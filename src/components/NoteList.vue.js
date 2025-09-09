@@ -438,13 +438,19 @@ else {
         const __VLS_79 = __VLS_asFunctionalComponent(__VLS_78, new __VLS_78({
             key: (note.id),
             ...{ class: "list-item" },
-            ...{ class: ({ 'over-time-limit': __VLS_ctx.isOverTimeLimit(note) }) },
+            ...{ class: ({
+                    'over-time-limit': __VLS_ctx.isOverTimeLimit(note),
+                    'warning-row': note.isWarning,
+                }) },
             gutter: (10),
         }));
         const __VLS_80 = __VLS_79({
             key: (note.id),
             ...{ class: "list-item" },
-            ...{ class: ({ 'over-time-limit': __VLS_ctx.isOverTimeLimit(note) }) },
+            ...{ class: ({
+                    'over-time-limit': __VLS_ctx.isOverTimeLimit(note),
+                    'warning-row': note.isWarning,
+                }) },
             gutter: (10),
         }, ...__VLS_functionalComponentArgsRest(__VLS_79));
         const { default: __VLS_82 } = __VLS_81.slots;
@@ -734,6 +740,7 @@ var __VLS_3;
 /** @type {__VLS_StyleScopedClasses['list-header']} */ ;
 /** @type {__VLS_StyleScopedClasses['list-item']} */ ;
 /** @type {__VLS_StyleScopedClasses['over-time-limit']} */ ;
+/** @type {__VLS_StyleScopedClasses['warning-row']} */ ;
 /** @type {__VLS_StyleScopedClasses['sound-icon']} */ ;
 /** @type {__VLS_StyleScopedClasses['map-name-content']} */ ;
 /** @type {__VLS_StyleScopedClasses['star-icon']} */ ;

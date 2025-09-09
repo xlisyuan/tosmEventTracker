@@ -4,12 +4,17 @@ import NoteInput from "./components/NoteInput.vue";
 import NoteList from "./components/NoteList.vue";
 import { ElMessage } from "element-plus";
 import { maps as originalMaps } from "./data/maps";
+// 嘗試從 localStorage 載入地圖資料，如果沒有則使用原始資料並存入
+const savedMaps = localStorage.getItem("mapData");
+const maps = ref(savedMaps ? JSON.parse(savedMaps) : [...originalMaps]);
+if (!savedMaps) {
+    localStorage.setItem("mapData", JSON.stringify(originalMaps));
+}
 const activeIndex = ref("0");
 const notes = ref([]);
 const currentSortMode = ref("time");
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
-const maps = ref([...originalMaps]);
 const toggleSort = () => {
     currentSortMode.value = currentSortMode.value === "time" ? "map" : "time";
     notes.value.sort(sortNotesArray);
@@ -35,15 +40,29 @@ const handleAddNewNote = (newNote) => {
         isStarred: mapData ? mapData.isStarred : false,
         hasSound: hasInputSoundOn.value,
     };
+    // 在新增前，檢查是否有相同地圖和分流的項目
+    notes.value.forEach((note) => {
+        if (note.mapLevel === finalNote.mapLevel &&
+            note.channel === finalNote.channel) {
+            note.isWarning = true; // 將重複的項目加上警告標誌
+        }
+        else {
+            // 考慮要不要用其他方法 測試多種可能?
+            note.isWarning = false; // 重置其他項目的警告標誌
+        }
+    });
     notes.value.unshift(finalNote);
     notes.value.sort(sortNotesArray);
     saveNotes();
     if (finalNote.hasSound) {
         new Audio("/sound/new_note.mp3").play();
     }
+    const message = mapData?.name
+        ? `記錄新增成功! ${mapData.name} 分流: ${finalNote.channel}`
+        : `記錄新增成功!`;
     ElMessage({
         type: "success",
-        message: "記錄新增成功",
+        message: message,
     });
 };
 const handleDeleteNote = (id) => {
@@ -125,6 +144,7 @@ const handleUpdateMapStar = (mapLevel) => {
     const map = maps.value.find((m) => m.level === mapLevel);
     if (map) {
         map.isStarred = !map.isStarred;
+        localStorage.setItem("mapData", JSON.stringify(maps.value));
     }
 };
 onMounted(() => {
@@ -255,10 +275,10 @@ const __VLS_self = (await import('vue')).defineComponent({
     setup: () => ({
         NoteInput: NoteInput,
         NoteList: NoteList,
+        maps: maps,
         notes: notes,
         currentSortMode: currentSortMode,
         hasInputSoundOn: hasInputSoundOn,
-        maps: maps,
         toggleSort: toggleSort,
         handleAddNewNote: handleAddNewNote,
         handleDeleteNote: handleDeleteNote,
