@@ -38,15 +38,14 @@ import { maps as originalMaps } from './data/maps';
 const activeIndex = ref('0');
 const notes = ref<Note[]>([]);
 const currentSortMode = ref<'time' | 'map'>('time');
-const ON_TIME_LIMIT_MS = 30 * 60 * 1000; // 30分鐘
+const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
-const maps = ref([...originalMaps]); // 將 maps 狀態移到這裡統一管理
+const maps = ref([...originalMaps]);
 
 const loadNotes = () => {
   const savedNotes = localStorage.getItem('notes');
   if (savedNotes) {
     notes.value = JSON.parse(savedNotes).map((note: Note) => {
-      // 確保從 localStorage 載入的 note 包含 isStarred 屬性
       const mapData = maps.value.find(m => m.level === note.mapLevel);
       return { ...note, isStarred: mapData ? mapData.isStarred : false };
     });
@@ -112,50 +111,52 @@ const sortNotesArray = (a: Note, b: Note): number => {
     return aMapName.localeCompare(bMapName);
   }
   
-  // 檢查 ON 的時間限制
   const aIsOnOverLimit = aStateCategory === 'ON' && (now - (a.onTime || now)) > ON_TIME_LIMIT_MS;
   const bIsOnOverLimit = bStateCategory === 'ON' && (now - (b.onTime || now)) > ON_TIME_LIMIT_MS;
 
-  // 將 ON 超過時間限制的項目排在最後
   if (aIsOnOverLimit && !bIsOnOverLimit) return 1;
   if (!aIsOnOverLimit && bIsOnOverLimit) return -1;
 
-  // 依據類別進行排序
   const stateOrder = { 'ON': 1, 'STAGE': 2, 'CD': 3 };
-  if (stateOrder[aStateCategory] !== stateOrder[bStateCategory]) {
-    return stateOrder[aStateCategory] - stateOrder[bStateCategory];
+  if (stateOrder[aStateCategory as keyof typeof stateOrder] !== stateOrder[bStateCategory as keyof typeof stateOrder]) {
+    return stateOrder[aStateCategory as keyof typeof stateOrder] - stateOrder[bStateCategory as keyof typeof stateOrder];
   }
   
-  // 在同一個狀態類別內，再依時間或階段排序
   if (aStateCategory === 'ON') {
-    return (b.onTime || 0) - (a.onTime || 0); // ON 狀態：ON 最久的排最前
+    return (b.onTime || 0) - (a.onTime || 0);
   } else if (aStateCategory === 'STAGE') {
     const aStage = parseInt(a.state.replace('STAGE_', ''), 10);
     const bStage = parseInt(b.state.replace('STAGE_', ''), 10);
-    return bStage - aStage; // STAGE 狀態：階段號碼大的排最前
+    return bStage - aStage;
   } else if (aStateCategory === 'CD') {
-    // CD 狀態：CD 越短的排越前
     return (a.respawnTime || 0) - (b.respawnTime || 0);
   }
   
   return 0;
 };
 
-const toggleSort = () => {
-  currentSortMode.value = currentSortMode.value === 'time' ? 'map' : 'time';
+const handleUpdateNoteStatus = (id: string, newState: NoteState, newTime: number | null) => {
+  const noteToUpdate = notes.value.find(note => note.id === id);
+  if (noteToUpdate) {
+    noteToUpdate.state = newState;
+    noteToUpdate.onTime = newTime;
+    noteToUpdate.hasAlerted = false;
+    
+    if (newState === 'CD') {
+      const map = maps.value.find(m => m.level === noteToUpdate.mapLevel);
+      if (map) {
+        noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
+      }
+    }
+  }
   notes.value.sort(sortNotesArray);
+  saveNotes();
 };
 
-const handleUpdateNoteStatus = () => {
-  // 這個函式目前沒有被使用，但保留以備未來擴充
-};
-
-// 新增此函式來處理 NoteList 發出的事件
 const handleToggleInputSound = (state: boolean) => {
   hasInputSoundOn.value = state;
 };
 
-// 新增此函式來處理子元件發出的星號更新事件
 const handleUpdateMapStar = (mapLevel: number) => {
   const map = maps.value.find(m => m.level === mapLevel);
   if (map) {
@@ -165,7 +166,6 @@ const handleUpdateMapStar = (mapLevel: number) => {
 
 onMounted(() => {
   loadNotes();
-  // 每秒更新一次，確保時間顯示即時
   setInterval(() => {
     notes.value.sort(sortNotesArray);
   }, 1000);
