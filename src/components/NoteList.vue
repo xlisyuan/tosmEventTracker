@@ -36,7 +36,10 @@
           v-for="note in notes"
           :key="note.id"
           class="list-item"
-          :class="{ 'over-time-limit': isOverTimeLimit(note) }"
+          :class="{
+            'over-time-limit': isOverTimeLimit(note),
+            'warning-row': note.isWarning,
+          }"
           :gutter="10"
         >
           <el-col :span="1">
@@ -407,6 +410,11 @@ const handleClearAll = async () => {
 
 .over-time-limit {
   color: #909399;
+}
+
+.warning-row {
+  background-color: #ffe6e6 !important;
+  border-left: 5px solid #ff4d4f;
 }
 
 .map-name-content {

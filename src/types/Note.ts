@@ -11,6 +11,7 @@ export interface Note {
     maxStages: number;
     onTime: number | null;
     hasAlerted: boolean;
+    isWarning?: boolean;
 }
 
 export interface Map {

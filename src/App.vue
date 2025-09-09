@@ -76,6 +76,20 @@ const handleAddNewNote = (newNote: any) => {
     isStarred: mapData ? mapData.isStarred : false,
     hasSound: hasInputSoundOn.value,
   };
+
+  // 在新增前，檢查是否有相同地圖和分流的項目
+  notes.value.forEach((note) => {
+    if (
+      note.mapLevel === finalNote.mapLevel &&
+      note.channel === finalNote.channel
+    ) {
+      note.isWarning = true; // 將重複的項目加上警告標誌
+    } else {
+      // 考慮要不要用其他方法 測試多種可能?
+      note.isWarning = false; // 重置其他項目的警告標誌
+    }
+  });
+
   notes.value.unshift(finalNote);
   notes.value.sort(sortNotesArray);
   saveNotes();
