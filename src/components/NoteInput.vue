@@ -2,10 +2,10 @@
   <el-card>
     <el-form class="input-form" @submit.prevent>
       <div class="input-form-left">
-        <el-form-item label="地圖分流狀態">
+        <el-form-item label="地圖 分流 時間or狀態">
           <el-input
             v-model="inputContent"
-            placeholder="e.g., 83 2 2.55.55"
+            placeholder="e.g., 83 2 1.35.45"
             @keyup.enter="handleAdd"
             @focus="isInputFocused = true"
             @blur="isInputFocused = false"
@@ -167,8 +167,8 @@ watch(
 
 const hintText = ref(`
   <strong>支援格式</strong>: 地圖等級(空格)分流(空格)時間/狀態<br>
-  <strong>CD時間</strong>: <code>1:30:00</code> (時:分:秒) 或 <code>25.10</code> (分.秒) 或 <code>55</code> (分)<br>
-  <strong>狀態</strong>: 階段 <code>3/5</code>, <code>ON</code>
+  <strong>CD時間</strong>: <code>1.30.00</code> (時.分.秒) 或 <code>25.10</code> (分.秒) 或 <code>55</code> (分)<br>
+  <strong>狀態</strong>: 階段 <code>1/4</code>, <code>3/4</code>, <code>ON</code>
 `);
 
 const toggleCollapse = () => {

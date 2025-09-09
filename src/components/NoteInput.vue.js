@@ -1,13 +1,13 @@
-import { ref, defineEmits, computed, watch, defineProps } from 'vue';
-import { ElMessage, ElButton } from 'element-plus';
-import { ArrowUp, ArrowDown, StarFilled } from '@element-plus/icons-vue';
+import { ref, defineEmits, computed, watch, defineProps } from "vue";
+import { ElMessage, ElButton } from "element-plus";
+import { ArrowUp, ArrowDown, StarFilled } from "@element-plus/icons-vue";
 const props = defineProps({
     hasSound: Boolean,
     maps: Array,
 });
-const emit = defineEmits(['add-note', 'update-map-star']);
-const inputContent = ref('');
-const timeInput = ref('');
+const emit = defineEmits(["add-note", "update-map-star"]);
+const inputContent = ref("");
+const timeInput = ref("");
 const hasSound = ref(true);
 const selectedEpisode = ref(0);
 const isStarSelection = ref(false);
@@ -19,21 +19,21 @@ watch(() => props.hasSound, (newVal) => {
 });
 const hintText = ref(`
   <strong>支援格式</strong>: 地圖等級(空格)分流(空格)時間/狀態<br>
-  <strong>CD時間</strong>: <code>1:30:00</code> (時:分:秒) 或 <code>25.10</code> (分.秒) 或 <code>55</code> (分)<br>
-  <strong>狀態</strong>: 階段 <code>3/5</code>, <code>ON</code>
+  <strong>CD時間</strong>: <code>1.30.00</code> (時.分.秒) 或 <code>25.10</code> (分.秒) 或 <code>55</code> (分)<br>
+  <strong>狀態</strong>: 階段 <code>1/4</code>, <code>3/4</code>, <code>ON</code>
 `);
 const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value;
 };
 const episodes = computed(() => {
-    const uniqueEpisodes = new Set(props.maps.map(map => map.episode));
+    const uniqueEpisodes = new Set(props.maps.map((map) => map.episode));
     return Array.from(uniqueEpisodes).sort((a, b) => a - b);
 });
 const filteredMaps = computed(() => {
     if (isStarSelection.value) {
-        return props.maps.filter(map => map.isStarred);
+        return props.maps.filter((map) => map.isStarred);
     }
-    return props.maps.filter(map => map.episode === selectedEpisode.value);
+    return props.maps.filter((map) => map.episode === selectedEpisode.value);
 });
 const parseInput = (value) => {
     const parts = value.trim().split(/\s+/);
@@ -51,7 +51,7 @@ const parseInput = (value) => {
         return result;
     }
     if (parts.length > 1) {
-        const map = props.maps.find(m => m.level === result.mapLevel);
+        const map = props.maps.find((m) => m.level === result.mapLevel);
         if (map && parts[1] === map.name.trim()) {
             result.mapName = parts[1];
             if (parts.length > 2) {
@@ -72,14 +72,14 @@ const parseInput = (value) => {
 };
 const hasValidMapLevel = computed(() => {
     const { mapLevel } = parseInput(inputContent.value);
-    return !isNaN(mapLevel) && props.maps.some(m => m.level === mapLevel);
+    return (!isNaN(mapLevel) && props.maps.some((m) => m.level === mapLevel));
 });
 const selectedMap = computed(() => {
     const { mapLevel, mapName } = parseInput(inputContent.value);
     if (mapName) {
-        return props.maps.find(m => m.level === mapLevel && m.name === mapName);
+        return props.maps.find((m) => m.level === mapLevel && m.name === mapName);
     }
-    return props.maps.find(m => m.level === mapLevel);
+    return props.maps.find((m) => m.level === mapLevel);
 });
 const selectedMapMaxStages = computed(() => {
     const map = selectedMap.value;
@@ -88,19 +88,19 @@ const selectedMapMaxStages = computed(() => {
 const getMapButtonType = (map) => {
     const { mapLevel, mapName } = parseInput(inputContent.value);
     if (mapName) {
-        return mapLevel === map.level && mapName === map.name ? 'primary' : '';
+        return mapLevel === map.level && mapName === map.name ? "primary" : "";
     }
-    return mapLevel === map.level ? 'primary' : '';
+    return mapLevel === map.level ? "primary" : "";
 };
 const getChannelButtonType = (channel) => {
     const { channel: currentChannel } = parseInput(inputContent.value);
-    return currentChannel === channel ? 'primary' : '';
+    return currentChannel === channel ? "primary" : "";
 };
 const getStateButtonType = (state) => {
-    return timeInput.value === state ? 'primary' : '';
+    return timeInput.value === state ? "primary" : "";
 };
 const handleEpisodeSelection = (ep) => {
-    if (ep === 'star') {
+    if (ep === "star") {
         isStarSelection.value = true;
         selectedEpisode.value = 0;
     }
@@ -137,8 +137,8 @@ const changeChannel = (delta) => {
     }
     else {
         ElMessage({
-            message: '分流已是最小，無法再減少',
-            type: 'warning',
+            message: "分流已是最小，無法再減少",
+            type: "warning",
         });
     }
 };
@@ -146,47 +146,48 @@ const fillState = (state) => {
     timeInput.value = state;
 };
 const toggleStar = (map) => {
-    emit('update-map-star', map.level);
+    emit("update-map-star", map.level);
 };
 const handleAdd = async () => {
     const parsed = parseInput(inputContent.value);
     const finalTimeStr = parsed.timeStr || timeInput.value.trim();
     if (!parsed.mapLevel || !parsed.channel || !finalTimeStr) {
-        ElMessage.error('輸入格式錯誤');
+        ElMessage.error("輸入格式錯誤");
         return;
     }
-    const map = props.maps.find(m => m.level === parsed.mapLevel);
+    const map = props.maps.find((m) => m.level === parsed.mapLevel);
     if (!map) {
-        ElMessage.error('找不到對應的地圖');
+        ElMessage.error("找不到對應的地圖");
         return;
     }
     let respawnTime = 0;
-    let state = 'CD';
+    let state = "CD";
     let maxStages = map.maxStages;
     let onTime = null;
-    if (finalTimeStr.toLowerCase() === 'on') {
-        state = 'ON';
+    if (finalTimeStr.toLowerCase() === "on") {
+        state = "ON";
         onTime = Date.now();
     }
-    else if (finalTimeStr.includes('/')) {
-        const [current, max] = finalTimeStr.split('/').map(Number);
+    else if (finalTimeStr.includes("/")) {
+        const [current, max] = finalTimeStr.split("/").map(Number);
         if (!isNaN(current) && !isNaN(max)) {
             state = `STAGE_${current}`;
             maxStages = max;
         }
         else {
-            ElMessage.error('階段格式錯誤');
+            ElMessage.error("階段格式錯誤");
             return;
         }
     }
-    else if (finalTimeStr.includes('.') || finalTimeStr.includes(':')) {
+    else if (finalTimeStr.includes(".") || finalTimeStr.includes(":")) {
         const timeParts = finalTimeStr.split(/[.:]/).map(Number);
         let totalSeconds = 0;
         if (timeParts.length === 2) {
             totalSeconds = timeParts[0] * 60 + (timeParts[1] || 0);
         }
         else {
-            totalSeconds = timeParts[0] * 3600 + timeParts[1] * 60 + (timeParts[2] || 0);
+            totalSeconds =
+                timeParts[0] * 3600 + timeParts[1] * 60 + (timeParts[2] || 0);
         }
         respawnTime = Date.now() + totalSeconds * 1000;
     }
@@ -195,7 +196,7 @@ const handleAdd = async () => {
         respawnTime = Date.now() + minutes * 60 * 1000;
     }
     else {
-        ElMessage.error('時間或階段格式錯誤');
+        ElMessage.error("時間或階段格式錯誤");
         return;
     }
     const noteData = {
@@ -209,9 +210,9 @@ const handleAdd = async () => {
         onTime,
         noteText: parsed.mapName,
     };
-    emit('add-note', noteData);
-    inputContent.value = '';
-    timeInput.value = '';
+    emit("add-note", noteData);
+    inputContent.value = "";
+    timeInput.value = "";
     selectedEpisode.value = 0;
     isStarSelection.value = false;
     isChannelConfirmed.value = false;
@@ -219,7 +220,7 @@ const handleAdd = async () => {
 watch(inputContent, (newValue) => {
     const { mapLevel, mapName, timeStr, channel } = parseInput(newValue);
     if (!isNaN(mapLevel)) {
-        const map = props.maps.find(m => m.level === mapLevel);
+        const map = props.maps.find((m) => m.level === mapLevel);
         if (map) {
             selectedEpisode.value = map.episode;
             isStarSelection.value = false;
@@ -238,7 +239,7 @@ watch(inputContent, (newValue) => {
         isChannelConfirmed.value = true;
     }
     else {
-        timeInput.value = '';
+        timeInput.value = "";
         if (isNaN(channel)) {
             isChannelConfirmed.value = false;
         }
@@ -291,10 +292,10 @@ const __VLS_14 = {}.ElFormItem;
 ElFormItem;
 // @ts-ignore
 const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({
-    label: "地圖分流狀態",
+    label: "地圖 分流 時間or狀態",
 }));
 const __VLS_16 = __VLS_15({
-    label: "地圖分流狀態",
+    label: "地圖 分流 時間or狀態",
 }, ...__VLS_functionalComponentArgsRest(__VLS_15));
 const { default: __VLS_18 } = __VLS_17.slots;
 const __VLS_19 = {}.ElInput;
@@ -307,14 +308,14 @@ const __VLS_20 = __VLS_asFunctionalComponent(__VLS_19, new __VLS_19({
     ...{ 'onFocus': {} },
     ...{ 'onBlur': {} },
     modelValue: (__VLS_ctx.inputContent),
-    placeholder: "e.g., 83 2 2.55.55",
+    placeholder: "e.g., 83 2 1.35.45",
 }));
 const __VLS_21 = __VLS_20({
     ...{ 'onKeyup': {} },
     ...{ 'onFocus': {} },
     ...{ 'onBlur': {} },
     modelValue: (__VLS_ctx.inputContent),
-    placeholder: "e.g., 83 2 2.55.55",
+    placeholder: "e.g., 83 2 1.35.45",
 }, ...__VLS_functionalComponentArgsRest(__VLS_20));
 let __VLS_23;
 let __VLS_24;

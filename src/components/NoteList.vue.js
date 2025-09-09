@@ -1,23 +1,34 @@
-import { ref, defineProps, defineEmits, onMounted, onUnmounted, h, computed } from 'vue';
-import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
-import { StarFilled, Bell, BellFilled } from '@element-plus/icons-vue';
+import { ref, defineProps, defineEmits, onMounted, onUnmounted, h, computed, } from "vue";
+import { ElMessage, ElMessageBox, ElButton } from "element-plus";
+import { StarFilled, Bell, BellFilled } from "@element-plus/icons-vue";
 const props = defineProps();
-const emit = defineEmits(['delete-note', 'clear-notes', 'toggle-sort', 'update-note-status', 'toggle-input-sound', 'update-map-star']);
+const emit = defineEmits([
+    "delete-note",
+    "clear-notes",
+    "toggle-sort",
+    "update-note-status",
+    "toggle-input-sound",
+    "update-map-star",
+]);
 const currentTime = ref(Date.now());
 let timer = null;
 let soundChecker = null;
+const showLocalTime = ref(false);
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const isAllSoundOn = ref(true);
+const toggleTimeDisplay = () => {
+    showLocalTime.value = !showLocalTime.value;
+};
 const getMapName = (level) => {
-    const map = props.maps.find(m => m.level === level);
-    return map ? map.name : '未知地圖';
+    const map = props.maps.find((m) => m.level === level);
+    return map ? map.name : "未知地圖";
 };
 const speakNoteDetails = (note) => {
-    if ('speechSynthesis' in window) {
+    if ("speechSynthesis" in window) {
         const mapName = getMapName(note.mapLevel);
         const utterance = new SpeechSynthesisUtterance();
         utterance.text = `E P ${getEpisode(note.mapLevel)}, ${mapName} 分流 ${note.channel}, CD已結束`;
-        utterance.lang = 'zh-TW';
+        utterance.lang = "zh-TW";
         window.speechSynthesis.speak(utterance);
     }
     else {
@@ -27,32 +38,43 @@ const speakNoteDetails = (note) => {
 const checkAndPlaySound = () => {
     const now = Date.now();
     for (const note of props.notes) {
-        if (note.state === 'CD' && note.hasSound && !note.hasAlerted && note.respawnTime <= now) {
+        if (note.state === "CD" &&
+            note.hasSound &&
+            !note.hasAlerted &&
+            note.respawnTime <= now) {
             speakNoteDetails(note);
             note.hasAlerted = true;
         }
     }
 };
 const sortButtonText = computed(() => {
-    if (props.currentSortMode === 'time') {
-        return '依地圖等級排序';
+    if (props.currentSortMode === "time") {
+        return "依地圖等級排序";
     }
     else {
-        return '依時間排序';
+        return "依時間排序";
     }
 });
 const toggleAllSoundButtonText = computed(() => {
-    return isAllSoundOn.value ? '提示聲全關' : '提示聲全開';
+    return isAllSoundOn.value ? "提示聲全關" : "提示聲全開";
 });
 const handleExpiredClick = (note) => {
     ElMessageBox({
-        title: '更新狀態',
-        message: h('div', { style: 'display: flex; flex-direction: column; align-items: center;' }, [
-            h('div', { style: 'width: 120px; margin-bottom: 10px;' }, [
-                h(ElButton, { type: 'success', onClick: () => handleSelection('on'), style: 'width: 100%;' }, () => 'ON')
+        title: "更新狀態",
+        message: h("div", { style: "display: flex; flex-direction: column; align-items: center;" }, [
+            h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
+                h(ElButton, {
+                    type: "success",
+                    onClick: () => handleSelection("on"),
+                    style: "width: 100%;",
+                }, () => "ON"),
             ]),
-            ...Array.from({ length: note.maxStages || 5 }, (_, i) => h('div', { style: 'width: 120px; margin-bottom: 10px;' }, [
-                h(ElButton, { type: '', onClick: () => handleSelection(`stage_${i + 1}`), style: 'width: 100%;' }, () => `階段 ${i + 1}/${note.maxStages || 5}`)
+            ...Array.from({ length: note.maxStages || 5 }, (_, i) => h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
+                h(ElButton, {
+                    type: "",
+                    onClick: () => handleSelection(`stage_${i + 1}`),
+                    style: "width: 100%;",
+                }, () => `階段 ${i + 1}/${note.maxStages || 5}`),
             ])),
         ]),
         showCancelButton: false,
@@ -64,16 +86,16 @@ const handleExpiredClick = (note) => {
         ElMessageBox.close();
         let newState;
         let newTime = null;
-        if (action === 'on') {
-            newState = 'ON';
+        if (action === "on") {
+            newState = "ON";
             newTime = Date.now();
         }
         else {
-            const stage = action.split('_')[1];
+            const stage = action.split("_")[1];
             newState = `STAGE_${stage}`;
             newTime = null;
         }
-        emit('update-note-status', note.id, newState, newTime);
+        emit("update-note-status", note.id, newState, newTime);
     };
 };
 onMounted(() => {
@@ -91,8 +113,8 @@ onUnmounted(() => {
     }
 });
 const getEpisode = (level) => {
-    const map = props.maps.find(m => m.level === level);
-    return map ? map.episode : '未知';
+    const map = props.maps.find((m) => m.level === level);
+    return map ? map.episode : "未知";
 };
 const formatTime = (seconds) => {
     if (seconds < 0)
@@ -100,76 +122,82 @@ const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
 };
 const getStatusText = (note) => {
     const now = currentTime.value;
-    if (note.state === 'ON') {
+    if (note.state === "ON") {
         const elapsedSeconds = Math.floor((now - (note.onTime || now)) / 1000);
         return `ON 已出現 ${formatTime(elapsedSeconds)}+`;
     }
-    else if (note.state.startsWith('STAGE_')) {
-        const stage = note.state.replace('STAGE_', '');
+    else if (note.state.startsWith("STAGE_")) {
+        const stage = note.state.replace("STAGE_", "");
         return `階段 ${stage}/${note.maxStages}`;
     }
-    else if (note.state === 'CD') {
+    else if (note.state === "CD") {
         const diffInSeconds = Math.floor((note.respawnTime - now) / 1000);
         if (diffInSeconds > 0) {
-            return `CD時間: ${formatTime(diffInSeconds)}`;
+            if (showLocalTime.value) {
+                const localTime = new Date(note.respawnTime || 0).toLocaleTimeString("zh-TW", { hour12: false });
+                return `開始於 ${localTime}`;
+            }
+            else {
+                return `CD時間 ${formatTime(diffInSeconds)}`;
+            }
         }
         else {
             const elapsedSeconds = Math.abs(diffInSeconds);
-            return `CD已過期: ${formatTime(elapsedSeconds)}`;
+            return `CD已過 ${formatTime(elapsedSeconds)}`;
         }
     }
-    return '';
+    return "";
 };
 const isOverTimeLimit = (note) => {
-    if (note.state === 'ON' && note.onTime) {
-        return (currentTime.value - note.onTime) > ON_TIME_LIMIT_MS;
+    if (note.state === "ON" && note.onTime) {
+        return currentTime.value - note.onTime > ON_TIME_LIMIT_MS;
     }
     return false;
 };
 const isMapStarred = (mapLevel) => {
-    const map = props.maps.find(m => m.level === mapLevel);
+    const map = props.maps.find((m) => m.level === mapLevel);
     return map ? map.isStarred : false;
 };
 const toggleStar = (mapLevel) => {
-    emit('update-map-star', mapLevel);
+    emit("update-map-star", mapLevel);
 };
 const toggleSound = (note) => {
     note.hasSound = !note.hasSound;
 };
 const handleToggleAllSound = () => {
     isAllSoundOn.value = !isAllSoundOn.value;
-    props.notes.forEach(note => {
+    props.notes.forEach((note) => {
         note.hasSound = isAllSoundOn.value;
     });
-    emit('toggle-input-sound', isAllSoundOn.value);
+    emit("toggle-input-sound", isAllSoundOn.value);
 };
 const sortNotes = () => {
-    emit('toggle-sort');
+    emit("toggle-sort");
 };
 const handleDelete = (id) => {
-    emit('delete-note', id);
+    emit("delete-note", id);
 };
 const handleClearAll = async () => {
     try {
-        await ElMessageBox.confirm('確定要清空所有記錄嗎？此操作無法復原。', '警告', {
-            confirmButtonText: '確定',
-            cancelButtonText: '取消',
-            type: 'warning',
+        await ElMessageBox.confirm("確定要清空所有記錄嗎？此操作無法復原。", "警告", {
+            confirmButtonText: "確定",
+            cancelButtonText: "取消",
+            type: "warning",
         });
-        emit('clear-notes');
+        emit("clear-notes");
         ElMessage({
-            type: 'success',
-            message: '所有記錄已清空',
+            type: "success",
+            message: "所有記錄已清空",
         });
     }
     catch (err) {
         ElMessage({
-            type: 'info',
-            message: '已取消清空',
+            type: "info",
+            message: "已取消清空",
         });
     }
 };
@@ -347,86 +375,109 @@ else {
         span: (5),
     }, ...__VLS_functionalComponentArgsRest(__VLS_56));
     const { default: __VLS_59 } = __VLS_58.slots;
+    const __VLS_60 = {}.ElButton;
+    /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+    // @ts-ignore
+    ElButton;
+    // @ts-ignore
+    const __VLS_61 = __VLS_asFunctionalComponent(__VLS_60, new __VLS_60({
+        ...{ 'onClick': {} },
+        size: "small",
+        type: "info",
+    }));
+    const __VLS_62 = __VLS_61({
+        ...{ 'onClick': {} },
+        size: "small",
+        type: "info",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_61));
+    let __VLS_64;
+    let __VLS_65;
+    const __VLS_66 = ({ click: {} },
+        { onClick: (__VLS_ctx.toggleTimeDisplay) });
+    const { default: __VLS_67 } = __VLS_63.slots;
+    // @ts-ignore
+    [toggleTimeDisplay,];
+    var __VLS_63;
     var __VLS_58;
-    const __VLS_60 = {}.ElCol;
+    const __VLS_68 = {}.ElCol;
     /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
     // @ts-ignore
     ElCol;
     // @ts-ignore
-    const __VLS_61 = __VLS_asFunctionalComponent(__VLS_60, new __VLS_60({
+    const __VLS_69 = __VLS_asFunctionalComponent(__VLS_68, new __VLS_68({
         span: (6),
     }));
-    const __VLS_62 = __VLS_61({
+    const __VLS_70 = __VLS_69({
         span: (6),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_61));
-    const { default: __VLS_64 } = __VLS_63.slots;
-    var __VLS_63;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_69));
+    const { default: __VLS_72 } = __VLS_71.slots;
+    var __VLS_71;
     var __VLS_33;
-    const __VLS_65 = {}.TransitionGroup;
+    const __VLS_73 = {}.TransitionGroup;
     /** @type {[typeof __VLS_components.TransitionGroup, typeof __VLS_components.transitionGroup, typeof __VLS_components.TransitionGroup, typeof __VLS_components.transitionGroup, ]} */ ;
     // @ts-ignore
     TransitionGroup;
     // @ts-ignore
-    const __VLS_66 = __VLS_asFunctionalComponent(__VLS_65, new __VLS_65({
+    const __VLS_74 = __VLS_asFunctionalComponent(__VLS_73, new __VLS_73({
         name: "list-item",
         tag: "div",
     }));
-    const __VLS_67 = __VLS_66({
+    const __VLS_75 = __VLS_74({
         name: "list-item",
         tag: "div",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_66));
-    const { default: __VLS_69 } = __VLS_68.slots;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_74));
+    const { default: __VLS_77 } = __VLS_76.slots;
     for (const [note] of __VLS_getVForSourceType((__VLS_ctx.notes))) {
         // @ts-ignore
         [notes,];
-        const __VLS_70 = {}.ElRow;
+        const __VLS_78 = {}.ElRow;
         /** @type {[typeof __VLS_components.ElRow, typeof __VLS_components.elRow, typeof __VLS_components.ElRow, typeof __VLS_components.elRow, ]} */ ;
         // @ts-ignore
         ElRow;
         // @ts-ignore
-        const __VLS_71 = __VLS_asFunctionalComponent(__VLS_70, new __VLS_70({
+        const __VLS_79 = __VLS_asFunctionalComponent(__VLS_78, new __VLS_78({
             key: (note.id),
             ...{ class: "list-item" },
             ...{ class: ({ 'over-time-limit': __VLS_ctx.isOverTimeLimit(note) }) },
             gutter: (10),
         }));
-        const __VLS_72 = __VLS_71({
+        const __VLS_80 = __VLS_79({
             key: (note.id),
             ...{ class: "list-item" },
             ...{ class: ({ 'over-time-limit': __VLS_ctx.isOverTimeLimit(note) }) },
             gutter: (10),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_71));
-        const { default: __VLS_74 } = __VLS_73.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_79));
+        const { default: __VLS_82 } = __VLS_81.slots;
         // @ts-ignore
         [isOverTimeLimit,];
-        const __VLS_75 = {}.ElCol;
+        const __VLS_83 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_76 = __VLS_asFunctionalComponent(__VLS_75, new __VLS_75({
+        const __VLS_84 = __VLS_asFunctionalComponent(__VLS_83, new __VLS_83({
             span: (1),
         }));
-        const __VLS_77 = __VLS_76({
+        const __VLS_85 = __VLS_84({
             span: (1),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_76));
-        const { default: __VLS_79 } = __VLS_78.slots;
-        const __VLS_80 = {}.ElIcon;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_84));
+        const { default: __VLS_87 } = __VLS_86.slots;
+        const __VLS_88 = {}.ElIcon;
         /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
         // @ts-ignore
         ElIcon;
         // @ts-ignore
-        const __VLS_81 = __VLS_asFunctionalComponent(__VLS_80, new __VLS_80({
+        const __VLS_89 = __VLS_asFunctionalComponent(__VLS_88, new __VLS_88({
             ...{ 'onClick': {} },
             ...{ class: "sound-icon" },
         }));
-        const __VLS_82 = __VLS_81({
+        const __VLS_90 = __VLS_89({
             ...{ 'onClick': {} },
             ...{ class: "sound-icon" },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_81));
-        let __VLS_84;
-        let __VLS_85;
-        const __VLS_86 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_89));
+        let __VLS_92;
+        let __VLS_93;
+        const __VLS_94 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -434,55 +485,55 @@ else {
                     // @ts-ignore
                     [toggleSound,];
                 } });
-        const { default: __VLS_87 } = __VLS_83.slots;
+        const { default: __VLS_95 } = __VLS_91.slots;
         if (note.hasSound) {
-            const __VLS_88 = {}.BellFilled;
+            const __VLS_96 = {}.BellFilled;
             /** @type {[typeof __VLS_components.BellFilled, ]} */ ;
             // @ts-ignore
             BellFilled;
             // @ts-ignore
-            const __VLS_89 = __VLS_asFunctionalComponent(__VLS_88, new __VLS_88({}));
-            const __VLS_90 = __VLS_89({}, ...__VLS_functionalComponentArgsRest(__VLS_89));
+            const __VLS_97 = __VLS_asFunctionalComponent(__VLS_96, new __VLS_96({}));
+            const __VLS_98 = __VLS_97({}, ...__VLS_functionalComponentArgsRest(__VLS_97));
         }
         else {
-            const __VLS_93 = {}.Bell;
+            const __VLS_101 = {}.Bell;
             /** @type {[typeof __VLS_components.Bell, ]} */ ;
             // @ts-ignore
             Bell;
             // @ts-ignore
-            const __VLS_94 = __VLS_asFunctionalComponent(__VLS_93, new __VLS_93({}));
-            const __VLS_95 = __VLS_94({}, ...__VLS_functionalComponentArgsRest(__VLS_94));
+            const __VLS_102 = __VLS_asFunctionalComponent(__VLS_101, new __VLS_101({}));
+            const __VLS_103 = __VLS_102({}, ...__VLS_functionalComponentArgsRest(__VLS_102));
         }
-        var __VLS_83;
-        var __VLS_78;
-        const __VLS_98 = {}.ElCol;
+        var __VLS_91;
+        var __VLS_86;
+        const __VLS_106 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_99 = __VLS_asFunctionalComponent(__VLS_98, new __VLS_98({
+        const __VLS_107 = __VLS_asFunctionalComponent(__VLS_106, new __VLS_106({
             span: (3),
         }));
-        const __VLS_100 = __VLS_99({
+        const __VLS_108 = __VLS_107({
             span: (3),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_99));
-        const { default: __VLS_102 } = __VLS_101.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_107));
+        const { default: __VLS_110 } = __VLS_109.slots;
         (__VLS_ctx.getEpisode(note.mapLevel));
         // @ts-ignore
         [getEpisode,];
-        var __VLS_101;
-        const __VLS_103 = {}.ElCol;
+        var __VLS_109;
+        const __VLS_111 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_104 = __VLS_asFunctionalComponent(__VLS_103, new __VLS_103({
+        const __VLS_112 = __VLS_asFunctionalComponent(__VLS_111, new __VLS_111({
             span: (6),
         }));
-        const __VLS_105 = __VLS_104({
+        const __VLS_113 = __VLS_112({
             span: (6),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_104));
-        const { default: __VLS_107 } = __VLS_106.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_112));
+        const { default: __VLS_115 } = __VLS_114.slots;
         __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
             ...{ class: "map-name-content" },
         });
@@ -491,24 +542,24 @@ else {
         (__VLS_ctx.getMapName(note.mapLevel));
         // @ts-ignore
         [getMapName,];
-        const __VLS_108 = {}.ElIcon;
+        const __VLS_116 = {}.ElIcon;
         /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
         // @ts-ignore
         ElIcon;
         // @ts-ignore
-        const __VLS_109 = __VLS_asFunctionalComponent(__VLS_108, new __VLS_108({
+        const __VLS_117 = __VLS_asFunctionalComponent(__VLS_116, new __VLS_116({
             ...{ 'onClick': {} },
             ...{ class: "star-icon" },
             ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
         }));
-        const __VLS_110 = __VLS_109({
+        const __VLS_118 = __VLS_117({
             ...{ 'onClick': {} },
             ...{ class: "star-icon" },
             ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_109));
-        let __VLS_112;
-        let __VLS_113;
-        const __VLS_114 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_117));
+        let __VLS_120;
+        let __VLS_121;
+        const __VLS_122 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -516,80 +567,45 @@ else {
                     // @ts-ignore
                     [isMapStarred, toggleStar,];
                 } });
-        const { default: __VLS_115 } = __VLS_111.slots;
-        const __VLS_116 = {}.StarFilled;
+        const { default: __VLS_123 } = __VLS_119.slots;
+        const __VLS_124 = {}.StarFilled;
         /** @type {[typeof __VLS_components.StarFilled, ]} */ ;
         // @ts-ignore
         StarFilled;
         // @ts-ignore
-        const __VLS_117 = __VLS_asFunctionalComponent(__VLS_116, new __VLS_116({}));
-        const __VLS_118 = __VLS_117({}, ...__VLS_functionalComponentArgsRest(__VLS_117));
-        var __VLS_111;
-        var __VLS_106;
-        const __VLS_121 = {}.ElCol;
+        const __VLS_125 = __VLS_asFunctionalComponent(__VLS_124, new __VLS_124({}));
+        const __VLS_126 = __VLS_125({}, ...__VLS_functionalComponentArgsRest(__VLS_125));
+        var __VLS_119;
+        var __VLS_114;
+        const __VLS_129 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_122 = __VLS_asFunctionalComponent(__VLS_121, new __VLS_121({
+        const __VLS_130 = __VLS_asFunctionalComponent(__VLS_129, new __VLS_129({
             span: (3),
         }));
-        const __VLS_123 = __VLS_122({
+        const __VLS_131 = __VLS_130({
             span: (3),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_122));
-        const { default: __VLS_125 } = __VLS_124.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_130));
+        const { default: __VLS_133 } = __VLS_132.slots;
         (note.channel);
-        var __VLS_124;
-        const __VLS_126 = {}.ElCol;
+        var __VLS_132;
+        const __VLS_134 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_127 = __VLS_asFunctionalComponent(__VLS_126, new __VLS_126({
+        const __VLS_135 = __VLS_asFunctionalComponent(__VLS_134, new __VLS_134({
             span: (5),
         }));
-        const __VLS_128 = __VLS_127({
+        const __VLS_136 = __VLS_135({
             span: (5),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_127));
-        const { default: __VLS_130 } = __VLS_129.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_135));
+        const { default: __VLS_138 } = __VLS_137.slots;
         if (note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime) {
             // @ts-ignore
             [currentTime,];
-            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-            const __VLS_131 = {}.ElButton;
-            /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
-            // @ts-ignore
-            ElButton;
-            // @ts-ignore
-            const __VLS_132 = __VLS_asFunctionalComponent(__VLS_131, new __VLS_131({
-                ...{ 'onClick': {} },
-                type: "warning",
-                size: "small",
-            }));
-            const __VLS_133 = __VLS_132({
-                ...{ 'onClick': {} },
-                type: "warning",
-                size: "small",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_132));
-            let __VLS_135;
-            let __VLS_136;
-            const __VLS_137 = ({ click: {} },
-                { onClick: (...[$event]) => {
-                        if (!!(__VLS_ctx.notes.length === 0))
-                            return;
-                        if (!(note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime))
-                            return;
-                        __VLS_ctx.handleExpiredClick(note);
-                        // @ts-ignore
-                        [handleExpiredClick,];
-                    } });
-            const { default: __VLS_138 } = __VLS_134.slots;
-            (__VLS_ctx.getStatusText(note));
-            // @ts-ignore
-            [getStatusText,];
-            var __VLS_134;
-        }
-        else if (note.state.startsWith('STAGE_')) {
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
             const __VLS_139 = {}.ElButton;
             /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
@@ -598,12 +614,12 @@ else {
             // @ts-ignore
             const __VLS_140 = __VLS_asFunctionalComponent(__VLS_139, new __VLS_139({
                 ...{ 'onClick': {} },
-                type: "primary",
+                type: "warning",
                 size: "small",
             }));
             const __VLS_141 = __VLS_140({
                 ...{ 'onClick': {} },
-                type: "primary",
+                type: "warning",
                 size: "small",
             }, ...__VLS_functionalComponentArgsRest(__VLS_140));
             let __VLS_143;
@@ -612,9 +628,7 @@ else {
                 { onClick: (...[$event]) => {
                         if (!!(__VLS_ctx.notes.length === 0))
                             return;
-                        if (!!(note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime))
-                            return;
-                        if (!(note.state.startsWith('STAGE_')))
+                        if (!(note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime))
                             return;
                         __VLS_ctx.handleExpiredClick(note);
                         // @ts-ignore
@@ -626,43 +640,80 @@ else {
             [getStatusText,];
             var __VLS_142;
         }
+        else if (note.state.startsWith('STAGE_')) {
+            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            const __VLS_147 = {}.ElButton;
+            /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+            // @ts-ignore
+            ElButton;
+            // @ts-ignore
+            const __VLS_148 = __VLS_asFunctionalComponent(__VLS_147, new __VLS_147({
+                ...{ 'onClick': {} },
+                type: "primary",
+                size: "small",
+            }));
+            const __VLS_149 = __VLS_148({
+                ...{ 'onClick': {} },
+                type: "primary",
+                size: "small",
+            }, ...__VLS_functionalComponentArgsRest(__VLS_148));
+            let __VLS_151;
+            let __VLS_152;
+            const __VLS_153 = ({ click: {} },
+                { onClick: (...[$event]) => {
+                        if (!!(__VLS_ctx.notes.length === 0))
+                            return;
+                        if (!!(note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime))
+                            return;
+                        if (!(note.state.startsWith('STAGE_')))
+                            return;
+                        __VLS_ctx.handleExpiredClick(note);
+                        // @ts-ignore
+                        [handleExpiredClick,];
+                    } });
+            const { default: __VLS_154 } = __VLS_150.slots;
+            (__VLS_ctx.getStatusText(note));
+            // @ts-ignore
+            [getStatusText,];
+            var __VLS_150;
+        }
         else {
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
             (__VLS_ctx.getStatusText(note));
             // @ts-ignore
             [getStatusText,];
         }
-        var __VLS_129;
-        const __VLS_147 = {}.ElCol;
+        var __VLS_137;
+        const __VLS_155 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_148 = __VLS_asFunctionalComponent(__VLS_147, new __VLS_147({
+        const __VLS_156 = __VLS_asFunctionalComponent(__VLS_155, new __VLS_155({
             span: (6),
         }));
-        const __VLS_149 = __VLS_148({
+        const __VLS_157 = __VLS_156({
             span: (6),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_148));
-        const { default: __VLS_151 } = __VLS_150.slots;
-        const __VLS_152 = {}.ElButton;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_156));
+        const { default: __VLS_159 } = __VLS_158.slots;
+        const __VLS_160 = {}.ElButton;
         /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
         // @ts-ignore
         ElButton;
         // @ts-ignore
-        const __VLS_153 = __VLS_asFunctionalComponent(__VLS_152, new __VLS_152({
+        const __VLS_161 = __VLS_asFunctionalComponent(__VLS_160, new __VLS_160({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
         }));
-        const __VLS_154 = __VLS_153({
+        const __VLS_162 = __VLS_161({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_153));
-        let __VLS_156;
-        let __VLS_157;
-        const __VLS_158 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_161));
+        let __VLS_164;
+        let __VLS_165;
+        const __VLS_166 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -670,12 +721,12 @@ else {
                     // @ts-ignore
                     [handleDelete,];
                 } });
-        const { default: __VLS_159 } = __VLS_155.slots;
-        var __VLS_155;
-        var __VLS_150;
-        var __VLS_73;
+        const { default: __VLS_167 } = __VLS_163.slots;
+        var __VLS_163;
+        var __VLS_158;
+        var __VLS_81;
     }
-    var __VLS_68;
+    var __VLS_76;
 }
 var __VLS_3;
 /** @type {__VLS_StyleScopedClasses['no-notes-message']} */ ;
@@ -695,6 +746,7 @@ const __VLS_self = (await import('vue')).defineComponent({
         Bell: Bell,
         BellFilled: BellFilled,
         currentTime: currentTime,
+        toggleTimeDisplay: toggleTimeDisplay,
         getMapName: getMapName,
         sortButtonText: sortButtonText,
         toggleAllSoundButtonText: toggleAllSoundButtonText,

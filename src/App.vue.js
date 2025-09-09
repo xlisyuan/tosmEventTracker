@@ -1,33 +1,33 @@
-import { ref, onMounted, watch } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
-import NoteInput from './components/NoteInput.vue';
-import NoteList from './components/NoteList.vue';
-import { ElMessage } from 'element-plus';
-import { maps as originalMaps } from './data/maps';
-const activeIndex = ref('0');
+import { ref, onMounted, watch } from "vue";
+import { v4 as uuidv4 } from "uuid";
+import NoteInput from "./components/NoteInput.vue";
+import NoteList from "./components/NoteList.vue";
+import { ElMessage } from "element-plus";
+import { maps as originalMaps } from "./data/maps";
+const activeIndex = ref("0");
 const notes = ref([]);
-const currentSortMode = ref('time');
+const currentSortMode = ref("time");
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
 const maps = ref([...originalMaps]);
 const toggleSort = () => {
-    currentSortMode.value = currentSortMode.value === 'time' ? 'map' : 'time';
+    currentSortMode.value = currentSortMode.value === "time" ? "map" : "time";
     notes.value.sort(sortNotesArray);
 };
 const loadNotes = () => {
-    const savedNotes = localStorage.getItem('notes');
+    const savedNotes = localStorage.getItem("notes");
     if (savedNotes) {
         notes.value = JSON.parse(savedNotes).map((note) => {
-            const mapData = maps.value.find(m => m.level === note.mapLevel);
+            const mapData = maps.value.find((m) => m.level === note.mapLevel);
             return { ...note, isStarred: mapData ? mapData.isStarred : false };
         });
     }
 };
 const saveNotes = () => {
-    localStorage.setItem('notes', JSON.stringify(notes.value));
+    localStorage.setItem("notes", JSON.stringify(notes.value));
 };
 const handleAddNewNote = (newNote) => {
-    const mapData = maps.value.find(m => m.level === newNote.mapLevel);
+    const mapData = maps.value.find((m) => m.level === newNote.mapLevel);
     const finalNote = {
         ...newNote,
         id: uuidv4(),
@@ -39,21 +39,21 @@ const handleAddNewNote = (newNote) => {
     notes.value.sort(sortNotesArray);
     saveNotes();
     if (finalNote.hasSound) {
-        new Audio('/sound/new_note.mp3').play();
+        new Audio("/sound/new_note.mp3").play();
     }
     ElMessage({
-        type: 'success',
-        message: '記錄新增成功',
+        type: "success",
+        message: "記錄新增成功",
     });
 };
 const handleDeleteNote = (id) => {
-    const index = notes.value.findIndex(note => note.id === id);
+    const index = notes.value.findIndex((note) => note.id === id);
     if (index !== -1) {
         notes.value.splice(index, 1);
         saveNotes();
         ElMessage({
-            type: 'success',
-            message: '記錄已刪除',
+            type: "success",
+            message: "記錄已刪除",
         });
     }
 };
@@ -62,52 +62,54 @@ const handleClearAllNotes = () => {
     saveNotes();
 };
 const getNoteStateCategory = (state) => {
-    if (state.toLowerCase() === 'on')
-        return 'ON';
-    if (state.includes('/'))
-        return 'STAGE';
-    return 'CD';
+    if (state.toLowerCase() === "on")
+        return "ON";
+    if (state.includes("/"))
+        return "STAGE";
+    return "CD";
 };
 const sortNotesArray = (a, b) => {
     const now = Date.now();
     const aStateCategory = getNoteStateCategory(a.state);
     const bStateCategory = getNoteStateCategory(b.state);
-    if (currentSortMode.value === 'map') {
-        const aMapName = maps.value.find(m => m.level === a.mapLevel)?.name || '';
-        const bMapName = maps.value.find(m => m.level === b.mapLevel)?.name || '';
+    if (currentSortMode.value === "map") {
+        const aMapName = maps.value.find((m) => m.level === a.mapLevel)?.name || "";
+        const bMapName = maps.value.find((m) => m.level === b.mapLevel)?.name || "";
         return aMapName.localeCompare(bMapName);
     }
-    const aIsOnOverLimit = aStateCategory === 'ON' && (now - (a.onTime || now)) > ON_TIME_LIMIT_MS;
-    const bIsOnOverLimit = bStateCategory === 'ON' && (now - (b.onTime || now)) > ON_TIME_LIMIT_MS;
+    const aIsOnOverLimit = aStateCategory === "ON" && now - (a.onTime || now) > ON_TIME_LIMIT_MS;
+    const bIsOnOverLimit = bStateCategory === "ON" && now - (b.onTime || now) > ON_TIME_LIMIT_MS;
     if (aIsOnOverLimit && !bIsOnOverLimit)
         return 1;
     if (!aIsOnOverLimit && bIsOnOverLimit)
         return -1;
-    const stateOrder = { 'ON': 1, 'STAGE': 2, 'CD': 3 };
-    if (stateOrder[aStateCategory] !== stateOrder[bStateCategory]) {
-        return stateOrder[aStateCategory] - stateOrder[bStateCategory];
+    const stateOrder = { ON: 1, STAGE: 2, CD: 3 };
+    if (stateOrder[aStateCategory] !==
+        stateOrder[bStateCategory]) {
+        return (stateOrder[aStateCategory] -
+            stateOrder[bStateCategory]);
     }
-    if (aStateCategory === 'ON') {
+    if (aStateCategory === "ON") {
         return (b.onTime || 0) - (a.onTime || 0);
     }
-    else if (aStateCategory === 'STAGE') {
-        const aStage = parseInt(a.state.replace('STAGE_', ''), 10);
-        const bStage = parseInt(b.state.replace('STAGE_', ''), 10);
+    else if (aStateCategory === "STAGE") {
+        const aStage = parseInt(a.state.replace("STAGE_", ""), 10);
+        const bStage = parseInt(b.state.replace("STAGE_", ""), 10);
         return bStage - aStage;
     }
-    else if (aStateCategory === 'CD') {
+    else if (aStateCategory === "CD") {
         return (a.respawnTime || 0) - (b.respawnTime || 0);
     }
     return 0;
 };
 const handleUpdateNoteStatus = (id, newState, newTime) => {
-    const noteToUpdate = notes.value.find(note => note.id === id);
+    const noteToUpdate = notes.value.find((note) => note.id === id);
     if (noteToUpdate) {
         noteToUpdate.state = newState;
         noteToUpdate.onTime = newTime;
         noteToUpdate.hasAlerted = false;
-        if (newState === 'CD') {
-            const map = maps.value.find(m => m.level === noteToUpdate.mapLevel);
+        if (newState === "CD") {
+            const map = maps.value.find((m) => m.level === noteToUpdate.mapLevel);
             if (map) {
                 noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
             }
@@ -120,7 +122,7 @@ const handleToggleInputSound = (state) => {
     hasInputSoundOn.value = state;
 };
 const handleUpdateMapStar = (mapLevel) => {
-    const map = maps.value.find(m => m.level === mapLevel);
+    const map = maps.value.find((m) => m.level === mapLevel);
     if (map) {
         map.isStarred = !map.isStarred;
     }
@@ -132,11 +134,6 @@ onMounted(() => {
     }, 1000);
 });
 watch(notes, saveNotes, { deep: true });
-// 確保 toggleSort 和其他需要暴露的函式可以被外部正確識別
-// defineExpose({
-//   toggleSort,
-//   // 如果未來有其他函式需要暴露，也可以加在這裡
-// });
 debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
 const __VLS_ctx = {};
 let __VLS_elements;
