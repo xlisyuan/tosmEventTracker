@@ -32,14 +32,23 @@ import NoteInput from "./components/NoteInput.vue";
 import NoteList from "./components/NoteList.vue";
 import type { Note, NoteState } from "./types/Note";
 import { ElMessage } from "element-plus";
-import { maps as originalMaps } from "./data/maps";
+import { maps as originalMaps, type MapData } from "./data/maps";
+
+// 嘗試從 localStorage 載入地圖資料，如果沒有則使用原始資料並存入
+const savedMaps = localStorage.getItem("mapData");
+const maps = ref<MapData[]>(
+  savedMaps ? JSON.parse(savedMaps) : [...originalMaps]
+);
+
+if (!savedMaps) {
+  localStorage.setItem("mapData", JSON.stringify(originalMaps));
+}
 
 const activeIndex = ref("0");
 const notes = ref<Note[]>([]);
 const currentSortMode = ref<"time" | "map">("time");
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
-const maps = ref([...originalMaps]);
 const toggleSort = () => {
   currentSortMode.value = currentSortMode.value === "time" ? "map" : "time";
   notes.value.sort(sortNotesArray);
@@ -175,6 +184,7 @@ const handleUpdateMapStar = (mapLevel: number) => {
   const map = maps.value.find((m) => m.level === mapLevel);
   if (map) {
     map.isStarred = !map.isStarred;
+    localStorage.setItem("mapData", JSON.stringify(maps.value));
   }
 };
 
