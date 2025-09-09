@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/vite-env.d.ts","./src/data/maps.ts","./src/types/note.ts","./src/app.vue","./src/components/noteinput.vue","./src/components/notelist.vue"],"version":"5.8.3"}
