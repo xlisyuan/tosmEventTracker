@@ -22,7 +22,12 @@
         <el-col :span="3">區域</el-col>
         <el-col :span="6">地圖</el-col>
         <el-col :span="3">分流</el-col>
-        <el-col :span="5">狀態</el-col>
+        <el-col :span="5">
+          狀態
+          <el-button size="small" type="info" @click="toggleTimeDisplay">
+            切換CD時間
+          </el-button>
+        </el-col>
         <el-col :span="6">操作</el-col>
       </el-row>
 
@@ -121,9 +126,14 @@ const emit = defineEmits([
 const currentTime = ref(Date.now());
 let timer: ReturnType<typeof setInterval> | null = null;
 let soundChecker: ReturnType<typeof setInterval> | null = null;
+const showLocalTime = ref(false);
 
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const isAllSoundOn = ref(true);
+
+const toggleTimeDisplay = () => {
+  showLocalTime.value = !showLocalTime.value;
+};
 
 const getMapName = (level: number) => {
   const map = props.maps.find((m) => m.level === level);
@@ -276,10 +286,18 @@ const getStatusText = (note: Note) => {
   } else if (note.state === "CD") {
     const diffInSeconds = Math.floor((note.respawnTime - now) / 1000);
     if (diffInSeconds > 0) {
-      return `CD時間: ${formatTime(diffInSeconds)}`;
+      if (showLocalTime.value) {
+        const localTime = new Date(note.respawnTime || 0).toLocaleTimeString(
+          "zh-TW",
+          { hour12: false }
+        );
+        return `開始於 ${localTime}`;
+      } else {
+        return `CD時間 ${formatTime(diffInSeconds)}`;
+      }
     } else {
       const elapsedSeconds = Math.abs(diffInSeconds);
-      return `CD已過期: ${formatTime(elapsedSeconds)}`;
+      return `CD已過 ${formatTime(elapsedSeconds)}`;
     }
   }
   return "";
