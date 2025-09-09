@@ -166,9 +166,10 @@ watch(
 );
 
 const hintText = ref(`
-  <strong>支援格式</strong>: 地圖等級(空格)分流(空格)時間/狀態<br>
-  <strong>CD時間</strong>: <code>1.30.00</code> (時.分.秒) 或 <code>25.10</code> (分.秒) 或 <code>55</code> (分)<br>
-  <strong>狀態</strong>: 階段 <code>1/4</code>, <code>3/4</code>, <code>ON</code>
+  <strong>支援格式</strong>: 地圖等級 (空格) 分流 (空格) CD時間或狀態<br>
+  <strong>CD時間</strong>: <code>1.30.7</code> (時.分.秒) 或 <code>25.10</code> (分.秒) 或 <code>5</code> (分)<br>
+  <strong>狀態</strong>: 階段 <code>1/4</code> 到 <code>3/4</code> 或 <code>ON</code><br>
+  輸入完可以直接enter
 `);
 
 const toggleCollapse = () => {
