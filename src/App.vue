@@ -82,9 +82,13 @@ const handleAddNewNote = (newNote: any) => {
   if (finalNote.hasSound) {
     new Audio("/sound/new_note.mp3").play();
   }
+  const message = mapData?.name
+    ? `記錄新增成功! ${mapData.name} 分流: ${finalNote.channel}`
+    : `記錄新增成功!`;
+
   ElMessage({
     type: "success",
-    message: "記錄新增成功",
+    message: message,
   });
 };
 
