@@ -1,21 +1,16 @@
 <template>
   <el-card>
-    <div v-if="notes.length === 0" class="no-notes-message">
-      沒有任何記錄。
-    </div>
+    <div v-if="notes.length === 0" class="no-notes-message">沒有任何記錄。</div>
     <div v-else>
       <div class="list-actions">
         <el-button @click="sortNotes">
           {{ sortButtonText }}
         </el-button>
-        <el-button 
-          @click="handleToggleAllSound"
-          :disabled="notes.length === 0"
-        >
+        <el-button @click="handleToggleAllSound" :disabled="notes.length === 0">
           {{ toggleAllSoundButtonText }}
         </el-button>
-        <el-button 
-          type="danger" 
+        <el-button
+          type="danger"
           @click="handleClearAll"
           :disabled="notes.length === 0"
         >
@@ -30,20 +25,17 @@
         <el-col :span="5">狀態</el-col>
         <el-col :span="6">操作</el-col>
       </el-row>
-      
+
       <transition-group name="list-item" tag="div">
-        <el-row 
-          v-for="note in notes" 
-          :key="note.id" 
-          class="list-item" 
+        <el-row
+          v-for="note in notes"
+          :key="note.id"
+          class="list-item"
           :class="{ 'over-time-limit': isOverTimeLimit(note) }"
           :gutter="10"
         >
           <el-col :span="1">
-            <el-icon 
-              class="sound-icon" 
-              @click.stop="toggleSound(note)"
-            >
+            <el-icon class="sound-icon" @click.stop="toggleSound(note)">
               <template v-if="note.hasSound"><BellFilled /></template>
               <template v-else><Bell /></template>
             </el-icon>
@@ -51,9 +43,11 @@
           <el-col :span="3">EP.{{ getEpisode(note.mapLevel) }}</el-col>
           <el-col :span="6">
             <span class="map-name-content">
-              <span>Lv.{{ note.mapLevel }} {{ getMapName(note.mapLevel) }}</span>
-              <el-icon 
-                class="star-icon" 
+              <span
+                >Lv.{{ note.mapLevel }} {{ getMapName(note.mapLevel) }}</span
+              >
+              <el-icon
+                class="star-icon"
                 :class="{ 'is-starred': isMapStarred(note.mapLevel) }"
                 @click.stop="toggleStar(note.mapLevel)"
               >
@@ -64,17 +58,29 @@
           <el-col :span="3">{{ note.channel }}</el-col>
           <el-col :span="5">
             <span v-if="note.state === 'CD' && note.respawnTime <= currentTime">
-              <el-button type="warning" size="small" @click="handleExpiredClick(note)">{{ getStatusText(note) }}</el-button>
+              <el-button
+                type="warning"
+                size="small"
+                @click="handleExpiredClick(note)"
+                >{{ getStatusText(note) }}</el-button
+              >
             </span>
             <span v-else-if="note.state.startsWith('STAGE_')">
-              <el-button type="primary" size="small" @click="handleExpiredClick(note)">{{ getStatusText(note) }}</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="handleExpiredClick(note)"
+                >{{ getStatusText(note) }}</el-button
+              >
             </span>
             <span v-else>
               {{ getStatusText(note) }}
             </span>
           </el-col>
           <el-col :span="6">
-            <el-button type="danger" size="small" @click="handleDelete(note.id)">刪除</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(note.id)"
+              >刪除</el-button
+            >
           </el-col>
         </el-row>
       </transition-group>
@@ -83,19 +89,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted, onUnmounted, h, computed } from 'vue';
-import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
-import type { Note, NoteState } from '@/types/Note';
-import type { MapData } from '@/data/maps';
-import { StarFilled, Bell, BellFilled } from '@element-plus/icons-vue';
+import {
+  ref,
+  defineProps,
+  defineEmits,
+  onMounted,
+  onUnmounted,
+  h,
+  computed,
+} from "vue";
+import { ElMessage, ElMessageBox, ElButton } from "element-plus";
+import type { Note, NoteState } from "@/types/Note";
+import type { MapData } from "@/data/maps";
+import { StarFilled, Bell, BellFilled } from "@element-plus/icons-vue";
 
 const props = defineProps<{
   notes: Note[];
-  currentSortMode: 'time' | 'map';
+  currentSortMode: "time" | "map";
   maps: MapData[];
 }>();
 
-const emit = defineEmits(['delete-note', 'clear-notes', 'toggle-sort', 'update-note-status', 'toggle-input-sound', 'update-map-star']);
+const emit = defineEmits([
+  "delete-note",
+  "clear-notes",
+  "toggle-sort",
+  "update-note-status",
+  "toggle-input-sound",
+  "update-map-star",
+]);
 
 const currentTime = ref(Date.now());
 let timer: ReturnType<typeof setInterval> | null = null;
@@ -105,18 +126,20 @@ const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const isAllSoundOn = ref(true);
 
 const getMapName = (level: number) => {
-  const map = props.maps.find(m => m.level === level);
-  return map ? map.name : '未知地圖';
+  const map = props.maps.find((m) => m.level === level);
+  return map ? map.name : "未知地圖";
 };
 
 const speakNoteDetails = (note: Note) => {
-  if ('speechSynthesis' in window) {
+  if ("speechSynthesis" in window) {
     const mapName = getMapName(note.mapLevel);
     const utterance = new SpeechSynthesisUtterance();
-    
-    utterance.text = `E P ${getEpisode(note.mapLevel)}, ${mapName} 分流 ${note.channel}, CD已結束`;
-    utterance.lang = 'zh-TW';
-    
+
+    utterance.text = `E P ${getEpisode(note.mapLevel)}, ${mapName} 分流 ${
+      note.channel
+    }, CD已結束`;
+    utterance.lang = "zh-TW";
+
     window.speechSynthesis.speak(utterance);
   } else {
     console.error("瀏覽器不支持語音合成 API。");
@@ -126,7 +149,12 @@ const speakNoteDetails = (note: Note) => {
 const checkAndPlaySound = () => {
   const now = Date.now();
   for (const note of props.notes) {
-    if (note.state === 'CD' && note.hasSound && !note.hasAlerted && note.respawnTime <= now) {
+    if (
+      note.state === "CD" &&
+      note.hasSound &&
+      !note.hasAlerted &&
+      note.respawnTime <= now
+    ) {
       speakNoteDetails(note);
       note.hasAlerted = true;
     }
@@ -134,30 +162,50 @@ const checkAndPlaySound = () => {
 };
 
 const sortButtonText = computed(() => {
-  if (props.currentSortMode === 'time') {
-    return '依地圖等級排序';
+  if (props.currentSortMode === "time") {
+    return "依地圖等級排序";
   } else {
-    return '依時間排序';
+    return "依時間排序";
   }
 });
 
 const toggleAllSoundButtonText = computed(() => {
-  return isAllSoundOn.value ? '提示聲全關' : '提示聲全開';
+  return isAllSoundOn.value ? "提示聲全關" : "提示聲全開";
 });
 
 const handleExpiredClick = (note: Note) => {
   ElMessageBox({
-    title: '更新狀態',
-    message: h('div', { style: 'display: flex; flex-direction: column; align-items: center;' }, [
-      h('div', { style: 'width: 120px; margin-bottom: 10px;' }, [
-        h(ElButton, { type: 'success', onClick: () => handleSelection('on'), style: 'width: 100%;' }, () => 'ON')
-      ]),
-      ...Array.from({ length: note.maxStages || 5 }, (_, i) => 
-        h('div', { style: 'width: 120px; margin-bottom: 10px;' }, [
-          h(ElButton, { type: '', onClick: () => handleSelection(`stage_${i + 1}`), style: 'width: 100%;' }, () => `階段 ${i + 1}/${note.maxStages || 5}`)
-        ])
-      ),
-    ]),
+    title: "更新狀態",
+    message: h(
+      "div",
+      { style: "display: flex; flex-direction: column; align-items: center;" },
+      [
+        h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
+          h(
+            ElButton,
+            {
+              type: "success",
+              onClick: () => handleSelection("on"),
+              style: "width: 100%;",
+            },
+            () => "ON"
+          ),
+        ]),
+        ...Array.from({ length: note.maxStages || 5 }, (_, i) =>
+          h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
+            h(
+              ElButton,
+              {
+                type: "",
+                onClick: () => handleSelection(`stage_${i + 1}`),
+                style: "width: 100%;",
+              },
+              () => `階段 ${i + 1}/${note.maxStages || 5}`
+            ),
+          ])
+        ),
+      ]
+    ),
     showCancelButton: false,
     showConfirmButton: false,
     showClose: true,
@@ -166,20 +214,20 @@ const handleExpiredClick = (note: Note) => {
 
   const handleSelection = (action: string) => {
     ElMessageBox.close();
-    
+
     let newState: NoteState;
     let newTime: number | null = null;
-    
-    if (action === 'on') {
-      newState = 'ON';
+
+    if (action === "on") {
+      newState = "ON";
       newTime = Date.now();
     } else {
-      const stage = action.split('_')[1];
+      const stage = action.split("_")[1];
       newState = `STAGE_${stage}` as NoteState;
       newTime = null;
     }
-    
-    emit('update-note-status', note.id, newState, newTime);
+
+    emit("update-note-status", note.id, newState, newTime);
   };
 };
 
@@ -201,8 +249,8 @@ onUnmounted(() => {
 });
 
 const getEpisode = (level: number) => {
-  const map = props.maps.find(m => m.level === level);
-  return map ? map.episode : '未知';
+  const map = props.maps.find((m) => m.level === level);
+  return map ? map.episode : "未知";
 };
 
 const formatTime = (seconds: number) => {
@@ -210,19 +258,22 @@ const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}:${String(remainingSeconds).padStart(2, "0")}`;
 };
 
 const getStatusText = (note: Note) => {
   const now = currentTime.value;
 
-  if (note.state === 'ON') {
+  if (note.state === "ON") {
     const elapsedSeconds = Math.floor((now - (note.onTime || now)) / 1000);
     return `ON 已出現 ${formatTime(elapsedSeconds)}+`;
-  } else if (note.state.startsWith('STAGE_')) {
-    const stage = note.state.replace('STAGE_', '');
+  } else if (note.state.startsWith("STAGE_")) {
+    const stage = note.state.replace("STAGE_", "");
     return `階段 ${stage}/${note.maxStages}`;
-  } else if (note.state === 'CD') {
+  } else if (note.state === "CD") {
     const diffInSeconds = Math.floor((note.respawnTime - now) / 1000);
     if (diffInSeconds > 0) {
       return `CD時間: ${formatTime(diffInSeconds)}`;
@@ -231,23 +282,23 @@ const getStatusText = (note: Note) => {
       return `CD已過期: ${formatTime(elapsedSeconds)}`;
     }
   }
-  return '';
+  return "";
 };
 
 const isOverTimeLimit = (note: Note) => {
-  if (note.state === 'ON' && note.onTime) {
-    return (currentTime.value - note.onTime) > ON_TIME_LIMIT_MS;
+  if (note.state === "ON" && note.onTime) {
+    return currentTime.value - note.onTime > ON_TIME_LIMIT_MS;
   }
   return false;
 };
 
 const isMapStarred = (mapLevel: number) => {
-  const map = props.maps.find(m => m.level === mapLevel);
+  const map = props.maps.find((m) => m.level === mapLevel);
   return map ? map.isStarred : false;
 };
 
 const toggleStar = (mapLevel: number) => {
-  emit('update-map-star', mapLevel);
+  emit("update-map-star", mapLevel);
 };
 
 const toggleSound = (note: Note) => {
@@ -256,40 +307,40 @@ const toggleSound = (note: Note) => {
 
 const handleToggleAllSound = () => {
   isAllSoundOn.value = !isAllSoundOn.value;
-  props.notes.forEach(note => {
+  props.notes.forEach((note) => {
     note.hasSound = isAllSoundOn.value;
   });
-  emit('toggle-input-sound', isAllSoundOn.value);
+  emit("toggle-input-sound", isAllSoundOn.value);
 };
 
 const sortNotes = () => {
-  emit('toggle-sort');
+  emit("toggle-sort");
 };
 
 const handleDelete = (id: string) => {
-  emit('delete-note', id);
+  emit("delete-note", id);
 };
 
 const handleClearAll = async () => {
   try {
     await ElMessageBox.confirm(
-      '確定要清空所有記錄嗎？此操作無法復原。',
-      '警告',
+      "確定要清空所有記錄嗎？此操作無法復原。",
+      "警告",
       {
-        confirmButtonText: '確定',
-        cancelButtonText: '取消',
-        type: 'warning',
+        confirmButtonText: "確定",
+        cancelButtonText: "取消",
+        type: "warning",
       }
     );
-    emit('clear-notes');
+    emit("clear-notes");
     ElMessage({
-      type: 'success',
-      message: '所有記錄已清空',
+      type: "success",
+      message: "所有記錄已清空",
     });
   } catch (err) {
-      ElMessage({
-      type: 'info',
-      message: '已取消清空',
+    ElMessage({
+      type: "info",
+      message: "已取消清空",
     });
   }
 };
@@ -349,11 +400,11 @@ const handleClearAll = async () => {
 .star-icon {
   font-size: 1.2em;
   cursor: pointer;
-  color: #C0C4CC;
+  color: #c0c4cc;
 }
 
 .star-icon.is-starred {
-  color: #F5C723;
+  color: #f5c723;
 }
 
 .sound-icon {
