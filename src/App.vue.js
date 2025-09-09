@@ -7,14 +7,17 @@ import { maps as originalMaps } from './data/maps';
 const activeIndex = ref('0');
 const notes = ref([]);
 const currentSortMode = ref('time');
-const ON_TIME_LIMIT_MS = 30 * 60 * 1000; // 30分鐘
+const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
-const maps = ref([...originalMaps]); // 將 maps 狀態移到這裡統一管理
+const maps = ref([...originalMaps]);
+const toggleSort = () => {
+    currentSortMode.value = currentSortMode.value === 'time' ? 'map' : 'time';
+    notes.value.sort(sortNotesArray);
+};
 const loadNotes = () => {
     const savedNotes = localStorage.getItem('notes');
     if (savedNotes) {
         notes.value = JSON.parse(savedNotes).map((note) => {
-            // 確保從 localStorage 載入的 note 包含 isStarred 屬性
             const mapData = maps.value.find(m => m.level === note.mapLevel);
             return { ...note, isStarred: mapData ? mapData.isStarred : false };
         });
@@ -74,46 +77,48 @@ const sortNotesArray = (a, b) => {
         const bMapName = maps.value.find(m => m.level === b.mapLevel)?.name || '';
         return aMapName.localeCompare(bMapName);
     }
-    // 檢查 ON 的時間限制
     const aIsOnOverLimit = aStateCategory === 'ON' && (now - (a.onTime || now)) > ON_TIME_LIMIT_MS;
     const bIsOnOverLimit = bStateCategory === 'ON' && (now - (b.onTime || now)) > ON_TIME_LIMIT_MS;
-    // 將 ON 超過時間限制的項目排在最後
     if (aIsOnOverLimit && !bIsOnOverLimit)
         return 1;
     if (!aIsOnOverLimit && bIsOnOverLimit)
         return -1;
-    // 依據類別進行排序
     const stateOrder = { 'ON': 1, 'STAGE': 2, 'CD': 3 };
     if (stateOrder[aStateCategory] !== stateOrder[bStateCategory]) {
         return stateOrder[aStateCategory] - stateOrder[bStateCategory];
     }
-    // 在同一個狀態類別內，再依時間或階段排序
     if (aStateCategory === 'ON') {
-        return (b.onTime || 0) - (a.onTime || 0); // ON 狀態：ON 最久的排最前
+        return (b.onTime || 0) - (a.onTime || 0);
     }
     else if (aStateCategory === 'STAGE') {
         const aStage = parseInt(a.state.replace('STAGE_', ''), 10);
         const bStage = parseInt(b.state.replace('STAGE_', ''), 10);
-        return bStage - aStage; // STAGE 狀態：階段號碼大的排最前
+        return bStage - aStage;
     }
     else if (aStateCategory === 'CD') {
-        // CD 狀態：CD 越短的排越前
         return (a.respawnTime || 0) - (b.respawnTime || 0);
     }
     return 0;
 };
-const toggleSort = () => {
-    currentSortMode.value = currentSortMode.value === 'time' ? 'map' : 'time';
+const handleUpdateNoteStatus = (id, newState, newTime) => {
+    const noteToUpdate = notes.value.find(note => note.id === id);
+    if (noteToUpdate) {
+        noteToUpdate.state = newState;
+        noteToUpdate.onTime = newTime;
+        noteToUpdate.hasAlerted = false;
+        if (newState === 'CD') {
+            const map = maps.value.find(m => m.level === noteToUpdate.mapLevel);
+            if (map) {
+                noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
+            }
+        }
+    }
     notes.value.sort(sortNotesArray);
+    saveNotes();
 };
-const handleUpdateNoteStatus = () => {
-    // 這個函式目前沒有被使用，但保留以備未來擴充
-};
-// 新增此函式來處理 NoteList 發出的事件
 const handleToggleInputSound = (state) => {
     hasInputSoundOn.value = state;
 };
-// 新增此函式來處理子元件發出的星號更新事件
 const handleUpdateMapStar = (mapLevel) => {
     const map = maps.value.find(m => m.level === mapLevel);
     if (map) {
@@ -122,12 +127,16 @@ const handleUpdateMapStar = (mapLevel) => {
 };
 onMounted(() => {
     loadNotes();
-    // 每秒更新一次，確保時間顯示即時
     setInterval(() => {
         notes.value.sort(sortNotesArray);
     }, 1000);
 });
 watch(notes, saveNotes, { deep: true });
+// 確保 toggleSort 和其他需要暴露的函式可以被外部正確識別
+// defineExpose({
+//   toggleSort,
+//   // 如果未來有其他函式需要暴露，也可以加在這裡
+// });
 debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
 const __VLS_ctx = {};
 let __VLS_elements;
@@ -253,10 +262,10 @@ const __VLS_self = (await import('vue')).defineComponent({
         currentSortMode: currentSortMode,
         hasInputSoundOn: hasInputSoundOn,
         maps: maps,
+        toggleSort: toggleSort,
         handleAddNewNote: handleAddNewNote,
         handleDeleteNote: handleDeleteNote,
         handleClearAllNotes: handleClearAllNotes,
-        toggleSort: toggleSort,
         handleUpdateNoteStatus: handleUpdateNoteStatus,
         handleToggleInputSound: handleToggleInputSound,
         handleUpdateMapStar: handleUpdateMapStar,

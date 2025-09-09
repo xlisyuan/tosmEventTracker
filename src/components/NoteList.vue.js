@@ -51,8 +51,8 @@ const handleExpiredClick = (note) => {
             h('div', { style: 'width: 120px; margin-bottom: 10px;' }, [
                 h(ElButton, { type: 'success', onClick: () => handleSelection('on'), style: 'width: 100%;' }, () => 'ON')
             ]),
-            ...Array.from({ length: 5 }, (_, i) => h('div', { style: 'width: 120px; margin-bottom: 10px;' }, [
-                h(ElButton, { type: '', onClick: () => handleSelection(`stage_${i + 1}`), style: 'width: 100%;' }, () => `階段 ${i + 1}`)
+            ...Array.from({ length: note.maxStages || 5 }, (_, i) => h('div', { style: 'width: 120px; margin-bottom: 10px;' }, [
+                h(ElButton, { type: '', onClick: () => handleSelection(`stage_${i + 1}`), style: 'width: 100%;' }, () => `階段 ${i + 1}/${note.maxStages || 5}`)
             ])),
         ]),
         showCancelButton: false,

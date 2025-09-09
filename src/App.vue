@@ -41,7 +41,10 @@ const currentSortMode = ref<'time' | 'map'>('time');
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
 const maps = ref([...originalMaps]);
-
+const toggleSort = () => {
+  currentSortMode.value = currentSortMode.value === 'time' ? 'map' : 'time';
+  notes.value.sort(sortNotesArray);
+};
 const loadNotes = () => {
   const savedNotes = localStorage.getItem('notes');
   if (savedNotes) {
@@ -172,6 +175,12 @@ onMounted(() => {
 });
 
 watch(notes, saveNotes, { deep: true });
+
+// 確保 toggleSort 和其他需要暴露的函式可以被外部正確識別
+// defineExpose({
+//   toggleSort,
+//   // 如果未來有其他函式需要暴露，也可以加在這裡
+// });
 </script>
 
 <style scoped>
