@@ -110,7 +110,7 @@ const getStatusText = (note) => {
     }
     else if (note.state.startsWith('STAGE_')) {
         const stage = note.state.replace('STAGE_', '');
-        return `${stage}/${note.maxStages}`;
+        return `階段 ${stage}/${note.maxStages}`;
     }
     else if (note.state === 'CD') {
         const diffInSeconds = Math.floor((note.respawnTime - now) / 1000);

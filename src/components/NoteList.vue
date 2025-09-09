@@ -221,7 +221,7 @@ const getStatusText = (note: Note) => {
     return `ON 已出現 ${formatTime(elapsedSeconds)}+`;
   } else if (note.state.startsWith('STAGE_')) {
     const stage = note.state.replace('STAGE_', '');
-    return `${stage}/${note.maxStages}`;
+    return `階段 ${stage}/${note.maxStages}`;
   } else if (note.state === 'CD') {
     const diffInSeconds = Math.floor((note.respawnTime - now) / 1000);
     if (diffInSeconds > 0) {
