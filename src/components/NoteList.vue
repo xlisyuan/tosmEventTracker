@@ -7,7 +7,11 @@
           {{ sortButtonText }}
         </el-button>
         <el-button @click="handleToggleAllSound" :disabled="notes.length === 0">
-          {{ toggleAllSoundButtonText }}
+         <span>{{ toggleAllSoundButtonText }}</span> 
+         <el-icon style="padding-left: 5px;">
+          <template v-if="isAllSoundOn"><Bell /></template>
+          <template v-else><BellFilled /></template>
+         </el-icon>
         </el-button>
         <el-button
           type="danger"
@@ -20,15 +24,23 @@
       <el-row class="list-header" :gutter="10">
         <el-col :span="1"></el-col>
         <el-col :span="3">區域</el-col>
-        <el-col :span="6">地圖</el-col>
-        <el-col :span="3">分流</el-col>
-        <el-col :span="5">
+        <el-col :span="7">地圖</el-col>
+        <el-col :span="3">
+          分流
+          <el-button
+            size="small"
+            type=""
+            :icon="Setting"
+            @click="toggleChannelAdjust"
+          />
+        </el-col>
+        <el-col :span="6">
           狀態
-          <el-button size="small" type="info" @click="toggleTimeDisplay">
+          <el-button size="small" type="" @click="toggleTimeDisplay">
             切換CD時間
           </el-button>
         </el-col>
-        <el-col :span="6">操作</el-col>
+        <el-col :span="4">操作</el-col>
       </el-row>
 
       <transition-group name="list-item" tag="div">
@@ -39,6 +51,7 @@
           :class="{
             'over-time-limit': isOverTimeLimit(note),
             'warning-row': note.isWarning,
+            'highlight-row': note.isHighlight,
           }"
           :gutter="10"
         >
@@ -49,7 +62,7 @@
             </el-icon>
           </el-col>
           <el-col :span="3">EP.{{ getEpisode(note.mapLevel) }}</el-col>
-          <el-col :span="6">
+          <el-col :span="7">
             <span class="map-name-content">
               <span
                 >Lv.{{ note.mapLevel }} {{ getMapName(note.mapLevel) }}</span
@@ -63,8 +76,12 @@
               </el-icon>
             </span>
           </el-col>
-          <el-col :span="3">{{ note.channel }}</el-col>
-          <el-col :span="5">
+          <el-col :span="3" style="display: flex; justify-content: space-around;">
+            <el-button size="small" v-if="showChannelAdjust" @click="channelAdjust(note,-1)">-</el-button>
+            <div>{{ note.channel }}</div>
+            <el-button size="small" v-if="showChannelAdjust" @click="channelAdjust(note,1)">+</el-button>
+          </el-col>
+          <el-col :span="6">
             <span v-if="note.state === 'CD' && note.respawnTime <= currentTime">
               <el-button
                 type="warning"
@@ -85,7 +102,7 @@
               {{ getStatusText(note) }}
             </span>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-button type="danger" size="small" @click="handleDelete(note.id)"
               >刪除</el-button
             >
@@ -106,10 +123,10 @@ import {
   h,
   computed,
 } from "vue";
-import { ElMessage, ElMessageBox, ElButton } from "element-plus";
+import { ElMessage, ElMessageBox, ElButton, ElIcon } from "element-plus";
 import type { Note, NoteState } from "@/types/Note";
 import type { MapData } from "@/data/maps";
-import { StarFilled, Bell, BellFilled } from "@element-plus/icons-vue";
+import { StarFilled, Bell, BellFilled, Setting } from "@element-plus/icons-vue";
 
 const props = defineProps<{
   notes: Note[];
@@ -122,6 +139,7 @@ const emit = defineEmits([
   "clear-notes",
   "toggle-sort",
   "update-note-status",
+  "update-note-channel",
   "toggle-input-sound",
   "update-map-star",
 ]);
@@ -130,6 +148,7 @@ const currentTime = ref(Date.now());
 let timer: ReturnType<typeof setInterval> | null = null;
 let soundChecker: ReturnType<typeof setInterval> | null = null;
 const showLocalTime = ref(false);
+const showChannelAdjust = ref(false);
 
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const isAllSoundOn = ref(true);
@@ -137,6 +156,46 @@ const isAllSoundOn = ref(true);
 const toggleTimeDisplay = () => {
   showLocalTime.value = !showLocalTime.value;
 };
+
+const toggleChannelAdjust = () => {
+  showChannelAdjust.value = !showChannelAdjust.value;
+  if(!showChannelAdjust.value) {
+      toggleHightlight(false);
+  }
+};
+
+const channelAdjust = (note: Note, delta: number) =>{
+  let currentChannel = note.channel;
+  const newChannel = currentChannel + delta;
+
+  if (newChannel >= 1) {
+    emit("update-note-channel", note.id, newChannel);
+    if(!note.isHighlight) {
+      toggleHightlight(true,note.mapLevel);
+    }
+  } else {
+    ElMessage({
+      message: "分流已是最小，無法再減少",
+      type: "warning",
+    });
+  }
+}
+
+const toggleHightlight = (on:boolean, target:number = 0) => {
+    for (const note of props.notes) {
+      // 編輯分流時提示所有相同地圖
+      if ( on && note.mapLevel == target) {
+        note.isHighlight = on;
+      }
+      // 結束編輯分流時關閉提示
+      if (note.isHighlight) {
+        note.isHighlight = on;
+      }
+      if (!on && note.isWarning) {
+        note.isWarning = on;
+      }
+    }
+}
 
 const getMapName = (level: number) => {
   const map = props.maps.find((m) => m.level === level);
@@ -415,6 +474,10 @@ const handleClearAll = async () => {
 .warning-row {
   background-color: #ffe6e6 !important;
   border-left: 5px solid #ff4d4f;
+}
+
+.highlight-row {
+  background-color: #dce6af !important;
 }
 
 .map-name-content {

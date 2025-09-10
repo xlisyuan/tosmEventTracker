@@ -16,6 +16,7 @@
           @clear-notes="handleClearAllNotes"
           @toggle-sort="toggleSort"
           @update-note-status="handleUpdateNoteStatus"
+          @update-note-channel="handleUpdateNoteChannel"
           @toggle-input-sound="handleToggleInputSound"
           :maps="maps"
           @update-map-star="handleUpdateMapStar"
@@ -180,6 +181,17 @@ const sortNotesArray = (a: Note, b: Note): number => {
   }
 
   return 0;
+};
+
+const handleUpdateNoteChannel = (
+  id: string,
+  newChannel: number
+) => {
+  const noteToUpdate = notes.value.find((note) => note.id === id);
+  if (noteToUpdate) {
+    noteToUpdate.channel = newChannel;
+  }
+  saveNotes();
 };
 
 const handleUpdateNoteStatus = (

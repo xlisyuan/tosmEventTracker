@@ -12,6 +12,7 @@ export interface Note {
     onTime: number | null;
     hasAlerted: boolean;
     isWarning?: boolean;
+    isHighlight?: boolean;
 }
 
 export interface Map {
