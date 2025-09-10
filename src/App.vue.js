@@ -10,6 +10,26 @@ const maps = ref(savedMaps ? JSON.parse(savedMaps) : [...originalMaps]);
 if (!savedMaps) {
     localStorage.setItem("mapData", JSON.stringify(originalMaps));
 }
+// 用來快取已載入的圖片路徑
+const mapImageCache = ref({});
+// 獨立的圖片載入函式
+const loadMapImage = async (mapLevel) => {
+    const mapData = maps.value.find((m) => m.level === mapLevel);
+    if (mapData?.imagePath && !mapImageCache.value[mapData.level]) {
+        try {
+            const image = new Image();
+            await new Promise((resolve, reject) => {
+                image.onload = resolve;
+                image.onerror = reject;
+                image.src = mapData.imagePath;
+            });
+            mapImageCache.value[mapData.level] = mapData.imagePath;
+        }
+        catch (e) {
+            console.error(`無法載入地圖圖片: ${mapData.imagePath}`, e);
+        }
+    }
+};
 const activeIndex = ref("0");
 const notes = ref([]);
 const currentSortMode = ref("time");
@@ -32,8 +52,10 @@ const loadNotes = () => {
 const saveNotes = () => {
     localStorage.setItem("notes", JSON.stringify(notes.value));
 };
-const handleAddNewNote = (newNote) => {
+const handleAddNewNote = async (newNote) => {
     const mapData = maps.value.find((m) => m.level === newNote.mapLevel);
+    // 圖片載入函式
+    await loadMapImage(newNote.mapLevel);
     const finalNote = {
         ...newNote,
         id: uuidv4(),
@@ -179,19 +201,19 @@ const exportNotes = async () => {
         // 複製成功時跳出提示
         ElMessage({
             type: "success",
-            message: "記錄已匯出並複製到剪貼簿。"
+            message: "記錄已匯出並複製到剪貼簿。",
         });
     }
     catch (err) {
         // 複製失敗時（例如使用者拒絕授權），跳出警告
         ElMessage({
             type: "warning",
-            message: "無法自動複製到剪貼簿，請手動複製上方文字。"
+            message: "無法自動複製到剪貼簿，請手動複製上方文字。",
         });
         console.error("Failed to copy notes to clipboard: ", err);
     }
 };
-const handleImportClick = () => {
+const handleImportClick = async () => {
     if (!importExportData.value) {
         ElMessage({ type: "warning", message: "請先貼上要匯入的記錄。" });
         return;
@@ -202,6 +224,9 @@ const handleImportClick = () => {
             importedNotes.some((n) => !n.mapLevel || !n.channel)) {
             ElMessage({ type: "error", message: "匯入的資料格式不正確。" });
             return;
+        }
+        for (const note of importedNotes) {
+            await loadMapImage(note.mapLevel);
         }
         const currentNotesMap = new Map(notes.value.map((note) => [`${note.mapLevel}-${note.channel}`, note]));
         const nonDuplicateNotes = [];
@@ -250,7 +275,10 @@ const handleImportClick = () => {
                         note,
                     ]));
                     duplicateNotes.forEach((item) => finalNotesMap.set(`${item.newNote.mapLevel}-${item.newNote.channel}`, item.newNote));
-                    const finalNotes = [...finalNotesMap.values(), ...nonDuplicateNotes];
+                    const finalNotes = [
+                        ...finalNotesMap.values(),
+                        ...nonDuplicateNotes,
+                    ];
                     notes.value = finalNotes;
                     notes.value.sort(sortNotesArray);
                     saveNotes();
@@ -292,6 +320,26 @@ const handleImportClick = () => {
 };
 onMounted(() => {
     loadNotes();
+    // 確保只更新必要的欄位，並保留使用者設定
+    if (notes.value.length > 0) {
+        notes.value = notes.value.map((note) => {
+            const mapData = maps.value.find((m) => m.level === note.mapLevel);
+            if (mapData) {
+                // 合併新舊資料，以舊記錄（note）的屬性為優先
+                return {
+                    ...note,
+                    noteText: mapData.name, // 更新地圖名稱
+                    maxStages: mapData.maxStages, // 更新階段數
+                    imagePath: mapData.imagePath, // 新增圖片路徑
+                };
+            }
+            return note;
+        });
+        // 頁面載入時，為已存在的記錄載入圖片
+        notes.value.forEach((note) => {
+            loadMapImage(note.mapLevel);
+        });
+    }
     setInterval(() => {
         notes.value.sort(sortNotesArray);
     }, 1000);
@@ -379,6 +427,7 @@ const __VLS_24 = __VLS_asFunctionalComponent(NoteList, new NoteList({
     notes: (__VLS_ctx.notes),
     currentSortMode: (__VLS_ctx.currentSortMode),
     maps: (__VLS_ctx.maps),
+    mapImageCache: (__VLS_ctx.mapImageCache),
 }));
 const __VLS_25 = __VLS_24({
     ...{ 'onDeleteNote': {} },
@@ -391,6 +440,7 @@ const __VLS_25 = __VLS_24({
     notes: (__VLS_ctx.notes),
     currentSortMode: (__VLS_ctx.currentSortMode),
     maps: (__VLS_ctx.maps),
+    mapImageCache: (__VLS_ctx.mapImageCache),
 }, ...__VLS_functionalComponentArgsRest(__VLS_24));
 let __VLS_27;
 let __VLS_28;
@@ -409,7 +459,7 @@ const __VLS_34 = ({ toggleInputSound: {} },
 const __VLS_35 = ({ updateMapStar: {} },
     { onUpdateMapStar: (__VLS_ctx.handleUpdateMapStar) });
 // @ts-ignore
-[maps, handleUpdateMapStar, notes, currentSortMode, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleToggleInputSound,];
+[maps, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleToggleInputSound,];
 var __VLS_26;
 var __VLS_14;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
@@ -492,6 +542,7 @@ const __VLS_self = (await import('vue')).defineComponent({
         NoteInput: NoteInput,
         NoteList: NoteList,
         maps: maps,
+        mapImageCache: mapImageCache,
         notes: notes,
         currentSortMode: currentSortMode,
         hasInputSoundOn: hasInputSoundOn,

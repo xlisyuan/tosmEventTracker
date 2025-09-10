@@ -642,29 +642,68 @@ else {
         __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
             ...{ class: "map-name-content" },
         });
-        __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-        (note.mapLevel);
-        (__VLS_ctx.getMapName(note.mapLevel));
+        const __VLS_139 = {}.ElPopover;
+        /** @type {[typeof __VLS_components.ElPopover, typeof __VLS_components.elPopover, typeof __VLS_components.ElPopover, typeof __VLS_components.elPopover, ]} */ ;
         // @ts-ignore
-        [getMapName,];
-        const __VLS_139 = {}.ElIcon;
+        ElPopover;
+        // @ts-ignore
+        const __VLS_140 = __VLS_asFunctionalComponent(__VLS_139, new __VLS_139({
+            placement: "top",
+            trigger: "hover",
+            width: (425),
+            hideAfter: (200),
+        }));
+        const __VLS_141 = __VLS_140({
+            placement: "top",
+            trigger: "hover",
+            width: (425),
+            hideAfter: (200),
+        }, ...__VLS_functionalComponentArgsRest(__VLS_140));
+        const { default: __VLS_143 } = __VLS_142.slots;
+        {
+            const { reference: __VLS_144 } = __VLS_142.slots;
+            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            (note.mapLevel);
+            (__VLS_ctx.getMapName(note.mapLevel));
+            // @ts-ignore
+            [getMapName,];
+        }
+        {
+            const { default: __VLS_145 } = __VLS_142.slots;
+            if (__VLS_ctx.mapImageCache[note.mapLevel]) {
+                // @ts-ignore
+                [mapImageCache,];
+                __VLS_asFunctionalElement(__VLS_elements.img)({
+                    src: (__VLS_ctx.mapImageCache[note.mapLevel]),
+                    alt: "地圖圖片",
+                    ...{ class: "popover-map-image" },
+                });
+                // @ts-ignore
+                [mapImageCache,];
+            }
+            else {
+                __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            }
+        }
+        var __VLS_142;
+        const __VLS_146 = {}.ElIcon;
         /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
         // @ts-ignore
         ElIcon;
         // @ts-ignore
-        const __VLS_140 = __VLS_asFunctionalComponent(__VLS_139, new __VLS_139({
+        const __VLS_147 = __VLS_asFunctionalComponent(__VLS_146, new __VLS_146({
             ...{ 'onClick': {} },
             ...{ class: "star-icon" },
             ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
         }));
-        const __VLS_141 = __VLS_140({
+        const __VLS_148 = __VLS_147({
             ...{ 'onClick': {} },
             ...{ class: "star-icon" },
             ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_140));
-        let __VLS_143;
-        let __VLS_144;
-        const __VLS_145 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_147));
+        let __VLS_150;
+        let __VLS_151;
+        const __VLS_152 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -672,49 +711,49 @@ else {
                     // @ts-ignore
                     [isMapStarred, toggleStar,];
                 } });
-        const { default: __VLS_146 } = __VLS_142.slots;
-        const __VLS_147 = {}.StarFilled;
+        const { default: __VLS_153 } = __VLS_149.slots;
+        const __VLS_154 = {}.StarFilled;
         /** @type {[typeof __VLS_components.StarFilled, ]} */ ;
         // @ts-ignore
         StarFilled;
         // @ts-ignore
-        const __VLS_148 = __VLS_asFunctionalComponent(__VLS_147, new __VLS_147({}));
-        const __VLS_149 = __VLS_148({}, ...__VLS_functionalComponentArgsRest(__VLS_148));
-        var __VLS_142;
+        const __VLS_155 = __VLS_asFunctionalComponent(__VLS_154, new __VLS_154({}));
+        const __VLS_156 = __VLS_155({}, ...__VLS_functionalComponentArgsRest(__VLS_155));
+        var __VLS_149;
         var __VLS_137;
-        const __VLS_152 = {}.ElCol;
+        const __VLS_159 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_153 = __VLS_asFunctionalComponent(__VLS_152, new __VLS_152({
+        const __VLS_160 = __VLS_asFunctionalComponent(__VLS_159, new __VLS_159({
             span: (3),
             ...{ style: {} },
         }));
-        const __VLS_154 = __VLS_153({
+        const __VLS_161 = __VLS_160({
             span: (3),
             ...{ style: {} },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_153));
-        const { default: __VLS_156 } = __VLS_155.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_160));
+        const { default: __VLS_163 } = __VLS_162.slots;
         if (__VLS_ctx.showChannelAdjust) {
             // @ts-ignore
             [showChannelAdjust,];
-            const __VLS_157 = {}.ElButton;
+            const __VLS_164 = {}.ElButton;
             /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
             // @ts-ignore
             ElButton;
             // @ts-ignore
-            const __VLS_158 = __VLS_asFunctionalComponent(__VLS_157, new __VLS_157({
+            const __VLS_165 = __VLS_asFunctionalComponent(__VLS_164, new __VLS_164({
                 ...{ 'onClick': {} },
                 size: "small",
             }));
-            const __VLS_159 = __VLS_158({
+            const __VLS_166 = __VLS_165({
                 ...{ 'onClick': {} },
                 size: "small",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_158));
-            let __VLS_161;
-            let __VLS_162;
-            const __VLS_163 = ({ click: {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_165));
+            let __VLS_168;
+            let __VLS_169;
+            const __VLS_170 = ({ click: {} },
                 { onClick: (...[$event]) => {
                         if (!!(__VLS_ctx.notes.length === 0))
                             return;
@@ -724,30 +763,30 @@ else {
                         // @ts-ignore
                         [channelAdjust,];
                     } });
-            const { default: __VLS_164 } = __VLS_160.slots;
-            var __VLS_160;
+            const { default: __VLS_171 } = __VLS_167.slots;
+            var __VLS_167;
         }
         __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({});
         (note.channel);
         if (__VLS_ctx.showChannelAdjust) {
             // @ts-ignore
             [showChannelAdjust,];
-            const __VLS_165 = {}.ElButton;
+            const __VLS_172 = {}.ElButton;
             /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
             // @ts-ignore
             ElButton;
             // @ts-ignore
-            const __VLS_166 = __VLS_asFunctionalComponent(__VLS_165, new __VLS_165({
+            const __VLS_173 = __VLS_asFunctionalComponent(__VLS_172, new __VLS_172({
                 ...{ 'onClick': {} },
                 size: "small",
             }));
-            const __VLS_167 = __VLS_166({
+            const __VLS_174 = __VLS_173({
                 ...{ 'onClick': {} },
                 size: "small",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_166));
-            let __VLS_169;
-            let __VLS_170;
-            const __VLS_171 = ({ click: {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_173));
+            let __VLS_176;
+            let __VLS_177;
+            const __VLS_178 = ({ click: {} },
                 { onClick: (...[$event]) => {
                         if (!!(__VLS_ctx.notes.length === 0))
                             return;
@@ -757,44 +796,44 @@ else {
                         // @ts-ignore
                         [channelAdjust,];
                     } });
-            const { default: __VLS_172 } = __VLS_168.slots;
-            var __VLS_168;
+            const { default: __VLS_179 } = __VLS_175.slots;
+            var __VLS_175;
         }
-        var __VLS_155;
-        const __VLS_173 = {}.ElCol;
+        var __VLS_162;
+        const __VLS_180 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_174 = __VLS_asFunctionalComponent(__VLS_173, new __VLS_173({
+        const __VLS_181 = __VLS_asFunctionalComponent(__VLS_180, new __VLS_180({
             span: (6),
         }));
-        const __VLS_175 = __VLS_174({
+        const __VLS_182 = __VLS_181({
             span: (6),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_174));
-        const { default: __VLS_177 } = __VLS_176.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_181));
+        const { default: __VLS_184 } = __VLS_183.slots;
         if (note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime) {
             // @ts-ignore
             [currentTime,];
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-            const __VLS_178 = {}.ElButton;
+            const __VLS_185 = {}.ElButton;
             /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
             // @ts-ignore
             ElButton;
             // @ts-ignore
-            const __VLS_179 = __VLS_asFunctionalComponent(__VLS_178, new __VLS_178({
+            const __VLS_186 = __VLS_asFunctionalComponent(__VLS_185, new __VLS_185({
                 ...{ 'onClick': {} },
                 type: "warning",
                 size: "small",
             }));
-            const __VLS_180 = __VLS_179({
+            const __VLS_187 = __VLS_186({
                 ...{ 'onClick': {} },
                 type: "warning",
                 size: "small",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_179));
-            let __VLS_182;
-            let __VLS_183;
-            const __VLS_184 = ({ click: {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_186));
+            let __VLS_189;
+            let __VLS_190;
+            const __VLS_191 = ({ click: {} },
                 { onClick: (...[$event]) => {
                         if (!!(__VLS_ctx.notes.length === 0))
                             return;
@@ -804,32 +843,32 @@ else {
                         // @ts-ignore
                         [handleExpiredClick,];
                     } });
-            const { default: __VLS_185 } = __VLS_181.slots;
+            const { default: __VLS_192 } = __VLS_188.slots;
             (__VLS_ctx.getStatusText(note));
             // @ts-ignore
             [getStatusText,];
-            var __VLS_181;
+            var __VLS_188;
         }
         else if (note.state.startsWith('STAGE_')) {
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-            const __VLS_186 = {}.ElButton;
+            const __VLS_193 = {}.ElButton;
             /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
             // @ts-ignore
             ElButton;
             // @ts-ignore
-            const __VLS_187 = __VLS_asFunctionalComponent(__VLS_186, new __VLS_186({
+            const __VLS_194 = __VLS_asFunctionalComponent(__VLS_193, new __VLS_193({
                 ...{ 'onClick': {} },
                 type: "primary",
                 size: "small",
             }));
-            const __VLS_188 = __VLS_187({
+            const __VLS_195 = __VLS_194({
                 ...{ 'onClick': {} },
                 type: "primary",
                 size: "small",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_187));
-            let __VLS_190;
-            let __VLS_191;
-            const __VLS_192 = ({ click: {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_194));
+            let __VLS_197;
+            let __VLS_198;
+            const __VLS_199 = ({ click: {} },
                 { onClick: (...[$event]) => {
                         if (!!(__VLS_ctx.notes.length === 0))
                             return;
@@ -841,11 +880,11 @@ else {
                         // @ts-ignore
                         [handleExpiredClick,];
                     } });
-            const { default: __VLS_193 } = __VLS_189.slots;
+            const { default: __VLS_200 } = __VLS_196.slots;
             (__VLS_ctx.getStatusText(note));
             // @ts-ignore
             [getStatusText,];
-            var __VLS_189;
+            var __VLS_196;
         }
         else {
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
@@ -853,37 +892,37 @@ else {
             // @ts-ignore
             [getStatusText,];
         }
-        var __VLS_176;
-        const __VLS_194 = {}.ElCol;
+        var __VLS_183;
+        const __VLS_201 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_195 = __VLS_asFunctionalComponent(__VLS_194, new __VLS_194({
+        const __VLS_202 = __VLS_asFunctionalComponent(__VLS_201, new __VLS_201({
             span: (4),
         }));
-        const __VLS_196 = __VLS_195({
+        const __VLS_203 = __VLS_202({
             span: (4),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_195));
-        const { default: __VLS_198 } = __VLS_197.slots;
-        const __VLS_199 = {}.ElButton;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_202));
+        const { default: __VLS_205 } = __VLS_204.slots;
+        const __VLS_206 = {}.ElButton;
         /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
         // @ts-ignore
         ElButton;
         // @ts-ignore
-        const __VLS_200 = __VLS_asFunctionalComponent(__VLS_199, new __VLS_199({
+        const __VLS_207 = __VLS_asFunctionalComponent(__VLS_206, new __VLS_206({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
         }));
-        const __VLS_201 = __VLS_200({
+        const __VLS_208 = __VLS_207({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_200));
-        let __VLS_203;
-        let __VLS_204;
-        const __VLS_205 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_207));
+        let __VLS_210;
+        let __VLS_211;
+        const __VLS_212 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -891,9 +930,9 @@ else {
                     // @ts-ignore
                     [handleDelete,];
                 } });
-        const { default: __VLS_206 } = __VLS_202.slots;
-        var __VLS_202;
-        var __VLS_197;
+        const { default: __VLS_213 } = __VLS_209.slots;
+        var __VLS_209;
+        var __VLS_204;
         var __VLS_104;
     }
     var __VLS_99;
@@ -908,6 +947,7 @@ var __VLS_3;
 /** @type {__VLS_StyleScopedClasses['highlight-row']} */ ;
 /** @type {__VLS_StyleScopedClasses['sound-icon']} */ ;
 /** @type {__VLS_StyleScopedClasses['map-name-content']} */ ;
+/** @type {__VLS_StyleScopedClasses['popover-map-image']} */ ;
 /** @type {__VLS_StyleScopedClasses['star-icon']} */ ;
 /** @type {__VLS_StyleScopedClasses['is-starred']} */ ;
 var __VLS_dollars;

@@ -7,11 +7,11 @@
           {{ sortButtonText }}
         </el-button>
         <el-button @click="handleToggleAllSound" :disabled="notes.length === 0">
-         <span>{{ toggleAllSoundButtonText }}</span> 
-         <el-icon style="padding-left: 5px;">
-          <template v-if="isAllSoundOn"><Bell /></template>
-          <template v-else><BellFilled /></template>
-         </el-icon>
+          <span>{{ toggleAllSoundButtonText }}</span>
+          <el-icon style="padding-left: 5px">
+            <template v-if="isAllSoundOn"><Bell /></template>
+            <template v-else><BellFilled /></template>
+          </el-icon>
         </el-button>
         <el-button
           type="danger"
@@ -64,9 +64,28 @@
           <el-col :span="3">EP.{{ getEpisode(note.mapLevel) }}</el-col>
           <el-col :span="7">
             <span class="map-name-content">
-              <span
-                >Lv.{{ note.mapLevel }} {{ getMapName(note.mapLevel) }}</span
+              <el-popover
+                placement="top"
+                trigger="hover"
+                :width="425"
+                :hide-after="200"
               >
+                <template #reference>
+                  <span>
+                    Lv.{{ note.mapLevel }} {{ getMapName(note.mapLevel) }}
+                  </span>
+                </template>
+
+                <template #default>
+                  <img
+                    v-if="mapImageCache[note.mapLevel]"
+                    :src="mapImageCache[note.mapLevel]"
+                    alt="地圖圖片"
+                    class="popover-map-image"
+                  />
+                  <span v-else>無地圖圖片</span>
+                </template>
+              </el-popover>
               <el-icon
                 class="star-icon"
                 :class="{ 'is-starred': isMapStarred(note.mapLevel) }"
@@ -76,10 +95,23 @@
               </el-icon>
             </span>
           </el-col>
-          <el-col :span="3" style="display: flex; justify-content: space-around;">
-            <el-button size="small" v-if="showChannelAdjust" @click="channelAdjust(note,-1)">-</el-button>
+          <el-col
+            :span="3"
+            style="display: flex; justify-content: space-around"
+          >
+            <el-button
+              size="small"
+              v-if="showChannelAdjust"
+              @click="channelAdjust(note, -1)"
+              >-</el-button
+            >
             <div>{{ note.channel }}</div>
-            <el-button size="small" v-if="showChannelAdjust" @click="channelAdjust(note,1)">+</el-button>
+            <el-button
+              size="small"
+              v-if="showChannelAdjust"
+              @click="channelAdjust(note, 1)"
+              >+</el-button
+            >
           </el-col>
           <el-col :span="6">
             <span v-if="note.state === 'CD' && note.respawnTime <= currentTime">
@@ -132,6 +164,7 @@ const props = defineProps<{
   notes: Note[];
   currentSortMode: "time" | "map";
   maps: MapData[];
+  mapImageCache: Record<number, string>; // 接收圖片快取
 }>();
 
 const emit = defineEmits([
@@ -159,19 +192,19 @@ const toggleTimeDisplay = () => {
 
 const toggleChannelAdjust = () => {
   showChannelAdjust.value = !showChannelAdjust.value;
-  if(!showChannelAdjust.value) {
-      toggleHightlight(false);
+  if (!showChannelAdjust.value) {
+    toggleHightlight(false);
   }
 };
 
-const channelAdjust = (note: Note, delta: number) =>{
+const channelAdjust = (note: Note, delta: number) => {
   let currentChannel = note.channel;
   const newChannel = currentChannel + delta;
 
   if (newChannel >= 1) {
     emit("update-note-channel", note.id, newChannel);
-    if(!note.isHighlight) {
-      toggleHightlight(true,note.mapLevel);
+    if (!note.isHighlight) {
+      toggleHightlight(true, note.mapLevel);
     }
   } else {
     ElMessage({
@@ -179,23 +212,23 @@ const channelAdjust = (note: Note, delta: number) =>{
       type: "warning",
     });
   }
-}
+};
 
-const toggleHightlight = (on:boolean, target:number = 0) => {
-    for (const note of props.notes) {
-      // 編輯分流時提示所有相同地圖
-      if ( on && note.mapLevel == target) {
-        note.isHighlight = on;
-      }
-      // 結束編輯分流時關閉提示
-      if (note.isHighlight) {
-        note.isHighlight = on;
-      }
-      if (!on && note.isWarning) {
-        note.isWarning = on;
-      }
+const toggleHightlight = (on: boolean, target: number = 0) => {
+  for (const note of props.notes) {
+    // 編輯分流時提示所有相同地圖
+    if (on && note.mapLevel == target) {
+      note.isHighlight = on;
     }
-}
+    // 結束編輯分流時關閉提示
+    if (note.isHighlight) {
+      note.isHighlight = on;
+    }
+    if (!on && note.isWarning) {
+      note.isWarning = on;
+    }
+  }
+};
 
 const getMapName = (level: number) => {
   const map = props.maps.find((m) => m.level === level);
@@ -499,5 +532,12 @@ const handleClearAll = async () => {
 .sound-icon {
   font-size: 1.2em;
   cursor: pointer;
+}
+
+.popover-map-image {
+  /* max-width: 100%; */
+  max-width: 400px;
+  height: auto;
+  border-radius: 4px;
 }
 </style>

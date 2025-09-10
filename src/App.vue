@@ -20,22 +20,25 @@
           @toggle-input-sound="handleToggleInputSound"
           :maps="maps"
           @update-map-star="handleUpdateMapStar"
+          :mapImageCache="mapImageCache"
         />
       </div>
     </el-main>
     <div class="import-export-section">
       <!-- <h3>匯入 / 匯出 記錄</h3> -->
       <div class="import-export-buttons">
-          <el-button type="primary" @click="exportNotes">匯出記錄</el-button>
-          <el-button type="success" @click="handleImportClick">匯入記錄</el-button>
+        <el-button type="primary" @click="exportNotes">匯出記錄</el-button>
+        <el-button type="success" @click="handleImportClick"
+          >匯入記錄</el-button
+        >
       </div>
       <el-input
-          v-model="importExportData"
-          type="textarea"
-          :rows="5"
-          placeholder="匯出的記錄會顯示在此處，或在此處貼上要匯入的資料"
+        v-model="importExportData"
+        type="textarea"
+        :rows="5"
+        placeholder="匯出的記錄會顯示在此處，或在此處貼上要匯入的資料"
       ></el-input>
-  </div>
+    </div>
   </el-container>
 </template>
 
@@ -58,6 +61,26 @@ if (!savedMaps) {
   localStorage.setItem("mapData", JSON.stringify(originalMaps));
 }
 
+// 用來快取已載入的圖片路徑
+const mapImageCache = ref<Record<number, string>>({});
+
+// 獨立的圖片載入函式
+const loadMapImage = async (mapLevel: number) => {
+  const mapData = maps.value.find((m) => m.level === mapLevel);
+  if (mapData?.imagePath && !mapImageCache.value[mapData.level]) {
+    try {
+      const image = new Image();
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = mapData.imagePath as string;
+      });
+      mapImageCache.value[mapData.level] = mapData.imagePath;
+    } catch (e) {
+      console.error(`無法載入地圖圖片: ${mapData.imagePath}`, e);
+    }
+  }
+};
 const activeIndex = ref("0");
 const notes = ref<Note[]>([]);
 const currentSortMode = ref<"time" | "map">("time");
@@ -82,8 +105,12 @@ const saveNotes = () => {
   localStorage.setItem("notes", JSON.stringify(notes.value));
 };
 
-const handleAddNewNote = (newNote: any) => {
+const handleAddNewNote = async (newNote: any) => {
   const mapData = maps.value.find((m) => m.level === newNote.mapLevel);
+
+  // 圖片載入函式
+  await loadMapImage(newNote.mapLevel);
+
   const finalNote = {
     ...newNote,
     id: uuidv4(),
@@ -197,10 +224,7 @@ const sortNotesArray = (a: Note, b: Note): number => {
   return 0;
 };
 
-const handleUpdateNoteChannel = (
-  id: string,
-  newChannel: number
-) => {
+const handleUpdateNoteChannel = (id: string, newChannel: number) => {
   const noteToUpdate = notes.value.find((note) => note.id === id);
   if (noteToUpdate) {
     noteToUpdate.channel = newChannel;
@@ -254,23 +278,23 @@ const exportNotes = async () => {
   try {
     // 將 JSON 字串複製到剪貼簿
     await navigator.clipboard.writeText(importExportData.value);
-    
+
     // 複製成功時跳出提示
-    ElMessage({ 
-      type: "success", 
-      message: "記錄已匯出並複製到剪貼簿。" 
+    ElMessage({
+      type: "success",
+      message: "記錄已匯出並複製到剪貼簿。",
     });
   } catch (err) {
     // 複製失敗時（例如使用者拒絕授權），跳出警告
-    ElMessage({ 
-      type: "warning", 
-      message: "無法自動複製到剪貼簿，請手動複製上方文字。" 
+    ElMessage({
+      type: "warning",
+      message: "無法自動複製到剪貼簿，請手動複製上方文字。",
     });
     console.error("Failed to copy notes to clipboard: ", err);
   }
 };
 
-const handleImportClick = () => {
+const handleImportClick = async () => {
   if (!importExportData.value) {
     ElMessage({ type: "warning", message: "請先貼上要匯入的記錄。" });
     return;
@@ -284,6 +308,10 @@ const handleImportClick = () => {
     ) {
       ElMessage({ type: "error", message: "匯入的資料格式不正確。" });
       return;
+    }
+
+    for (const note of importedNotes) {
+      await loadMapImage(note.mapLevel);
     }
 
     const currentNotesMap = new Map(
@@ -323,8 +351,7 @@ const handleImportClick = () => {
           h(
             "ul",
             {
-              style:
-                "max-height: 200px; overflow-y: auto; padding-left: 20px;",
+              style: "max-height: 200px; overflow-y: auto; padding-left: 20px;",
             },
             duplicateNotes.map((item) =>
               h(
@@ -355,7 +382,10 @@ const handleImportClick = () => {
                 item.newNote
               )
             );
-            const finalNotes = [...finalNotesMap.values(), ...nonDuplicateNotes];
+            const finalNotes = [
+              ...finalNotesMap.values(),
+              ...nonDuplicateNotes,
+            ];
             notes.value = finalNotes;
             notes.value.sort(sortNotesArray);
             saveNotes();
@@ -395,6 +425,29 @@ const handleImportClick = () => {
 
 onMounted(() => {
   loadNotes();
+
+  // 確保只更新必要的欄位，並保留使用者設定
+  if (notes.value.length > 0) {
+    notes.value = notes.value.map((note) => {
+      const mapData = maps.value.find((m) => m.level === note.mapLevel);
+      if (mapData) {
+        // 合併新舊資料，以舊記錄（note）的屬性為優先
+        return {
+          ...note,
+          noteText: mapData.name, // 更新地圖名稱
+          maxStages: mapData.maxStages, // 更新階段數
+          imagePath: mapData.imagePath, // 新增圖片路徑
+        };
+      }
+      return note;
+    });
+
+    // 頁面載入時，為已存在的記錄載入圖片
+    notes.value.forEach((note) => {
+      loadMapImage(note.mapLevel);
+    });
+  }
+
   setInterval(() => {
     notes.value.sort(sortNotesArray);
   }, 1000);
