@@ -1,12 +1,13 @@
 import { ref, defineProps, defineEmits, onMounted, onUnmounted, h, computed, } from "vue";
-import { ElMessage, ElMessageBox, ElButton } from "element-plus";
-import { StarFilled, Bell, BellFilled } from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox, ElButton, ElIcon } from "element-plus";
+import { StarFilled, Bell, BellFilled, Setting } from "@element-plus/icons-vue";
 const props = defineProps();
 const emit = defineEmits([
     "delete-note",
     "clear-notes",
     "toggle-sort",
     "update-note-status",
+    "update-note-channel",
     "toggle-input-sound",
     "update-map-star",
 ]);
@@ -14,10 +15,48 @@ const currentTime = ref(Date.now());
 let timer = null;
 let soundChecker = null;
 const showLocalTime = ref(false);
+const showChannelAdjust = ref(false);
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const isAllSoundOn = ref(true);
 const toggleTimeDisplay = () => {
     showLocalTime.value = !showLocalTime.value;
+};
+const toggleChannelAdjust = () => {
+    showChannelAdjust.value = !showChannelAdjust.value;
+    if (!showChannelAdjust.value) {
+        toggleHightlight(false);
+    }
+};
+const channelAdjust = (note, delta) => {
+    let currentChannel = note.channel;
+    const newChannel = currentChannel + delta;
+    if (newChannel >= 1) {
+        emit("update-note-channel", note.id, newChannel);
+        if (!note.isHighlight) {
+            toggleHightlight(true, note.mapLevel);
+        }
+    }
+    else {
+        ElMessage({
+            message: "分流已是最小，無法再減少",
+            type: "warning",
+        });
+    }
+};
+const toggleHightlight = (on, target = 0) => {
+    for (const note of props.notes) {
+        // 編輯分流時提示所有相同地圖
+        if (on && note.mapLevel == target) {
+            note.isHighlight = on;
+        }
+        // 結束編輯分流時關閉提示
+        if (note.isHighlight) {
+            note.isHighlight = on;
+        }
+        if (!on && note.isWarning) {
+            note.isWarning = on;
+        }
+    }
 };
 const getMapName = (level) => {
     const map = props.maps.find((m) => m.level === level);
@@ -69,12 +108,12 @@ const handleExpiredClick = (note) => {
                     style: "width: 100%;",
                 }, () => "ON"),
             ]),
-            ...Array.from({ length: note.maxStages || 5 }, (_, i) => h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
+            ...Array.from({ length: note.maxStages || 4 }, (_, i) => h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
                 h(ElButton, {
                     type: "",
                     onClick: () => handleSelection(`stage_${i + 1}`),
                     style: "width: 100%;",
-                }, () => `階段 ${i + 1}/${note.maxStages || 5}`),
+                }, () => `階段 ${i + 1}/${note.maxStages || 4}`),
             ])),
         ]),
         showCancelButton: false,
@@ -272,218 +311,278 @@ else {
     const { default: __VLS_21 } = __VLS_17.slots;
     // @ts-ignore
     [notes, handleToggleAllSound,];
+    __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
     (__VLS_ctx.toggleAllSoundButtonText);
     // @ts-ignore
     [toggleAllSoundButtonText,];
+    const __VLS_22 = {}.ElIcon;
+    /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
+    // @ts-ignore
+    ElIcon;
+    // @ts-ignore
+    const __VLS_23 = __VLS_asFunctionalComponent(__VLS_22, new __VLS_22({
+        ...{ style: {} },
+    }));
+    const __VLS_24 = __VLS_23({
+        ...{ style: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_23));
+    const { default: __VLS_26 } = __VLS_25.slots;
+    if (__VLS_ctx.isAllSoundOn) {
+        // @ts-ignore
+        [isAllSoundOn,];
+        const __VLS_27 = {}.Bell;
+        /** @type {[typeof __VLS_components.Bell, ]} */ ;
+        // @ts-ignore
+        Bell;
+        // @ts-ignore
+        const __VLS_28 = __VLS_asFunctionalComponent(__VLS_27, new __VLS_27({}));
+        const __VLS_29 = __VLS_28({}, ...__VLS_functionalComponentArgsRest(__VLS_28));
+    }
+    else {
+        const __VLS_32 = {}.BellFilled;
+        /** @type {[typeof __VLS_components.BellFilled, ]} */ ;
+        // @ts-ignore
+        BellFilled;
+        // @ts-ignore
+        const __VLS_33 = __VLS_asFunctionalComponent(__VLS_32, new __VLS_32({}));
+        const __VLS_34 = __VLS_33({}, ...__VLS_functionalComponentArgsRest(__VLS_33));
+    }
+    var __VLS_25;
     var __VLS_17;
-    const __VLS_22 = {}.ElButton;
+    const __VLS_37 = {}.ElButton;
     /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
     // @ts-ignore
     ElButton;
     // @ts-ignore
-    const __VLS_23 = __VLS_asFunctionalComponent(__VLS_22, new __VLS_22({
+    const __VLS_38 = __VLS_asFunctionalComponent(__VLS_37, new __VLS_37({
         ...{ 'onClick': {} },
         type: "danger",
         disabled: (__VLS_ctx.notes.length === 0),
     }));
-    const __VLS_24 = __VLS_23({
+    const __VLS_39 = __VLS_38({
         ...{ 'onClick': {} },
         type: "danger",
         disabled: (__VLS_ctx.notes.length === 0),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_23));
-    let __VLS_26;
-    let __VLS_27;
-    const __VLS_28 = ({ click: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_38));
+    let __VLS_41;
+    let __VLS_42;
+    const __VLS_43 = ({ click: {} },
         { onClick: (__VLS_ctx.handleClearAll) });
-    const { default: __VLS_29 } = __VLS_25.slots;
+    const { default: __VLS_44 } = __VLS_40.slots;
     // @ts-ignore
     [notes, handleClearAll,];
-    var __VLS_25;
-    const __VLS_30 = {}.ElRow;
+    var __VLS_40;
+    const __VLS_45 = {}.ElRow;
     /** @type {[typeof __VLS_components.ElRow, typeof __VLS_components.elRow, typeof __VLS_components.ElRow, typeof __VLS_components.elRow, ]} */ ;
     // @ts-ignore
     ElRow;
     // @ts-ignore
-    const __VLS_31 = __VLS_asFunctionalComponent(__VLS_30, new __VLS_30({
-        ...{ class: "list-header" },
-        gutter: (10),
-    }));
-    const __VLS_32 = __VLS_31({
-        ...{ class: "list-header" },
-        gutter: (10),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_31));
-    const { default: __VLS_34 } = __VLS_33.slots;
-    const __VLS_35 = {}.ElCol;
-    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
-    // @ts-ignore
-    ElCol;
-    // @ts-ignore
-    const __VLS_36 = __VLS_asFunctionalComponent(__VLS_35, new __VLS_35({
-        span: (1),
-    }));
-    const __VLS_37 = __VLS_36({
-        span: (1),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_36));
-    const __VLS_40 = {}.ElCol;
-    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
-    // @ts-ignore
-    ElCol;
-    // @ts-ignore
-    const __VLS_41 = __VLS_asFunctionalComponent(__VLS_40, new __VLS_40({
-        span: (3),
-    }));
-    const __VLS_42 = __VLS_41({
-        span: (3),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_41));
-    const { default: __VLS_44 } = __VLS_43.slots;
-    var __VLS_43;
-    const __VLS_45 = {}.ElCol;
-    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
-    // @ts-ignore
-    ElCol;
-    // @ts-ignore
     const __VLS_46 = __VLS_asFunctionalComponent(__VLS_45, new __VLS_45({
-        span: (6),
+        ...{ class: "list-header" },
+        gutter: (10),
     }));
     const __VLS_47 = __VLS_46({
-        span: (6),
+        ...{ class: "list-header" },
+        gutter: (10),
     }, ...__VLS_functionalComponentArgsRest(__VLS_46));
     const { default: __VLS_49 } = __VLS_48.slots;
-    var __VLS_48;
     const __VLS_50 = {}.ElCol;
     /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
     // @ts-ignore
     ElCol;
     // @ts-ignore
     const __VLS_51 = __VLS_asFunctionalComponent(__VLS_50, new __VLS_50({
-        span: (3),
+        span: (1),
     }));
     const __VLS_52 = __VLS_51({
-        span: (3),
+        span: (1),
     }, ...__VLS_functionalComponentArgsRest(__VLS_51));
-    const { default: __VLS_54 } = __VLS_53.slots;
-    var __VLS_53;
     const __VLS_55 = {}.ElCol;
     /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
     // @ts-ignore
     ElCol;
     // @ts-ignore
     const __VLS_56 = __VLS_asFunctionalComponent(__VLS_55, new __VLS_55({
-        span: (5),
+        span: (3),
     }));
     const __VLS_57 = __VLS_56({
-        span: (5),
+        span: (3),
     }, ...__VLS_functionalComponentArgsRest(__VLS_56));
     const { default: __VLS_59 } = __VLS_58.slots;
-    const __VLS_60 = {}.ElButton;
-    /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
-    // @ts-ignore
-    ElButton;
-    // @ts-ignore
-    const __VLS_61 = __VLS_asFunctionalComponent(__VLS_60, new __VLS_60({
-        ...{ 'onClick': {} },
-        size: "small",
-        type: "info",
-    }));
-    const __VLS_62 = __VLS_61({
-        ...{ 'onClick': {} },
-        size: "small",
-        type: "info",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_61));
-    let __VLS_64;
-    let __VLS_65;
-    const __VLS_66 = ({ click: {} },
-        { onClick: (__VLS_ctx.toggleTimeDisplay) });
-    const { default: __VLS_67 } = __VLS_63.slots;
-    // @ts-ignore
-    [toggleTimeDisplay,];
-    var __VLS_63;
     var __VLS_58;
-    const __VLS_68 = {}.ElCol;
+    const __VLS_60 = {}.ElCol;
     /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
     // @ts-ignore
     ElCol;
     // @ts-ignore
-    const __VLS_69 = __VLS_asFunctionalComponent(__VLS_68, new __VLS_68({
+    const __VLS_61 = __VLS_asFunctionalComponent(__VLS_60, new __VLS_60({
+        span: (7),
+    }));
+    const __VLS_62 = __VLS_61({
+        span: (7),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_61));
+    const { default: __VLS_64 } = __VLS_63.slots;
+    var __VLS_63;
+    const __VLS_65 = {}.ElCol;
+    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
+    // @ts-ignore
+    ElCol;
+    // @ts-ignore
+    const __VLS_66 = __VLS_asFunctionalComponent(__VLS_65, new __VLS_65({
+        span: (3),
+    }));
+    const __VLS_67 = __VLS_66({
+        span: (3),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_66));
+    const { default: __VLS_69 } = __VLS_68.slots;
+    const __VLS_70 = {}.ElButton;
+    /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+    // @ts-ignore
+    ElButton;
+    // @ts-ignore
+    const __VLS_71 = __VLS_asFunctionalComponent(__VLS_70, new __VLS_70({
+        ...{ 'onClick': {} },
+        size: "small",
+        type: "",
+        icon: (__VLS_ctx.Setting),
+    }));
+    const __VLS_72 = __VLS_71({
+        ...{ 'onClick': {} },
+        size: "small",
+        type: "",
+        icon: (__VLS_ctx.Setting),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_71));
+    let __VLS_74;
+    let __VLS_75;
+    const __VLS_76 = ({ click: {} },
+        { onClick: (__VLS_ctx.toggleChannelAdjust) });
+    // @ts-ignore
+    [Setting, toggleChannelAdjust,];
+    var __VLS_73;
+    var __VLS_68;
+    const __VLS_78 = {}.ElCol;
+    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
+    // @ts-ignore
+    ElCol;
+    // @ts-ignore
+    const __VLS_79 = __VLS_asFunctionalComponent(__VLS_78, new __VLS_78({
         span: (6),
     }));
-    const __VLS_70 = __VLS_69({
+    const __VLS_80 = __VLS_79({
         span: (6),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_69));
-    const { default: __VLS_72 } = __VLS_71.slots;
-    var __VLS_71;
-    var __VLS_33;
-    const __VLS_73 = {}.TransitionGroup;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_79));
+    const { default: __VLS_82 } = __VLS_81.slots;
+    const __VLS_83 = {}.ElButton;
+    /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+    // @ts-ignore
+    ElButton;
+    // @ts-ignore
+    const __VLS_84 = __VLS_asFunctionalComponent(__VLS_83, new __VLS_83({
+        ...{ 'onClick': {} },
+        size: "small",
+        type: "",
+    }));
+    const __VLS_85 = __VLS_84({
+        ...{ 'onClick': {} },
+        size: "small",
+        type: "",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_84));
+    let __VLS_87;
+    let __VLS_88;
+    const __VLS_89 = ({ click: {} },
+        { onClick: (__VLS_ctx.toggleTimeDisplay) });
+    const { default: __VLS_90 } = __VLS_86.slots;
+    // @ts-ignore
+    [toggleTimeDisplay,];
+    var __VLS_86;
+    var __VLS_81;
+    const __VLS_91 = {}.ElCol;
+    /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
+    // @ts-ignore
+    ElCol;
+    // @ts-ignore
+    const __VLS_92 = __VLS_asFunctionalComponent(__VLS_91, new __VLS_91({
+        span: (4),
+    }));
+    const __VLS_93 = __VLS_92({
+        span: (4),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_92));
+    const { default: __VLS_95 } = __VLS_94.slots;
+    var __VLS_94;
+    var __VLS_48;
+    const __VLS_96 = {}.TransitionGroup;
     /** @type {[typeof __VLS_components.TransitionGroup, typeof __VLS_components.transitionGroup, typeof __VLS_components.TransitionGroup, typeof __VLS_components.transitionGroup, ]} */ ;
     // @ts-ignore
     TransitionGroup;
     // @ts-ignore
-    const __VLS_74 = __VLS_asFunctionalComponent(__VLS_73, new __VLS_73({
+    const __VLS_97 = __VLS_asFunctionalComponent(__VLS_96, new __VLS_96({
         name: "list-item",
         tag: "div",
     }));
-    const __VLS_75 = __VLS_74({
+    const __VLS_98 = __VLS_97({
         name: "list-item",
         tag: "div",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_74));
-    const { default: __VLS_77 } = __VLS_76.slots;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_97));
+    const { default: __VLS_100 } = __VLS_99.slots;
     for (const [note] of __VLS_getVForSourceType((__VLS_ctx.notes))) {
         // @ts-ignore
         [notes,];
-        const __VLS_78 = {}.ElRow;
+        const __VLS_101 = {}.ElRow;
         /** @type {[typeof __VLS_components.ElRow, typeof __VLS_components.elRow, typeof __VLS_components.ElRow, typeof __VLS_components.elRow, ]} */ ;
         // @ts-ignore
         ElRow;
         // @ts-ignore
-        const __VLS_79 = __VLS_asFunctionalComponent(__VLS_78, new __VLS_78({
+        const __VLS_102 = __VLS_asFunctionalComponent(__VLS_101, new __VLS_101({
             key: (note.id),
             ...{ class: "list-item" },
             ...{ class: ({
                     'over-time-limit': __VLS_ctx.isOverTimeLimit(note),
                     'warning-row': note.isWarning,
+                    'highlight-row': note.isHighlight,
                 }) },
             gutter: (10),
         }));
-        const __VLS_80 = __VLS_79({
+        const __VLS_103 = __VLS_102({
             key: (note.id),
             ...{ class: "list-item" },
             ...{ class: ({
                     'over-time-limit': __VLS_ctx.isOverTimeLimit(note),
                     'warning-row': note.isWarning,
+                    'highlight-row': note.isHighlight,
                 }) },
             gutter: (10),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_79));
-        const { default: __VLS_82 } = __VLS_81.slots;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_102));
+        const { default: __VLS_105 } = __VLS_104.slots;
         // @ts-ignore
         [isOverTimeLimit,];
-        const __VLS_83 = {}.ElCol;
+        const __VLS_106 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_84 = __VLS_asFunctionalComponent(__VLS_83, new __VLS_83({
+        const __VLS_107 = __VLS_asFunctionalComponent(__VLS_106, new __VLS_106({
             span: (1),
         }));
-        const __VLS_85 = __VLS_84({
+        const __VLS_108 = __VLS_107({
             span: (1),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_84));
-        const { default: __VLS_87 } = __VLS_86.slots;
-        const __VLS_88 = {}.ElIcon;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_107));
+        const { default: __VLS_110 } = __VLS_109.slots;
+        const __VLS_111 = {}.ElIcon;
         /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
         // @ts-ignore
         ElIcon;
         // @ts-ignore
-        const __VLS_89 = __VLS_asFunctionalComponent(__VLS_88, new __VLS_88({
+        const __VLS_112 = __VLS_asFunctionalComponent(__VLS_111, new __VLS_111({
             ...{ 'onClick': {} },
             ...{ class: "sound-icon" },
         }));
-        const __VLS_90 = __VLS_89({
+        const __VLS_113 = __VLS_112({
             ...{ 'onClick': {} },
             ...{ class: "sound-icon" },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_89));
-        let __VLS_92;
-        let __VLS_93;
-        const __VLS_94 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_112));
+        let __VLS_115;
+        let __VLS_116;
+        const __VLS_117 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -491,98 +590,27 @@ else {
                     // @ts-ignore
                     [toggleSound,];
                 } });
-        const { default: __VLS_95 } = __VLS_91.slots;
+        const { default: __VLS_118 } = __VLS_114.slots;
         if (note.hasSound) {
-            const __VLS_96 = {}.BellFilled;
+            const __VLS_119 = {}.BellFilled;
             /** @type {[typeof __VLS_components.BellFilled, ]} */ ;
             // @ts-ignore
             BellFilled;
             // @ts-ignore
-            const __VLS_97 = __VLS_asFunctionalComponent(__VLS_96, new __VLS_96({}));
-            const __VLS_98 = __VLS_97({}, ...__VLS_functionalComponentArgsRest(__VLS_97));
+            const __VLS_120 = __VLS_asFunctionalComponent(__VLS_119, new __VLS_119({}));
+            const __VLS_121 = __VLS_120({}, ...__VLS_functionalComponentArgsRest(__VLS_120));
         }
         else {
-            const __VLS_101 = {}.Bell;
+            const __VLS_124 = {}.Bell;
             /** @type {[typeof __VLS_components.Bell, ]} */ ;
             // @ts-ignore
             Bell;
             // @ts-ignore
-            const __VLS_102 = __VLS_asFunctionalComponent(__VLS_101, new __VLS_101({}));
-            const __VLS_103 = __VLS_102({}, ...__VLS_functionalComponentArgsRest(__VLS_102));
+            const __VLS_125 = __VLS_asFunctionalComponent(__VLS_124, new __VLS_124({}));
+            const __VLS_126 = __VLS_125({}, ...__VLS_functionalComponentArgsRest(__VLS_125));
         }
-        var __VLS_91;
-        var __VLS_86;
-        const __VLS_106 = {}.ElCol;
-        /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
-        // @ts-ignore
-        ElCol;
-        // @ts-ignore
-        const __VLS_107 = __VLS_asFunctionalComponent(__VLS_106, new __VLS_106({
-            span: (3),
-        }));
-        const __VLS_108 = __VLS_107({
-            span: (3),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_107));
-        const { default: __VLS_110 } = __VLS_109.slots;
-        (__VLS_ctx.getEpisode(note.mapLevel));
-        // @ts-ignore
-        [getEpisode,];
-        var __VLS_109;
-        const __VLS_111 = {}.ElCol;
-        /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
-        // @ts-ignore
-        ElCol;
-        // @ts-ignore
-        const __VLS_112 = __VLS_asFunctionalComponent(__VLS_111, new __VLS_111({
-            span: (6),
-        }));
-        const __VLS_113 = __VLS_112({
-            span: (6),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_112));
-        const { default: __VLS_115 } = __VLS_114.slots;
-        __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
-            ...{ class: "map-name-content" },
-        });
-        __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-        (note.mapLevel);
-        (__VLS_ctx.getMapName(note.mapLevel));
-        // @ts-ignore
-        [getMapName,];
-        const __VLS_116 = {}.ElIcon;
-        /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
-        // @ts-ignore
-        ElIcon;
-        // @ts-ignore
-        const __VLS_117 = __VLS_asFunctionalComponent(__VLS_116, new __VLS_116({
-            ...{ 'onClick': {} },
-            ...{ class: "star-icon" },
-            ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
-        }));
-        const __VLS_118 = __VLS_117({
-            ...{ 'onClick': {} },
-            ...{ class: "star-icon" },
-            ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_117));
-        let __VLS_120;
-        let __VLS_121;
-        const __VLS_122 = ({ click: {} },
-            { onClick: (...[$event]) => {
-                    if (!!(__VLS_ctx.notes.length === 0))
-                        return;
-                    __VLS_ctx.toggleStar(note.mapLevel);
-                    // @ts-ignore
-                    [isMapStarred, toggleStar,];
-                } });
-        const { default: __VLS_123 } = __VLS_119.slots;
-        const __VLS_124 = {}.StarFilled;
-        /** @type {[typeof __VLS_components.StarFilled, ]} */ ;
-        // @ts-ignore
-        StarFilled;
-        // @ts-ignore
-        const __VLS_125 = __VLS_asFunctionalComponent(__VLS_124, new __VLS_124({}));
-        const __VLS_126 = __VLS_125({}, ...__VLS_functionalComponentArgsRest(__VLS_125));
-        var __VLS_119;
         var __VLS_114;
+        var __VLS_109;
         const __VLS_129 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
@@ -595,7 +623,9 @@ else {
             span: (3),
         }, ...__VLS_functionalComponentArgsRest(__VLS_130));
         const { default: __VLS_133 } = __VLS_132.slots;
-        (note.channel);
+        (__VLS_ctx.getEpisode(note.mapLevel));
+        // @ts-ignore
+        [getEpisode,];
         var __VLS_132;
         const __VLS_134 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
@@ -603,34 +633,168 @@ else {
         ElCol;
         // @ts-ignore
         const __VLS_135 = __VLS_asFunctionalComponent(__VLS_134, new __VLS_134({
-            span: (5),
+            span: (7),
         }));
         const __VLS_136 = __VLS_135({
-            span: (5),
+            span: (7),
         }, ...__VLS_functionalComponentArgsRest(__VLS_135));
         const { default: __VLS_138 } = __VLS_137.slots;
-        if (note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime) {
+        __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
+            ...{ class: "map-name-content" },
+        });
+        __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+        (note.mapLevel);
+        (__VLS_ctx.getMapName(note.mapLevel));
+        // @ts-ignore
+        [getMapName,];
+        const __VLS_139 = {}.ElIcon;
+        /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
+        // @ts-ignore
+        ElIcon;
+        // @ts-ignore
+        const __VLS_140 = __VLS_asFunctionalComponent(__VLS_139, new __VLS_139({
+            ...{ 'onClick': {} },
+            ...{ class: "star-icon" },
+            ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
+        }));
+        const __VLS_141 = __VLS_140({
+            ...{ 'onClick': {} },
+            ...{ class: "star-icon" },
+            ...{ class: ({ 'is-starred': __VLS_ctx.isMapStarred(note.mapLevel) }) },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_140));
+        let __VLS_143;
+        let __VLS_144;
+        const __VLS_145 = ({ click: {} },
+            { onClick: (...[$event]) => {
+                    if (!!(__VLS_ctx.notes.length === 0))
+                        return;
+                    __VLS_ctx.toggleStar(note.mapLevel);
+                    // @ts-ignore
+                    [isMapStarred, toggleStar,];
+                } });
+        const { default: __VLS_146 } = __VLS_142.slots;
+        const __VLS_147 = {}.StarFilled;
+        /** @type {[typeof __VLS_components.StarFilled, ]} */ ;
+        // @ts-ignore
+        StarFilled;
+        // @ts-ignore
+        const __VLS_148 = __VLS_asFunctionalComponent(__VLS_147, new __VLS_147({}));
+        const __VLS_149 = __VLS_148({}, ...__VLS_functionalComponentArgsRest(__VLS_148));
+        var __VLS_142;
+        var __VLS_137;
+        const __VLS_152 = {}.ElCol;
+        /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
+        // @ts-ignore
+        ElCol;
+        // @ts-ignore
+        const __VLS_153 = __VLS_asFunctionalComponent(__VLS_152, new __VLS_152({
+            span: (3),
+            ...{ style: {} },
+        }));
+        const __VLS_154 = __VLS_153({
+            span: (3),
+            ...{ style: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_153));
+        const { default: __VLS_156 } = __VLS_155.slots;
+        if (__VLS_ctx.showChannelAdjust) {
             // @ts-ignore
-            [currentTime,];
-            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-            const __VLS_139 = {}.ElButton;
+            [showChannelAdjust,];
+            const __VLS_157 = {}.ElButton;
             /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
             // @ts-ignore
             ElButton;
             // @ts-ignore
-            const __VLS_140 = __VLS_asFunctionalComponent(__VLS_139, new __VLS_139({
+            const __VLS_158 = __VLS_asFunctionalComponent(__VLS_157, new __VLS_157({
+                ...{ 'onClick': {} },
+                size: "small",
+            }));
+            const __VLS_159 = __VLS_158({
+                ...{ 'onClick': {} },
+                size: "small",
+            }, ...__VLS_functionalComponentArgsRest(__VLS_158));
+            let __VLS_161;
+            let __VLS_162;
+            const __VLS_163 = ({ click: {} },
+                { onClick: (...[$event]) => {
+                        if (!!(__VLS_ctx.notes.length === 0))
+                            return;
+                        if (!(__VLS_ctx.showChannelAdjust))
+                            return;
+                        __VLS_ctx.channelAdjust(note, -1);
+                        // @ts-ignore
+                        [channelAdjust,];
+                    } });
+            const { default: __VLS_164 } = __VLS_160.slots;
+            var __VLS_160;
+        }
+        __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({});
+        (note.channel);
+        if (__VLS_ctx.showChannelAdjust) {
+            // @ts-ignore
+            [showChannelAdjust,];
+            const __VLS_165 = {}.ElButton;
+            /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+            // @ts-ignore
+            ElButton;
+            // @ts-ignore
+            const __VLS_166 = __VLS_asFunctionalComponent(__VLS_165, new __VLS_165({
+                ...{ 'onClick': {} },
+                size: "small",
+            }));
+            const __VLS_167 = __VLS_166({
+                ...{ 'onClick': {} },
+                size: "small",
+            }, ...__VLS_functionalComponentArgsRest(__VLS_166));
+            let __VLS_169;
+            let __VLS_170;
+            const __VLS_171 = ({ click: {} },
+                { onClick: (...[$event]) => {
+                        if (!!(__VLS_ctx.notes.length === 0))
+                            return;
+                        if (!(__VLS_ctx.showChannelAdjust))
+                            return;
+                        __VLS_ctx.channelAdjust(note, 1);
+                        // @ts-ignore
+                        [channelAdjust,];
+                    } });
+            const { default: __VLS_172 } = __VLS_168.slots;
+            var __VLS_168;
+        }
+        var __VLS_155;
+        const __VLS_173 = {}.ElCol;
+        /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
+        // @ts-ignore
+        ElCol;
+        // @ts-ignore
+        const __VLS_174 = __VLS_asFunctionalComponent(__VLS_173, new __VLS_173({
+            span: (6),
+        }));
+        const __VLS_175 = __VLS_174({
+            span: (6),
+        }, ...__VLS_functionalComponentArgsRest(__VLS_174));
+        const { default: __VLS_177 } = __VLS_176.slots;
+        if (note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime) {
+            // @ts-ignore
+            [currentTime,];
+            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            const __VLS_178 = {}.ElButton;
+            /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+            // @ts-ignore
+            ElButton;
+            // @ts-ignore
+            const __VLS_179 = __VLS_asFunctionalComponent(__VLS_178, new __VLS_178({
                 ...{ 'onClick': {} },
                 type: "warning",
                 size: "small",
             }));
-            const __VLS_141 = __VLS_140({
+            const __VLS_180 = __VLS_179({
                 ...{ 'onClick': {} },
                 type: "warning",
                 size: "small",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_140));
-            let __VLS_143;
-            let __VLS_144;
-            const __VLS_145 = ({ click: {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_179));
+            let __VLS_182;
+            let __VLS_183;
+            const __VLS_184 = ({ click: {} },
                 { onClick: (...[$event]) => {
                         if (!!(__VLS_ctx.notes.length === 0))
                             return;
@@ -640,32 +804,32 @@ else {
                         // @ts-ignore
                         [handleExpiredClick,];
                     } });
-            const { default: __VLS_146 } = __VLS_142.slots;
+            const { default: __VLS_185 } = __VLS_181.slots;
             (__VLS_ctx.getStatusText(note));
             // @ts-ignore
             [getStatusText,];
-            var __VLS_142;
+            var __VLS_181;
         }
         else if (note.state.startsWith('STAGE_')) {
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-            const __VLS_147 = {}.ElButton;
+            const __VLS_186 = {}.ElButton;
             /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
             // @ts-ignore
             ElButton;
             // @ts-ignore
-            const __VLS_148 = __VLS_asFunctionalComponent(__VLS_147, new __VLS_147({
+            const __VLS_187 = __VLS_asFunctionalComponent(__VLS_186, new __VLS_186({
                 ...{ 'onClick': {} },
                 type: "primary",
                 size: "small",
             }));
-            const __VLS_149 = __VLS_148({
+            const __VLS_188 = __VLS_187({
                 ...{ 'onClick': {} },
                 type: "primary",
                 size: "small",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_148));
-            let __VLS_151;
-            let __VLS_152;
-            const __VLS_153 = ({ click: {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_187));
+            let __VLS_190;
+            let __VLS_191;
+            const __VLS_192 = ({ click: {} },
                 { onClick: (...[$event]) => {
                         if (!!(__VLS_ctx.notes.length === 0))
                             return;
@@ -677,11 +841,11 @@ else {
                         // @ts-ignore
                         [handleExpiredClick,];
                     } });
-            const { default: __VLS_154 } = __VLS_150.slots;
+            const { default: __VLS_193 } = __VLS_189.slots;
             (__VLS_ctx.getStatusText(note));
             // @ts-ignore
             [getStatusText,];
-            var __VLS_150;
+            var __VLS_189;
         }
         else {
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
@@ -689,37 +853,37 @@ else {
             // @ts-ignore
             [getStatusText,];
         }
-        var __VLS_137;
-        const __VLS_155 = {}.ElCol;
+        var __VLS_176;
+        const __VLS_194 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_156 = __VLS_asFunctionalComponent(__VLS_155, new __VLS_155({
-            span: (6),
+        const __VLS_195 = __VLS_asFunctionalComponent(__VLS_194, new __VLS_194({
+            span: (4),
         }));
-        const __VLS_157 = __VLS_156({
-            span: (6),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_156));
-        const { default: __VLS_159 } = __VLS_158.slots;
-        const __VLS_160 = {}.ElButton;
+        const __VLS_196 = __VLS_195({
+            span: (4),
+        }, ...__VLS_functionalComponentArgsRest(__VLS_195));
+        const { default: __VLS_198 } = __VLS_197.slots;
+        const __VLS_199 = {}.ElButton;
         /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
         // @ts-ignore
         ElButton;
         // @ts-ignore
-        const __VLS_161 = __VLS_asFunctionalComponent(__VLS_160, new __VLS_160({
+        const __VLS_200 = __VLS_asFunctionalComponent(__VLS_199, new __VLS_199({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
         }));
-        const __VLS_162 = __VLS_161({
+        const __VLS_201 = __VLS_200({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_161));
-        let __VLS_164;
-        let __VLS_165;
-        const __VLS_166 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_200));
+        let __VLS_203;
+        let __VLS_204;
+        const __VLS_205 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -727,12 +891,12 @@ else {
                     // @ts-ignore
                     [handleDelete,];
                 } });
-        const { default: __VLS_167 } = __VLS_163.slots;
-        var __VLS_163;
-        var __VLS_158;
-        var __VLS_81;
+        const { default: __VLS_206 } = __VLS_202.slots;
+        var __VLS_202;
+        var __VLS_197;
+        var __VLS_104;
     }
-    var __VLS_76;
+    var __VLS_99;
 }
 var __VLS_3;
 /** @type {__VLS_StyleScopedClasses['no-notes-message']} */ ;
@@ -741,6 +905,7 @@ var __VLS_3;
 /** @type {__VLS_StyleScopedClasses['list-item']} */ ;
 /** @type {__VLS_StyleScopedClasses['over-time-limit']} */ ;
 /** @type {__VLS_StyleScopedClasses['warning-row']} */ ;
+/** @type {__VLS_StyleScopedClasses['highlight-row']} */ ;
 /** @type {__VLS_StyleScopedClasses['sound-icon']} */ ;
 /** @type {__VLS_StyleScopedClasses['map-name-content']} */ ;
 /** @type {__VLS_StyleScopedClasses['star-icon']} */ ;
@@ -749,11 +914,17 @@ var __VLS_dollars;
 const __VLS_self = (await import('vue')).defineComponent({
     setup: () => ({
         ElButton: ElButton,
+        ElIcon: ElIcon,
         StarFilled: StarFilled,
         Bell: Bell,
         BellFilled: BellFilled,
+        Setting: Setting,
         currentTime: currentTime,
+        showChannelAdjust: showChannelAdjust,
+        isAllSoundOn: isAllSoundOn,
         toggleTimeDisplay: toggleTimeDisplay,
+        toggleChannelAdjust: toggleChannelAdjust,
+        channelAdjust: channelAdjust,
         getMapName: getMapName,
         sortButtonText: sortButtonText,
         toggleAllSoundButtonText: toggleAllSoundButtonText,
