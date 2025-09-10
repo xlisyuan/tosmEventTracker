@@ -125,7 +125,7 @@ const handleClearAllNotes = () => {
 
 const getNoteStateCategory = (state: string) => {
   if (state.toLowerCase() === "on") return "ON";
-  if (state.includes("/")) return "STAGE";
+  if (state.includes("_")) return "STAGE";
   return "CD";
 };
 
@@ -135,19 +135,27 @@ const sortNotesArray = (a: Note, b: Note): number => {
   const bStateCategory = getNoteStateCategory(b.state);
 
   if (currentSortMode.value === "map") {
-    const aMapName = maps.value.find((m) => m.level === a.mapLevel)?.name || "";
-    const bMapName = maps.value.find((m) => m.level === b.mapLevel)?.name || "";
-    return aMapName.localeCompare(bMapName);
+    // 優先依照地圖等級降冪排序 (由大到小)
+    if (a.mapLevel !== b.mapLevel) {
+      return b.mapLevel - a.mapLevel;
+    }
+    // 地圖等級相同時，依照分流升冪排序 (由小到大)
+    if (a.channel !== b.channel) {
+      return a.channel - b.channel;
+    }
   }
 
+  // 檢查 ON 的時間限制
   const aIsOnOverLimit =
     aStateCategory === "ON" && now - (a.onTime || now) > ON_TIME_LIMIT_MS;
   const bIsOnOverLimit =
     bStateCategory === "ON" && now - (b.onTime || now) > ON_TIME_LIMIT_MS;
 
+  // 將 ON 超過時間限制的項目排在最後
   if (aIsOnOverLimit && !bIsOnOverLimit) return 1;
   if (!aIsOnOverLimit && bIsOnOverLimit) return -1;
 
+  // 依據類別進行排序
   const stateOrder = { ON: 1, STAGE: 2, CD: 3 };
   if (
     stateOrder[aStateCategory as keyof typeof stateOrder] !==
@@ -159,13 +167,15 @@ const sortNotesArray = (a: Note, b: Note): number => {
     );
   }
 
+  // 在同一個狀態類別內，再依時間或階段排序
   if (aStateCategory === "ON") {
-    return (b.onTime || 0) - (a.onTime || 0);
+    return (b.onTime || 0) - (a.onTime || 0); // ON 狀態：ON 最久的排最前
   } else if (aStateCategory === "STAGE") {
     const aStage = parseInt(a.state.replace("STAGE_", ""), 10);
     const bStage = parseInt(b.state.replace("STAGE_", ""), 10);
-    return bStage - aStage;
+    return bStage - aStage; // STAGE 狀態：階段號碼大的排最前
   } else if (aStateCategory === "CD") {
+    // CD 狀態：CD 越短的排越前
     return (a.respawnTime || 0) - (b.respawnTime || 0);
   }
 
@@ -189,8 +199,8 @@ const handleUpdateNoteStatus = (
         noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
       }
     }
+    notes.value.sort(sortNotesArray);
   }
-  notes.value.sort(sortNotesArray);
   saveNotes();
 };
 
@@ -218,7 +228,6 @@ watch(notes, saveNotes, { deep: true });
 
 <style scoped>
 .app-container {
-  width: 920px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
