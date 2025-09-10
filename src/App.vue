@@ -50,6 +50,7 @@ import NoteList from "./components/NoteList.vue";
 import type { Note, NoteState } from "./types/Note";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { maps as originalMaps, type MapData } from "./data/maps";
+import packageInfo from "../package.json";
 
 // 嘗試從 localStorage 載入地圖資料，如果沒有則使用原始資料並存入
 const savedMaps = localStorage.getItem("mapData");
@@ -453,6 +454,8 @@ onMounted(() => {
   setInterval(() => {
     notes.value.sort(sortNotesArray);
   }, 1000);
+
+  console.log(`版本：v${packageInfo.version}`);
 });
 
 watch(notes, saveNotes, { deep: true });
