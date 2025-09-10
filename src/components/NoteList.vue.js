@@ -81,7 +81,14 @@ const checkAndPlaySound = () => {
             note.hasSound &&
             !note.hasAlerted &&
             note.respawnTime <= now) {
-            speakNoteDetails(note);
+            // 重開網頁時 CD到期三分鐘內的分流 才語音提醒?
+            if (now - note.respawnTime < 3 * 60 * 1000) {
+                speakNoteDetails(note);
+            }
+            else {
+                let msg = `EP.${getEpisode(note.mapLevel)} ${getMapName(note.mapLevel)} CH.${note.channel} CD已結束`;
+                ElMessage({ type: "warning", message: msg });
+            }
             note.hasAlerted = true;
         }
     }
