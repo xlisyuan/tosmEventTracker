@@ -194,7 +194,8 @@ const exportNotes = async () => {
         respawnTime: note.respawnTime,
         state: note.state,
     }));
-    importExportData.value = JSON.stringify(exportedNotes, null, 2);
+    // importExportData.value = JSON.stringify(exportedNotes, null, 2);
+    importExportData.value = JSON.stringify(exportedNotes);
     try {
         // 將 JSON 字串複製到剪貼簿
         await navigator.clipboard.writeText(importExportData.value);
