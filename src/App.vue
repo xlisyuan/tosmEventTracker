@@ -325,6 +325,7 @@ const handleImportClick = async () => {
       const existingKey = `${importedNote.mapLevel}-${importedNote.channel}`;
       const existingNote = currentNotesMap.get(existingKey);
       const mapData = maps.value.find((m) => m.level === importedNote.mapLevel);
+      const isExpired = importedNote.respawnTime <= Date.now();
       const processedNote: Note = {
         ...importedNote,
         id: uuidv4(),
@@ -332,7 +333,7 @@ const handleImportClick = async () => {
         isStarred: existingNote ? existingNote.isStarred : false,
         onTime: importedNote.onTime || null,
         respawnTime: importedNote.respawnTime || null,
-        hasAlerted: false,
+        hasAlerted: isExpired,
         maxStages: mapData ? mapData.maxStages : 0,
       };
 
