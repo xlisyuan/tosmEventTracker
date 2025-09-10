@@ -263,7 +263,7 @@ const handleExpiredClick = (note: Note) => {
             () => "ON"
           ),
         ]),
-        ...Array.from({ length: note.maxStages || 5 }, (_, i) =>
+        ...Array.from({ length: note.maxStages || 4 }, (_, i) =>
           h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
             h(
               ElButton,
@@ -272,7 +272,7 @@ const handleExpiredClick = (note: Note) => {
                 onClick: () => handleSelection(`stage_${i + 1}`),
                 style: "width: 100%;",
               },
-              () => `階段 ${i + 1}/${note.maxStages || 5}`
+              () => `階段 ${i + 1}/${note.maxStages || 4}`
             ),
           ])
         ),
