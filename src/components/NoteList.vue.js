@@ -65,7 +65,7 @@ const getMapName = (level) => {
 };
 const speakNoteDetails = (note) => {
     if ("speechSynthesis" in window) {
-        const mapName = getMapName(note.mapLevel);
+        const mapName = note.noteText || getMapName(note.mapLevel);
         const utterance = new SpeechSynthesisUtterance();
         utterance.text = `E P ${getEpisode(note.mapLevel)}, ${mapName} 分流 ${note.channel}, CD已結束`;
         utterance.lang = "zh-TW";
@@ -87,7 +87,7 @@ const checkAndPlaySound = () => {
                 speakNoteDetails(note);
             }
             else {
-                let msg = `EP.${getEpisode(note.mapLevel)} ${getMapName(note.mapLevel)} CH.${note.channel} CD已結束`;
+                let msg = `EP.${getEpisode(note.mapLevel)} ${note.noteText || getMapName(note.mapLevel)} CH.${note.channel} CD已結束`;
                 ElMessage({ type: "warning", message: msg });
             }
             note.hasAlerted = true;
@@ -636,7 +636,7 @@ else {
             const { reference: __VLS_144 } = __VLS_142.slots;
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
             (note.mapLevel);
-            (__VLS_ctx.getMapName(note.mapLevel));
+            (note.noteText || __VLS_ctx.getMapName(note.mapLevel));
             // @ts-ignore
             [getMapName,];
         }

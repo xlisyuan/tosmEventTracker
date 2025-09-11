@@ -1,5 +1,5 @@
-import { ref, defineEmits, computed, watch, defineProps } from "vue";
-import { ElMessage, ElButton } from "element-plus";
+import { ref, defineEmits, computed, watch, h, defineProps } from "vue";
+import { ElMessage, ElMessageBox, ElButton } from "element-plus";
 import { ArrowUp, ArrowDown, StarFilled } from "@element-plus/icons-vue";
 const props = defineProps({
     hasSound: Boolean,
@@ -46,15 +46,20 @@ const parseInput = (value) => {
     };
     if (parts.length === 0)
         return result;
+    // 第一部分：解析地圖等級
     result.mapLevel = parseInt(parts[0]);
-    if (isNaN(result.mapLevel)) {
-        result.mapLevel = null;
+    if (isNaN(result.mapLevel))
         return result;
-    }
+    // 第二部分：判斷是地圖名稱還是分流
     if (parts.length > 1) {
-        const map = props.maps.find((m) => m.level === result.mapLevel);
-        if (map && parts[1] === map.name.trim()) {
-            result.mapName = parts[1];
+        const potentialMapName = parts[1];
+        // 檢查是否有地圖同時符合等級和名稱
+        const isMapName = props.maps.some((m) => m.level === result.mapLevel &&
+            m.name.trim() === potentialMapName);
+        // 如果是地圖名稱
+        if (isMapName) {
+            result.mapName = potentialMapName;
+            // 繼續解析分流與時間
             if (parts.length > 2) {
                 result.channel = parseInt(parts[2]);
                 if (parts.length > 3) {
@@ -63,7 +68,9 @@ const parseInput = (value) => {
             }
         }
         else {
-            result.channel = parseInt(parts[1]);
+            // 否則，將其視為分流
+            result.channel = parseInt(potentialMapName);
+            // 繼續解析時間
             if (parts.length > 2) {
                 result.timeStr = parts[2];
             }
@@ -156,9 +163,14 @@ const handleAdd = async () => {
         ElMessage.error("輸入格式錯誤");
         return;
     }
-    const map = props.maps.find((m) => m.level === parsed.mapLevel);
+    let map;
+    if (parsed.mapName != null) {
+        map = props.maps.find((m) => m.name === parsed.mapName);
+    }
+    else {
+        map = (await getMapData(parsed.mapLevel));
+    }
     if (!map) {
-        ElMessage.error("找不到對應的地圖");
         return;
     }
     let respawnTime = 0;
@@ -209,7 +221,7 @@ const handleAdd = async () => {
         hasSound: hasSound.value,
         maxStages,
         onTime,
-        noteText: parsed.mapName,
+        noteText: parsed.mapName || map.name,
     };
     emit("add-note", noteData);
     inputContent.value = "";
@@ -217,6 +229,52 @@ const handleAdd = async () => {
     selectedEpisode.value = 0;
     isStarSelection.value = false;
     isChannelConfirmed.value = false;
+};
+const getMapData = async (mapLevel) => {
+    const matchingMaps = props.maps.filter((m) => m.level === mapLevel);
+    let map;
+    if (matchingMaps.length > 1) {
+        matchingMaps.sort((a, b) => {
+            if (a.episode !== b.episode) {
+                return a.episode - b.episode;
+            }
+            return a.level - b.level;
+        });
+        try {
+            const selectedMapName = await new Promise((resolve, reject) => {
+                const message = h("div", null, matchingMaps.map((m) => h(ElButton, {
+                    onClick: () => {
+                        resolve(m.name);
+                        ElMessageBox.close();
+                    },
+                    style: { margin: "5px" },
+                }, () => `EP${m.episode} - Lv.${m.level} ${m.name}`)));
+                ElMessageBox.alert(message, "地圖選擇", {
+                    showConfirmButton: false,
+                    callback: (action) => {
+                        if (action === "cancel") {
+                            reject("cancel");
+                        }
+                    },
+                });
+            });
+            map = matchingMaps.find((m) => m.name === selectedMapName);
+        }
+        catch (action) {
+            if (action === "cancel") {
+                ElMessage.info("已取消新增");
+            }
+            return;
+        }
+    }
+    else {
+        map = matchingMaps[0];
+    }
+    if (!map) {
+        ElMessage.error("找不到對應的地圖");
+        return;
+    }
+    return map;
 };
 watch(inputContent, (newValue) => {
     const { mapLevel, mapName, timeStr, channel } = parseInput(newValue);

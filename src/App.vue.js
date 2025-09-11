@@ -15,8 +15,8 @@ if (!savedMaps) {
 // 用來快取已載入的圖片路徑
 const mapImageCache = ref({});
 // 獨立的圖片載入函式
-const loadMapImage = async (mapLevel) => {
-    const mapData = maps.value.find((m) => m.level === mapLevel);
+const loadMapImage = async (noteText) => {
+    const mapData = maps.value.find((m) => m.name === noteText);
     if (mapData?.imagePath && !mapImageCache.value[mapData.level]) {
         try {
             const image = new Image();
@@ -55,8 +55,18 @@ const loadNotes = () => {
     const savedNotes = localStorage.getItem("notes");
     if (savedNotes) {
         notes.value = JSON.parse(savedNotes).map((note) => {
-            const mapData = maps.value.find((m) => m.level === note.mapLevel);
-            return { ...note, isStarred: mapData ? mapData.isStarred : false };
+            const mapData = maps.value.find((m) => m.level === note.mapLevel && m.name === note.noteText);
+            if (mapData) {
+                return {
+                    ...note,
+                    isStarred: mapData.isStarred,
+                    noteText: mapData.name,
+                    maxStages: mapData.maxStages,
+                    // 如果 note 物件沒有 imagePath，則在這裡添加
+                    imagePath: note.imagePath || mapData.imagePath,
+                };
+            }
+            return note;
         });
     }
 };
@@ -64,26 +74,28 @@ const saveNotes = () => {
     localStorage.setItem("notes", JSON.stringify(notes.value));
 };
 const handleAddNewNote = async (newNote) => {
-    const mapData = maps.value.find((m) => m.level === newNote.mapLevel);
+    const mapData = newNote.noteText != null
+        ? maps.value.find((m) => m.name === newNote.noteText)
+        : maps.value.find((m) => m.level === newNote.mapLevel);
     // 圖片載入函式
-    await loadMapImage(newNote.mapLevel);
+    await loadMapImage(newNote.noteText);
     const finalNote = {
         ...newNote,
         id: uuidv4(),
         noteText: mapData ? mapData.name : newNote.noteText,
         isStarred: mapData ? mapData.isStarred : false,
-        hasSound: hasInputSoundOn.value,
+        hasSound: newNote.hasSound,
         maxStages: mapData ? mapData.maxStages : 0,
     };
     // 在新增前，檢查是否有相同地圖和分流的項目
     notes.value.forEach((note) => {
         if (note.mapLevel === finalNote.mapLevel &&
+            note.noteText === finalNote.noteText &&
             note.channel === finalNote.channel) {
             note.isWarning = true;
         }
         else {
-            // 重置警告
-            // 考慮要不要用其他方法 測試其他可能?
+            // 重置
             note.isWarning = false;
         }
     });
@@ -249,7 +261,7 @@ const handleImportClick = async () => {
             return;
         }
         for (const note of importedNotes) {
-            await loadMapImage(note.mapLevel);
+            await loadMapImage(note.noteText);
         }
         const currentNotesMap = new Map(notes.value.map((note) => [`${note.mapLevel}-${note.channel}`, note]));
         const nonDuplicateNotes = [];
@@ -346,22 +358,9 @@ onMounted(() => {
     loadNotes();
     // 確保只更新必要的欄位，並保留使用者設定
     if (notes.value.length > 0) {
-        notes.value = notes.value.map((note) => {
-            const mapData = maps.value.find((m) => m.level === note.mapLevel);
-            if (mapData) {
-                // 合併新舊資料，以舊記錄（note）的屬性為優先
-                return {
-                    ...note,
-                    noteText: mapData.name, // 更新地圖名稱
-                    maxStages: mapData.maxStages, // 更新階段數
-                    imagePath: mapData.imagePath, // 新增圖片路徑
-                };
-            }
-            return note;
-        });
         // 頁面載入時，為已存在的記錄載入圖片
         notes.value.forEach((note) => {
-            loadMapImage(note.mapLevel);
+            loadMapImage(note.noteText);
         });
     }
     setInterval(() => {
