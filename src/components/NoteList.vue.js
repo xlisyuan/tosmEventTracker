@@ -642,11 +642,11 @@ else {
         }
         {
             const { default: __VLS_145 } = __VLS_142.slots;
-            if (__VLS_ctx.mapImageCache[note.mapLevel]) {
+            if (__VLS_ctx.mapImageCache[note.noteText]) {
                 // @ts-ignore
                 [mapImageCache,];
                 __VLS_asFunctionalElement(__VLS_elements.img)({
-                    src: (__VLS_ctx.mapImageCache[note.mapLevel]),
+                    src: (__VLS_ctx.mapImageCache[note.noteText]),
                     alt: "地圖圖片",
                     ...{ class: "popover-map-image" },
                 });
