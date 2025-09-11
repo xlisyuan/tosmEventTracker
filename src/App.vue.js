@@ -163,7 +163,7 @@ const sortNotesArray = (a, b) => {
     }
     // 在同一個狀態類別內，再依時間或階段排序
     if (aStateCategory === "ON") {
-        return (b.onTime || 0) - (a.onTime || 0); // ON 狀態：ON 最久的排最前
+        return (a.onTime || 0) - (b.onTime || 0); // ON 狀態：ON 最久的排最前
     }
     else if (aStateCategory === "STAGE") {
         const aStage = parseInt(a.state.replace("STAGE_", ""), 10);
