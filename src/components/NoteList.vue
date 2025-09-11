@@ -79,8 +79,8 @@
 
                 <template #default>
                   <img
-                    v-if="mapImageCache[note.mapLevel]"
-                    :src="mapImageCache[note.mapLevel]"
+                    v-if="mapImageCache[note.noteText]"
+                    :src="mapImageCache[note.noteText]"
                     alt="地圖圖片"
                     class="popover-map-image"
                   />
@@ -175,7 +175,7 @@ const props = defineProps<{
   notes: Note[];
   currentSortMode: "time" | "map";
   maps: MapData[];
-  mapImageCache: Record<number, string>; // 接收圖片快取
+  mapImageCache: Record<string, string>; // 接收圖片快取
 }>();
 
 const emit = defineEmits([
