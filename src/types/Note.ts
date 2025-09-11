@@ -3,6 +3,7 @@ export type NoteState = 'CD' | 'ON' | `STAGE_${number}`;
 export interface Note {
     id: string;
     mapLevel: number;
+    noteText:string;
     channel: number;
     respawnTime: number;
     state: NoteState;

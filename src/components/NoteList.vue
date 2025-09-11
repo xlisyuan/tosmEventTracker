@@ -72,7 +72,8 @@
               >
                 <template #reference>
                   <span>
-                    Lv.{{ note.mapLevel }} {{ getMapName(note.mapLevel) }}
+                    Lv.{{ note.mapLevel }}
+                    {{ note.noteText || getMapName(note.mapLevel) }}
                   </span>
                 </template>
 
@@ -248,7 +249,7 @@ const getMapName = (level: number) => {
 
 const speakNoteDetails = (note: Note) => {
   if ("speechSynthesis" in window) {
-    const mapName = getMapName(note.mapLevel);
+    const mapName = note.noteText || getMapName(note.mapLevel);
     const utterance = new SpeechSynthesisUtterance();
 
     utterance.text = `E P ${getEpisode(note.mapLevel)}, ${mapName} 分流 ${
@@ -275,9 +276,9 @@ const checkAndPlaySound = () => {
       if (now - note.respawnTime < 3 * 60 * 1000) {
         speakNoteDetails(note);
       } else {
-        let msg = `EP.${getEpisode(note.mapLevel)} ${getMapName(
-          note.mapLevel
-        )} CH.${note.channel} CD已結束`;
+        let msg = `EP.${getEpisode(note.mapLevel)} ${
+          note.noteText || getMapName(note.mapLevel)
+        } CH.${note.channel} CD已結束`;
         ElMessage({ type: "warning", message: msg });
       }
       note.hasAlerted = true;

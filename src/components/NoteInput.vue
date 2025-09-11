@@ -209,18 +209,24 @@ const parseInput = (value: string) => {
 
   if (parts.length === 0) return result;
 
+  // 第一部分：解析地圖等級
   result.mapLevel = parseInt(parts[0]);
-  if (isNaN(result.mapLevel)) {
-    result.mapLevel = null;
-    return result;
-  }
+  if (isNaN(result.mapLevel)) return result;
 
+  // 第二部分：判斷是地圖名稱還是分流
   if (parts.length > 1) {
-    const map = props.maps!.find(
-      (m) => (m as any).level === result.mapLevel
-    ) as MapData;
-    if (map && parts[1] === map.name.trim()) {
-      result.mapName = parts[1];
+    const potentialMapName = parts[1];
+    // 檢查是否有地圖同時符合等級和名稱
+    const isMapName = props.maps!.some(
+      (m) =>
+        (m as any).level === result.mapLevel &&
+        (m as any).name.trim() === potentialMapName
+    );
+
+    // 如果是地圖名稱
+    if (isMapName) {
+      result.mapName = potentialMapName;
+      // 繼續解析分流與時間
       if (parts.length > 2) {
         result.channel = parseInt(parts[2]);
         if (parts.length > 3) {
@@ -228,7 +234,9 @@ const parseInput = (value: string) => {
         }
       }
     } else {
-      result.channel = parseInt(parts[1]);
+      // 否則，將其視為分流
+      result.channel = parseInt(potentialMapName);
+      // 繼續解析時間
       if (parts.length > 2) {
         result.timeStr = parts[2];
       }
@@ -338,12 +346,17 @@ const handleAdd = async () => {
     return;
   }
 
-  const map = props.maps!.find(
-    (m) => (m as any).level === parsed.mapLevel
-  ) as MapData;
+  let map: MapData;
+
+  if (parsed.mapName != null) {
+    map = props.maps!.find(
+      (m) => (m as any).name === parsed.mapName
+    ) as MapData;
+  } else {
+    map = (await getMapData(parsed.mapLevel)) as MapData;
+  }
 
   if (!map) {
-    ElMessage.error("找不到對應的地圖");
     return;
   }
 
@@ -392,7 +405,7 @@ const handleAdd = async () => {
     hasSound: hasSound.value,
     maxStages,
     onTime,
-    noteText: parsed.mapName,
+    noteText: parsed.mapName || map.name,
   };
 
   emit("add-note", noteData);
@@ -401,6 +414,67 @@ const handleAdd = async () => {
   selectedEpisode.value = 0;
   isStarSelection.value = false;
   isChannelConfirmed.value = false;
+};
+
+const getMapData = async (mapLevel: number) => {
+  const matchingMaps = props.maps!.filter((m) => (m as any).level === mapLevel);
+  let map: MapData;
+
+  if (matchingMaps.length > 1) {
+    matchingMaps.sort((a, b) => {
+      if (a.episode !== b.episode) {
+        return a.episode - b.episode;
+      }
+      return a.level - b.level;
+    });
+
+    try {
+      const selectedMapName = await new Promise<string>((resolve, reject) => {
+        const message = h(
+          "div",
+          null,
+          matchingMaps.map((m) =>
+            h(
+              ElButton,
+              {
+                onClick: () => {
+                  resolve(m.name);
+                  ElMessageBox.close();
+                },
+                style: { margin: "5px" },
+              },
+              () => `EP${m.episode} - Lv.${m.level} ${m.name}`
+            )
+          )
+        );
+
+        ElMessageBox.alert(message, "地圖選擇", {
+          showConfirmButton: false,
+          callback: (action: string) => {
+            if (action === "cancel") {
+              reject("cancel");
+            }
+          },
+        });
+      });
+
+      map = matchingMaps.find((m) => m.name === selectedMapName) as MapData;
+    } catch (action) {
+      if (action === "cancel") {
+        ElMessage.info("已取消新增");
+      }
+      return;
+    }
+  } else {
+    map = matchingMaps[0];
+  }
+
+  if (!map) {
+    ElMessage.error("找不到對應的地圖");
+    return;
+  }
+
+  return map;
 };
 
 watch(inputContent, (newValue) => {
