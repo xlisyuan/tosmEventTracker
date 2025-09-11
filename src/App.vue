@@ -20,9 +20,16 @@
           @toggle-input-sound="handleToggleInputSound"
           :maps="maps"
           @update-map-star="handleUpdateMapStar"
+          @show-update-dialog="handleShowUpdateDialog"
           :mapImageCache="mapImageCache"
         />
       </div>
+      <UpdateStatusDialog
+        v-model="showUpdateDialog"
+        :current-note="currentNoteToUpdate"
+        @update-note-status="handleUpdateNoteStatus"
+        @update-note-cd="handleUpdateNoteCd"
+      />
     </el-main>
     <div class="import-export-section">
       <!-- <h3>匯入 / 匯出 記錄</h3> -->
@@ -47,6 +54,7 @@ import { ref, onMounted, watch, h } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import NoteInput from "./components/NoteInput.vue";
 import NoteList from "./components/NoteList.vue";
+import UpdateStatusDialog from "./components/UpdateStatusDialog.vue";
 import type { Note, NoteState } from "./types/Note";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { maps as originalMaps, type MapData } from "./data/maps";
@@ -88,6 +96,18 @@ const currentSortMode = ref<"time" | "map">("time");
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
 const importExportData = ref("");
+
+const showUpdateDialog = ref(false);
+const currentNoteToUpdate = ref<Note | null>(null);
+
+const handleShowUpdateDialog = (noteId: string) => {
+  const note = notes.value.find((n) => n.id === noteId);
+  if (note) {
+    currentNoteToUpdate.value = note;
+    showUpdateDialog.value = true;
+  }
+};
+
 const toggleSort = () => {
   currentSortMode.value = currentSortMode.value === "time" ? "map" : "time";
   notes.value.sort(sortNotesArray);
@@ -253,6 +273,18 @@ const handleUpdateNoteStatus = (
     notes.value.sort(sortNotesArray);
   }
   saveNotes();
+};
+
+const handleUpdateNoteCd = (id: string, respawnTime: number) => {
+  const note = notes.value.find((n) => n.id === id);
+  if (note) {
+    note.respawnTime = respawnTime;
+    note.state = "CD";
+    note.onTime = null;
+    note.hasAlerted = false;
+    note.isWarning = false;
+    saveNotes();
+  }
 };
 
 const handleToggleInputSound = (state: boolean) => {

@@ -124,7 +124,17 @@
             </span>
             <span v-else-if="note.state.startsWith('STAGE_')">
               <el-button
+                plain
                 type="primary"
+                size="small"
+                @click="handleExpiredClick(note)"
+                >{{ getStatusText(note) }}</el-button
+              >
+            </span>
+            <span v-else-if="note.state === 'ON'">
+              <el-button
+                plain
+                type="info"
                 size="small"
                 @click="handleExpiredClick(note)"
                 >{{ getStatusText(note) }}</el-button
@@ -175,6 +185,7 @@ const emit = defineEmits([
   "update-note-channel",
   "toggle-input-sound",
   "update-map-star",
+  "show-update-dialog",
 ]);
 
 const currentTime = ref(Date.now());
@@ -287,61 +298,8 @@ const toggleAllSoundButtonText = computed(() => {
 });
 
 const handleExpiredClick = (note: Note) => {
-  ElMessageBox({
-    title: "更新狀態",
-    message: h(
-      "div",
-      { style: "display: flex; flex-direction: column; align-items: center;" },
-      [
-        h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
-          h(
-            ElButton,
-            {
-              type: "success",
-              onClick: () => handleSelection("on"),
-              style: "width: 100%;",
-            },
-            () => "ON"
-          ),
-        ]),
-        ...Array.from({ length: note.maxStages || 4 }, (_, i) =>
-          h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
-            h(
-              ElButton,
-              {
-                type: "",
-                onClick: () => handleSelection(`stage_${i + 1}`),
-                style: "width: 100%;",
-              },
-              () => `階段 ${i + 1}/${note.maxStages || 4}`
-            ),
-          ])
-        ),
-      ]
-    ),
-    showCancelButton: false,
-    showConfirmButton: false,
-    showClose: true,
-    center: true,
-  });
-
-  const handleSelection = (action: string) => {
-    ElMessageBox.close();
-
-    let newState: NoteState;
-    let newTime: number | null = null;
-
-    if (action === "on") {
-      newState = "ON";
-      newTime = Date.now();
-    } else {
-      const stage = action.split("_")[1];
-      newState = `STAGE_${stage}` as NoteState;
-      newTime = null;
-    }
-
-    emit("update-note-status", note.id, newState, newTime);
-  };
+  // 不再使用 ElMessageBox，直接發出事件
+  emit("show-update-dialog", note.id);
 };
 
 onMounted(() => {

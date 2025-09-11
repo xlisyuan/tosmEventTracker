@@ -120,6 +120,7 @@
             v-model="timeInput"
             placeholder="e.g., 1:10:05 或 25.10"
             style="width: 150px"
+            @keyup.enter="handleAdd"
           />
         </div>
         <el-button
