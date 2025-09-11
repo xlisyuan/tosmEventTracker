@@ -154,7 +154,7 @@ const handleAddNewNote = async (newNote: any) => {
     id: uuidv4(),
     noteText: mapData ? mapData.name : newNote.noteText,
     isStarred: mapData ? mapData.isStarred : false,
-    hasSound: hasInputSoundOn.value,
+    hasSound: newNote.hasSound,
     maxStages: mapData ? mapData.maxStages : 0,
   };
 
