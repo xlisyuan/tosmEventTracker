@@ -71,12 +71,12 @@ if (!savedMaps) {
 }
 
 // 用來快取已載入的圖片路徑
-const mapImageCache = ref<Record<number, string>>({});
+const mapImageCache = ref<Record<string, string>>({});
 
 // 獨立的圖片載入函式
 const loadMapImage = async (noteText: string) => {
   const mapData = maps.value.find((m) => m.name === noteText);
-  if (mapData?.imagePath && !mapImageCache.value[mapData.level]) {
+  if (mapData?.imagePath && !mapImageCache.value[mapData.name]) {
     try {
       const image = new Image();
       await new Promise((resolve, reject) => {
@@ -84,7 +84,7 @@ const loadMapImage = async (noteText: string) => {
         image.onerror = reject;
         image.src = mapData.imagePath as string;
       });
-      mapImageCache.value[mapData.level] = mapData.imagePath;
+      mapImageCache.value[mapData.name] = mapData.imagePath;
     } catch (e) {
       console.error(`無法載入地圖圖片: ${mapData.imagePath}`, e);
     }
@@ -141,24 +141,22 @@ const saveNotes = () => {
 };
 
 const handleAddNewNote = async (newNote: any) => {
-  const mapData =
-    newNote.noteText != null
-      ? maps.value.find((m) => m.name === newNote.noteText)
-      : maps.value.find((m) => m.level === newNote.mapLevel);
-
-  // 圖片載入函式
-  await loadMapImage(newNote.noteText);
+  const mapData = maps.value.find((m) => m.name === newNote.noteText);
+  if (!mapData) {
+    ElMessage.error("找不到對應的地圖資料");
+    return;
+  }
+  await loadMapImage(mapData.name);
 
   const finalNote = {
     ...newNote,
     id: uuidv4(),
-    noteText: mapData ? mapData.name : newNote.noteText,
-    isStarred: mapData ? mapData.isStarred : false,
+    noteText: mapData.name,
+    isStarred: mapData.isStarred,
     hasSound: newNote.hasSound,
-    maxStages: mapData ? mapData.maxStages : 0,
+    maxStages: mapData.maxStages,
   };
 
-  // 在新增前，檢查是否有相同地圖和分流的項目
   notes.value.forEach((note) => {
     if (
       note.mapLevel === finalNote.mapLevel &&
@@ -167,7 +165,6 @@ const handleAddNewNote = async (newNote: any) => {
     ) {
       note.isWarning = true;
     } else {
-      // 重置
       note.isWarning = false;
     }
   });
@@ -175,14 +172,9 @@ const handleAddNewNote = async (newNote: any) => {
   notes.value.unshift(finalNote);
   notes.value.sort(sortNotesArray);
   saveNotes();
-
-  const message = mapData?.name
-    ? `記錄新增成功! ${mapData.name} 分流: ${finalNote.channel}`
-    : `記錄新增成功!`;
-
   ElMessage({
     type: "success",
-    message: message,
+    message: `記錄新增成功! ${finalNote.noteText} 分流: ${finalNote.channel}`,
   });
 };
 
@@ -323,6 +315,7 @@ const exportNotes = async () => {
     onTime: note.onTime,
     respawnTime: note.respawnTime,
     state: note.state,
+    noteText: (note as any).noteText,
   }));
   // importExportData.value = JSON.stringify(exportedNotes, null, 2);
   importExportData.value = JSON.stringify(exportedNotes);
@@ -352,7 +345,6 @@ const handleImportClick = async () => {
   }
   try {
     const importedNotes = JSON.parse(importExportData.value);
-
     if (
       !Array.isArray(importedNotes) ||
       importedNotes.some((n) => !n.mapLevel || !n.channel)
@@ -360,41 +352,44 @@ const handleImportClick = async () => {
       ElMessage({ type: "error", message: "匯入的資料格式不正確。" });
       return;
     }
-
+    // 預載入圖片
     for (const note of importedNotes) {
       await loadMapImage(note.noteText);
     }
-
+    // 在建立 Map 時將 noteText 納入鍵中
     const currentNotesMap = new Map(
-      notes.value.map((note) => [`${note.mapLevel}-${note.channel}`, note])
+      notes.value.map((note) => [
+        `${note.mapLevel}-${note.channel}-${note.noteText}`,
+        note,
+      ])
     );
-
     const nonDuplicateNotes: Note[] = [];
     const duplicateNotes: { newNote: Note; oldNote: Note }[] = [];
-
     importedNotes.forEach((importedNote) => {
-      const existingKey = `${importedNote.mapLevel}-${importedNote.channel}`;
-      const existingNote = currentNotesMap.get(existingKey);
-      const mapData = maps.value.find((m) => m.level === importedNote.mapLevel);
+      const mapData = maps.value.find(
+        (m) =>
+          m.level === importedNote.mapLevel && m.name === importedNote.noteText
+      );
       const isExpired = importedNote.respawnTime <= Date.now();
       const processedNote: Note = {
         ...importedNote,
         id: uuidv4(),
         hasSound: hasInputSoundOn.value,
-        isStarred: existingNote ? existingNote.isStarred : false,
+        isStarred: mapData ? mapData.isStarred : false,
         onTime: importedNote.onTime || null,
         respawnTime: importedNote.respawnTime || null,
         hasAlerted: isExpired,
         maxStages: mapData ? mapData.maxStages : 0,
       };
-
+      // 在判斷重複時將 noteText 納入鍵中
+      const existingKey = `${importedNote.mapLevel}-${importedNote.channel}-${importedNote.noteText}`;
+      const existingNote = currentNotesMap.get(existingKey);
       if (existingNote) {
         duplicateNotes.push({ newNote: processedNote, oldNote: existingNote });
       } else {
         nonDuplicateNotes.push(processedNote);
       }
     });
-
     if (duplicateNotes.length > 0) {
       ElMessageBox({
         title: "發現重複的記錄",
@@ -408,7 +403,7 @@ const handleImportClick = async () => {
             duplicateNotes.map((item) =>
               h(
                 "li",
-                `地圖: ${item.newNote.mapLevel} 分流: ${item.newNote.channel}`
+                `地圖: ${item.newNote.mapLevel} - ${item.newNote.noteText} 分流: ${item.newNote.channel}`
               )
             )
           ),
@@ -421,16 +416,15 @@ const handleImportClick = async () => {
       })
         .then((action) => {
           if (action === "confirm") {
-            // 覆蓋模式
             const finalNotesMap = new Map(
               notes.value.map((note) => [
-                `${note.mapLevel}-${note.channel}`,
+                `${note.mapLevel}-${note.channel}-${note.noteText}`,
                 note,
               ])
             );
             duplicateNotes.forEach((item) =>
               finalNotesMap.set(
-                `${item.newNote.mapLevel}-${item.newNote.channel}`,
+                `${item.newNote.mapLevel}-${item.newNote.channel}-${item.newNote.noteText}`,
                 item.newNote
               )
             );
@@ -446,7 +440,6 @@ const handleImportClick = async () => {
               message: `成功覆蓋 ${duplicateNotes.length} 筆並新增 ${nonDuplicateNotes.length} 筆記錄。`,
             });
           } else if (action === "cancel") {
-            // 跳過模式
             const finalNotes = [...notes.value, ...nonDuplicateNotes];
             notes.value = finalNotes;
             notes.value.sort(sortNotesArray);
@@ -461,7 +454,6 @@ const handleImportClick = async () => {
           ElMessage({ type: "info", message: "已取消匯入。" });
         });
     } else {
-      // 沒有重複項目，直接新增
       notes.value = [...notes.value, ...nonDuplicateNotes];
       notes.value.sort(sortNotesArray);
       saveNotes();
