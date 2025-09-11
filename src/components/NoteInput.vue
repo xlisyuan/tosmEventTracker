@@ -556,12 +556,12 @@ h4 {
   top: 100%;
   left: 0;
   font-size: 12px;
-  color: #606266;
+  color: var(--el-text-color-regular);
+  background-color: var(--el-color-info-light-9);
   line-height: 1.5;
   margin-top: 5px;
   z-index: 10;
   padding: 8px 12px;
-  background-color: #ffffff;
   border-radius: 4px;
   border: 1px solid #dcdfe6;
   width: auto;

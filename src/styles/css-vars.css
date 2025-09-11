@@ -1,0 +1,12 @@
+html.dark {
+  --app-container-color: #242424;
+  --el-switch-on-color: #123;
+  --cus-highlight-row: #445a3f;
+  --cus-active-row: #276480;
+}
+html {
+  --app-container-color: #f4f4f5;
+  --el-switch-on-color: #123;
+  --cus-highlight-row: #dce6af;
+  --cus-active-row: #e6f7ff;
+}

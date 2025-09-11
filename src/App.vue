@@ -1,6 +1,22 @@
 <template>
   <el-container class="app-container">
-    <el-header class="app-header"> </el-header>
+    <el-header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <!-- <div class="title">野外活動追蹤</div> -->
+        </div>
+        <div class="header-right">
+          <el-switch
+            v-model="isDark"
+            inline-prompt
+            :active-icon="Moon"
+            :inactive-icon="Sunny"
+            size="large"
+            class="dark-mode-switch"
+          />
+        </div>
+      </div>
+    </el-header>
     <el-main class="app-main">
       <NoteInput
         @add-note="handleAddNewNote"
@@ -59,8 +75,21 @@ import type { Note, NoteState } from "./types/Note";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { maps as originalMaps, type MapData } from "./data/maps";
 import packageInfo from "../package.json";
+import { Sunny, Moon } from "@element-plus/icons-vue";
+// --------------------- 主題模式狀態 ---------------------
+const isDark = ref(false);
 
-// 嘗試從 localStorage 載入地圖資料，如果沒有則使用原始資料並存入
+watch(isDark, (newValue) => {
+  if (newValue) {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+});
+
+// --------------------- 地圖與圖片快取 ---------------------
 const savedMaps = localStorage.getItem("mapData");
 const maps = ref<MapData[]>(
   savedMaps ? JSON.parse(savedMaps) : [...originalMaps]
@@ -468,6 +497,18 @@ const handleImportClick = async () => {
 };
 
 onMounted(() => {
+  const savedTheme = localStorage.getItem("theme");
+  isDark.value =
+    savedTheme === "dark" ||
+    (savedTheme === null &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  if (isDark.value) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+
   loadNotes();
 
   // 確保只更新必要的欄位，並保留使用者設定
@@ -493,13 +534,26 @@ watch(notes, saveNotes, { deep: true });
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f4f4f5;
+  background-color: var(--app-container-color);
   min-height: 100vh;
 }
 .app-header {
   height: auto;
   text-align: center;
-  padding: 20px 0;
+  padding: 5px;
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+}
+.dark-mode-switch {
+  --el-switch-on-color: #0e2d5a;
+  --el-switch-off-color: #eba523;
 }
 .app-main {
   padding: 0;

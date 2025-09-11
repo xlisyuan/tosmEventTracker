@@ -457,7 +457,7 @@ const handleClearAll = async () => {
 }
 .list-item-enter-active {
   transition: all 0.5s ease;
-  background-color: #e6f7ff;
+  background-color: var(--cus-active-row);
 }
 .list-item-leave-to {
   opacity: 0;
@@ -472,12 +472,12 @@ const handleClearAll = async () => {
 }
 
 .warning-row {
-  background-color: #ffe6e6 !important;
-  border-left: 5px solid #ff4d4f;
+  background-color: var(--el-color-danger-light-8) !important;
+  border-left: 5px solid var(--el-color-danger);
 }
 
 .highlight-row {
-  background-color: #dce6af !important;
+  background-color: var(--cus-highlight-row) !important;
 }
 
 .map-name-content {
