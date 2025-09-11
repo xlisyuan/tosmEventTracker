@@ -1,4 +1,4 @@
-import { ref, defineProps, defineEmits, onMounted, onUnmounted, h, computed, } from "vue";
+import { ref, defineProps, defineEmits, onMounted, onUnmounted, computed, } from "vue";
 import { ElMessage, ElMessageBox, ElButton, ElIcon } from "element-plus";
 import { StarFilled, Bell, BellFilled, Setting } from "@element-plus/icons-vue";
 const props = defineProps();
@@ -10,6 +10,7 @@ const emit = defineEmits([
     "update-note-channel",
     "toggle-input-sound",
     "update-map-star",
+    "show-update-dialog",
 ]);
 const currentTime = ref(Date.now());
 let timer = null;
@@ -105,44 +106,8 @@ const toggleAllSoundButtonText = computed(() => {
     return isAllSoundOn.value ? "提示聲全關" : "提示聲全開";
 });
 const handleExpiredClick = (note) => {
-    ElMessageBox({
-        title: "更新狀態",
-        message: h("div", { style: "display: flex; flex-direction: column; align-items: center;" }, [
-            h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
-                h(ElButton, {
-                    type: "success",
-                    onClick: () => handleSelection("on"),
-                    style: "width: 100%;",
-                }, () => "ON"),
-            ]),
-            ...Array.from({ length: note.maxStages || 4 }, (_, i) => h("div", { style: "width: 120px; margin-bottom: 10px;" }, [
-                h(ElButton, {
-                    type: "",
-                    onClick: () => handleSelection(`stage_${i + 1}`),
-                    style: "width: 100%;",
-                }, () => `階段 ${i + 1}/${note.maxStages || 4}`),
-            ])),
-        ]),
-        showCancelButton: false,
-        showConfirmButton: false,
-        showClose: true,
-        center: true,
-    });
-    const handleSelection = (action) => {
-        ElMessageBox.close();
-        let newState;
-        let newTime = null;
-        if (action === "on") {
-            newState = "ON";
-            newTime = Date.now();
-        }
-        else {
-            const stage = action.split("_")[1];
-            newState = `STAGE_${stage}`;
-            newTime = null;
-        }
-        emit("update-note-status", note.id, newState, newTime);
-    };
+    // 不再使用 ElMessageBox，直接發出事件
+    emit("show-update-dialog", note.id);
 };
 onMounted(() => {
     timer = setInterval(() => {
@@ -865,11 +830,13 @@ else {
             // @ts-ignore
             const __VLS_194 = __VLS_asFunctionalComponent(__VLS_193, new __VLS_193({
                 ...{ 'onClick': {} },
+                plain: true,
                 type: "primary",
                 size: "small",
             }));
             const __VLS_195 = __VLS_194({
                 ...{ 'onClick': {} },
+                plain: true,
                 type: "primary",
                 size: "small",
             }, ...__VLS_functionalComponentArgsRest(__VLS_194));
@@ -893,6 +860,47 @@ else {
             [getStatusText,];
             var __VLS_196;
         }
+        else if (note.state === 'ON') {
+            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            const __VLS_201 = {}.ElButton;
+            /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
+            // @ts-ignore
+            ElButton;
+            // @ts-ignore
+            const __VLS_202 = __VLS_asFunctionalComponent(__VLS_201, new __VLS_201({
+                ...{ 'onClick': {} },
+                plain: true,
+                type: "info",
+                size: "small",
+            }));
+            const __VLS_203 = __VLS_202({
+                ...{ 'onClick': {} },
+                plain: true,
+                type: "info",
+                size: "small",
+            }, ...__VLS_functionalComponentArgsRest(__VLS_202));
+            let __VLS_205;
+            let __VLS_206;
+            const __VLS_207 = ({ click: {} },
+                { onClick: (...[$event]) => {
+                        if (!!(__VLS_ctx.notes.length === 0))
+                            return;
+                        if (!!(note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime))
+                            return;
+                        if (!!(note.state.startsWith('STAGE_')))
+                            return;
+                        if (!(note.state === 'ON'))
+                            return;
+                        __VLS_ctx.handleExpiredClick(note);
+                        // @ts-ignore
+                        [handleExpiredClick,];
+                    } });
+            const { default: __VLS_208 } = __VLS_204.slots;
+            (__VLS_ctx.getStatusText(note));
+            // @ts-ignore
+            [getStatusText,];
+            var __VLS_204;
+        }
         else {
             __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
             (__VLS_ctx.getStatusText(note));
@@ -900,36 +908,36 @@ else {
             [getStatusText,];
         }
         var __VLS_183;
-        const __VLS_201 = {}.ElCol;
+        const __VLS_209 = {}.ElCol;
         /** @type {[typeof __VLS_components.ElCol, typeof __VLS_components.elCol, typeof __VLS_components.ElCol, typeof __VLS_components.elCol, ]} */ ;
         // @ts-ignore
         ElCol;
         // @ts-ignore
-        const __VLS_202 = __VLS_asFunctionalComponent(__VLS_201, new __VLS_201({
+        const __VLS_210 = __VLS_asFunctionalComponent(__VLS_209, new __VLS_209({
             span: (4),
         }));
-        const __VLS_203 = __VLS_202({
+        const __VLS_211 = __VLS_210({
             span: (4),
-        }, ...__VLS_functionalComponentArgsRest(__VLS_202));
-        const { default: __VLS_205 } = __VLS_204.slots;
-        const __VLS_206 = {}.ElButton;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_210));
+        const { default: __VLS_213 } = __VLS_212.slots;
+        const __VLS_214 = {}.ElButton;
         /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
         // @ts-ignore
         ElButton;
         // @ts-ignore
-        const __VLS_207 = __VLS_asFunctionalComponent(__VLS_206, new __VLS_206({
+        const __VLS_215 = __VLS_asFunctionalComponent(__VLS_214, new __VLS_214({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
         }));
-        const __VLS_208 = __VLS_207({
+        const __VLS_216 = __VLS_215({
             ...{ 'onClick': {} },
             type: "danger",
             size: "small",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_207));
-        let __VLS_210;
-        let __VLS_211;
-        const __VLS_212 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_215));
+        let __VLS_218;
+        let __VLS_219;
+        const __VLS_220 = ({ click: {} },
             { onClick: (...[$event]) => {
                     if (!!(__VLS_ctx.notes.length === 0))
                         return;
@@ -937,9 +945,9 @@ else {
                     // @ts-ignore
                     [handleDelete,];
                 } });
-        const { default: __VLS_213 } = __VLS_209.slots;
-        var __VLS_209;
-        var __VLS_204;
+        const { default: __VLS_221 } = __VLS_217.slots;
+        var __VLS_217;
+        var __VLS_212;
         var __VLS_104;
     }
     var __VLS_99;

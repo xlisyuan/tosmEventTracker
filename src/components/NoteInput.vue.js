@@ -796,43 +796,50 @@ if (__VLS_ctx.isChannelConfirmed) {
     ElInput;
     // @ts-ignore
     const __VLS_161 = __VLS_asFunctionalComponent(__VLS_160, new __VLS_160({
+        ...{ 'onKeyup': {} },
         modelValue: (__VLS_ctx.timeInput),
         placeholder: "e.g., 1:10:05 或 25.10",
         ...{ style: {} },
     }));
     const __VLS_162 = __VLS_161({
+        ...{ 'onKeyup': {} },
         modelValue: (__VLS_ctx.timeInput),
         placeholder: "e.g., 1:10:05 或 25.10",
         ...{ style: {} },
     }, ...__VLS_functionalComponentArgsRest(__VLS_161));
+    let __VLS_164;
+    let __VLS_165;
+    const __VLS_166 = ({ keyup: {} },
+        { onKeyup: (__VLS_ctx.handleAdd) });
     // @ts-ignore
-    [timeInput,];
+    [handleAdd, timeInput,];
+    var __VLS_163;
     if (__VLS_ctx.timeInput.length > 0) {
         // @ts-ignore
         [timeInput,];
-        const __VLS_165 = {}.ElButton;
+        const __VLS_168 = {}.ElButton;
         /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
         // @ts-ignore
         ElButton;
         // @ts-ignore
-        const __VLS_166 = __VLS_asFunctionalComponent(__VLS_165, new __VLS_165({
+        const __VLS_169 = __VLS_asFunctionalComponent(__VLS_168, new __VLS_168({
             ...{ 'onClick': {} },
             type: "primary",
             ...{ class: "add-button-bottom" },
         }));
-        const __VLS_167 = __VLS_166({
+        const __VLS_170 = __VLS_169({
             ...{ 'onClick': {} },
             type: "primary",
             ...{ class: "add-button-bottom" },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_166));
-        let __VLS_169;
-        let __VLS_170;
-        const __VLS_171 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_169));
+        let __VLS_172;
+        let __VLS_173;
+        const __VLS_174 = ({ click: {} },
             { onClick: (__VLS_ctx.handleAdd) });
-        const { default: __VLS_172 } = __VLS_168.slots;
+        const { default: __VLS_175 } = __VLS_171.slots;
         // @ts-ignore
         [handleAdd,];
-        var __VLS_168;
+        var __VLS_171;
     }
 }
 var __VLS_3;
