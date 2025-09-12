@@ -22,25 +22,26 @@
         </el-button>
       </div>
       <el-row class="list-header" :gutter="10">
-        <el-col :span="1"></el-col>
+        <el-col :span="1" :xs="0"></el-col>
         <el-col :span="3">區域</el-col>
-        <el-col :span="7">地圖</el-col>
+        <el-col :span="7" :xs="6">地圖</el-col>
         <el-col :span="3">
           分流
           <el-button
+            v-if="!isXs"
             size="small"
             type=""
             :icon="Setting"
             @click="toggleChannelAdjust"
           />
         </el-col>
-        <el-col :span="6">
+        <el-col :span="6" :xs="9">
           狀態
           <el-button size="small" type="" @click="toggleTimeDisplay">
             切換CD時間
           </el-button>
         </el-col>
-        <el-col :span="4">操作</el-col>
+        <el-col :span="4" :xs="3">操作</el-col>
       </el-row>
 
       <transition-group name="list-item" tag="div">
@@ -55,16 +56,20 @@
           }"
           :gutter="10"
         >
-          <el-col :span="1">
+          <el-col :span="1" :xs="0">
             <el-icon class="sound-icon" @click.stop="toggleSound(note)">
               <template v-if="note.hasSound"><BellFilled /></template>
               <template v-else><Bell /></template>
             </el-icon>
           </el-col>
-          <el-col :span="3">EP.{{ getEpisode(note.mapLevel) }}</el-col>
-          <el-col :span="7">
+          <el-col :span="3" :xs="2">
+            <span v-if="!isXs">EP.</span>
+            {{ getEpisode(note.mapLevel) }}
+          </el-col>
+          <el-col :span="7" :xs="8">
             <span class="map-name-content">
               <el-popover
+                v-if="!isXs"
                 placement="top"
                 trigger="hover"
                 :width="425"
@@ -87,6 +92,10 @@
                   <span v-else>無地圖圖片</span>
                 </template>
               </el-popover>
+              <span v-else>
+                Lv.{{ note.mapLevel }}
+                {{ note.noteText || getMapName(note.mapLevel) }}
+              </span>
               <el-icon
                 class="star-icon"
                 :class="{ 'is-starred': isMapStarred(note.mapLevel) }"
@@ -98,6 +107,7 @@
           </el-col>
           <el-col
             :span="3"
+            :xs="2"
             style="display: flex; justify-content: space-around"
           >
             <el-button
@@ -114,7 +124,7 @@
               >+</el-button
             >
           </el-col>
-          <el-col :span="6">
+          <el-col :span="6" :xs="9">
             <span v-if="note.state === 'CD' && note.respawnTime <= currentTime">
               <el-button
                 type="warning"
@@ -145,10 +155,23 @@
               {{ getStatusText(note) }}
             </span>
           </el-col>
-          <el-col :span="4">
-            <el-button type="danger" size="small" @click="handleDelete(note.id)"
-              >刪除</el-button
+          <el-col :span="4" :xs="3">
+            <el-button
+              v-if="!isXs"
+              type="danger"
+              size="small"
+              @click="handleDelete(note.id)"
             >
+              刪除
+            </el-button>
+            <el-button
+              v-else
+              type="danger"
+              size="small"
+              @click="handleDelete(note.id)"
+            >
+              <el-icon><Delete /></el-icon>
+            </el-button>
           </el-col>
         </el-row>
       </transition-group>
@@ -169,7 +192,13 @@ import {
 import { ElMessage, ElMessageBox, ElButton, ElIcon } from "element-plus";
 import type { Note, NoteState } from "@/types/Note";
 import type { MapData } from "@/data/maps";
-import { StarFilled, Bell, BellFilled, Setting } from "@element-plus/icons-vue";
+import {
+  StarFilled,
+  Bell,
+  BellFilled,
+  Setting,
+  Delete,
+} from "@element-plus/icons-vue";
 
 const props = defineProps<{
   notes: Note[];
@@ -188,6 +217,23 @@ const emit = defineEmits([
   "update-map-star",
   "show-update-dialog",
 ]);
+// --------------------- 響應式邏輯 ---------------------
+const isXs = ref(false);
+
+const checkXs = () => {
+  isXs.value = window.innerWidth < 768;
+};
+
+onMounted(() => {
+  checkXs();
+  window.addEventListener("resize", checkXs);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkXs);
+});
+
+// ----------------------------------------------------
 
 const currentTime = ref(Date.now());
 let timer: ReturnType<typeof setInterval> | null = null;
@@ -288,7 +334,7 @@ const checkAndPlaySound = () => {
 
 const sortButtonText = computed(() => {
   if (props.currentSortMode === "time") {
-    return "依地圖等級排序";
+    return "依地圖排序";
   } else {
     return "依時間排序";
   }

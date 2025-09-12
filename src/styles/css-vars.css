@@ -10,3 +10,24 @@ html {
   --cus-highlight-row: #dce6af;
   --cus-active-row: #e6f7ff;
 }
+
+@media screen and (min-width: 992px) {
+  html {
+    --cus-app-padding: 2rem;
+    --cus-app-container-padding: 20px;
+  }
+}
+
+/* 手機 */
+@media screen and (max-width: 991px) {
+  html {
+    --cus-app-padding: 0;
+    --cus-app-container-padding: 5px;
+  }
+  .el-button {
+    margin-bottom: 5px;
+  }
+  .el-card .el-card__body {
+    padding: 10px;
+  }
+}
