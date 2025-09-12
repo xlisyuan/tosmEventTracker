@@ -25,7 +25,11 @@ const handleSelection = (action) => {
     else {
         const stage = action.split("_")[1];
         newState = `STAGE_${stage}`;
-        newTime = null;
+        newTime =
+            props.currentNote.state === `STAGE_${stage}` &&
+                props.currentNote.stageTime
+                ? props.currentNote.stageTime
+                : Date.now();
     }
     emit("update-note-status", props.currentNote.id, newState, newTime);
 };

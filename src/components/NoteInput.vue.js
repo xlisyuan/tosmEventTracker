@@ -177,6 +177,7 @@ const handleAdd = async () => {
     let state = "CD";
     let maxStages = map.maxStages;
     let onTime = null;
+    let stageTime = null;
     if (finalTimeStr.toLowerCase() === "on") {
         state = "ON";
         onTime = Date.now();
@@ -186,6 +187,7 @@ const handleAdd = async () => {
         if (!isNaN(current) && !isNaN(max)) {
             state = `STAGE_${current}`;
             maxStages = max;
+            stageTime = Date.now();
         }
         else {
             ElMessage.error("階段格式錯誤");
@@ -221,6 +223,7 @@ const handleAdd = async () => {
         hasSound: hasSound.value,
         maxStages,
         onTime,
+        stageTime,
         noteText: parsed.mapName || map.name,
     };
     emit("add-note", noteData);

@@ -196,13 +196,23 @@ const handleUpdateNoteStatus = (id, newState, newTime) => {
     const noteToUpdate = notes.value.find((note) => note.id === id);
     if (noteToUpdate) {
         noteToUpdate.state = newState;
-        noteToUpdate.onTime = newTime;
+        noteToUpdate.onTime = null;
+        noteToUpdate.stageTime = null;
         noteToUpdate.hasAlerted = false;
-        if (newState === "CD") {
-            const map = maps.value.find((m) => m.level === noteToUpdate.mapLevel);
-            if (map) {
-                noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
-            }
+        switch (newState) {
+            case "ON":
+                noteToUpdate.onTime = newTime;
+                break;
+            case "CD":
+                const map = maps.value.find((m) => m.level === noteToUpdate.mapLevel);
+                if (map) {
+                    noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
+                }
+                break;
+            default:
+                // STAGE_
+                noteToUpdate.stageTime = newTime;
+                break;
         }
         notes.value.sort(sortNotesArray);
     }
@@ -214,6 +224,7 @@ const handleUpdateNoteCd = (id, respawnTime) => {
         note.respawnTime = respawnTime;
         note.state = "CD";
         note.onTime = null;
+        note.stageTime = null;
         note.hasAlerted = false;
         note.isWarning = false;
         saveNotes();
