@@ -105,19 +105,21 @@ const mapImageCache = ref<Record<string, string>>({});
 // 獨立的圖片載入函式
 const loadMapImage = async (noteText: string) => {
   const mapData = maps.value.find((m) => m.name === noteText);
-  if (mapData?.imagePath && !mapImageCache.value[mapData.name]) {
-    try {
-      const image = new Image();
-      await new Promise((resolve, reject) => {
-        image.onload = resolve;
-        image.onerror = reject;
-        image.src = mapData.imagePath as string;
-      });
-      mapImageCache.value[mapData.name] = mapData.imagePath;
-    } catch (e) {
-      console.error(`無法載入地圖圖片: ${mapData.imagePath}`, e);
-    }
-  }
+  // todo: 等蒐集完地圖再更新
+  // if (mapData?.imagePath && !mapImageCache.value[mapData.name]) {
+  //   console.log(mapData?.imagePath);
+  //   try {
+  //     const image = new Image();
+  //     await new Promise((resolve, reject) => {
+  //       image.onload = resolve;
+  //       image.onerror = reject;
+  //       image.src = mapData.imagePath as string;
+  //     });
+  //     mapImageCache.value[mapData.name] = mapData.imagePath;
+  //   } catch (e) {
+  //     console.error(`無法載入地圖圖片: ${mapData.imagePath}`, e);
+  //   }
+  // }
 };
 const activeIndex = ref("0");
 const notes = ref<Note[]>([]);
