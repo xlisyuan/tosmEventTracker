@@ -344,7 +344,12 @@ const getStatusText = (note: Note) => {
     return `ON 已出現 ${formatTime(elapsedSeconds)}+`;
   } else if (note.state.startsWith("STAGE_")) {
     const stage = note.state.replace("STAGE_", "");
-    return `階段 ${stage}/${note.maxStages}`;
+    if (note.stageTime) {
+      const elapsedSeconds = Math.floor((now - (note.stageTime || now)) / 1000);
+      return `${stage} 階段 ${formatTime(elapsedSeconds)}+ `;
+    } else {
+      return `階段 ${stage} / ${note.maxStages}`;
+    }
   } else if (note.state === "CD") {
     const diffInSeconds = Math.floor((note.respawnTime - now) / 1000);
     if (diffInSeconds > 0) {
