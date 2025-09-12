@@ -544,7 +544,7 @@ watch(notes, saveNotes, { deep: true });
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--cus-app-container-padding);
   background-color: var(--app-container-color);
   min-height: 100vh;
 }

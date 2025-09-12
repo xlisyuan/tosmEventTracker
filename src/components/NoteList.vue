@@ -22,7 +22,7 @@
         </el-button>
       </div>
       <el-row class="list-header" :gutter="10">
-        <el-col :span="1"></el-col>
+        <el-col :span="1" :xs="0"></el-col>
         <el-col :span="3">區域</el-col>
         <el-col :span="7">地圖</el-col>
         <el-col :span="3">
@@ -34,13 +34,13 @@
             @click="toggleChannelAdjust"
           />
         </el-col>
-        <el-col :span="6">
+        <el-col :span="6" :xs="8">
           狀態
           <el-button size="small" type="" @click="toggleTimeDisplay">
             切換CD時間
           </el-button>
         </el-col>
-        <el-col :span="4">操作</el-col>
+        <el-col :span="4" :xs="3">操作</el-col>
       </el-row>
 
       <transition-group name="list-item" tag="div">
@@ -55,14 +55,14 @@
           }"
           :gutter="10"
         >
-          <el-col :span="1">
+          <el-col :span="1" :xs="0">
             <el-icon class="sound-icon" @click.stop="toggleSound(note)">
               <template v-if="note.hasSound"><BellFilled /></template>
               <template v-else><Bell /></template>
             </el-icon>
           </el-col>
-          <el-col :span="3">EP.{{ getEpisode(note.mapLevel) }}</el-col>
-          <el-col :span="7">
+          <el-col :span="3" :xs="2">EP.{{ getEpisode(note.mapLevel) }}</el-col>
+          <el-col :span="7" :xs="8">
             <span class="map-name-content">
               <el-popover
                 placement="top"
@@ -98,6 +98,7 @@
           </el-col>
           <el-col
             :span="3"
+            :xs="2"
             style="display: flex; justify-content: space-around"
           >
             <el-button
@@ -114,7 +115,7 @@
               >+</el-button
             >
           </el-col>
-          <el-col :span="6">
+          <el-col :span="6" :xs="9">
             <span v-if="note.state === 'CD' && note.respawnTime <= currentTime">
               <el-button
                 type="warning"
@@ -145,7 +146,7 @@
               {{ getStatusText(note) }}
             </span>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" :xs="3">
             <el-button type="danger" size="small" @click="handleDelete(note.id)"
               >刪除</el-button
             >
@@ -288,7 +289,7 @@ const checkAndPlaySound = () => {
 
 const sortButtonText = computed(() => {
   if (props.currentSortMode === "time") {
-    return "依地圖等級排序";
+    return "依地圖排序";
   } else {
     return "依時間排序";
   }
