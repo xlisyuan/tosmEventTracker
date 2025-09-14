@@ -54,6 +54,7 @@ const handleCustomCd = () => {
                 timeParts[0] * 3600 + timeParts[1] * 60 + (timeParts[2] || 0);
         }
         else {
+            // nosec?
             ElMessage.error("時間格式錯誤，請使用 mm:ss 或 hh:mm:ss");
             return;
         }
@@ -117,53 +118,83 @@ const { default: __VLS_8 } = __VLS_3.slots;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ style: {} },
 });
-const __VLS_9 = {}.ElInput;
-/** @type {[typeof __VLS_components.ElInput, typeof __VLS_components.elInput, ]} */ ;
-// @ts-ignore
-ElInput;
-// @ts-ignore
-const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
-    ...{ 'onKeyup': {} },
-    modelValue: (__VLS_ctx.newCdTimeInput),
-    placeholder: "時.分.秒 + enter",
-    ...{ style: {} },
-}));
-const __VLS_11 = __VLS_10({
-    ...{ 'onKeyup': {} },
-    modelValue: (__VLS_ctx.newCdTimeInput),
-    placeholder: "時.分.秒 + enter",
-    ...{ style: {} },
-}, ...__VLS_functionalComponentArgsRest(__VLS_10));
-let __VLS_13;
-let __VLS_14;
-const __VLS_15 = ({ keyup: {} },
-    { onKeyup: (__VLS_ctx.handleCustomCd) });
-// @ts-ignore
-[newCdTimeInput, handleCustomCd,];
-var __VLS_12;
-const __VLS_17 = {}.ElButton;
+if (__VLS_ctx.featureFlags?.nosec) {
+    // @ts-ignore
+    [featureFlags,];
+    const __VLS_9 = {}.ElInput;
+    /** @type {[typeof __VLS_components.ElInput, typeof __VLS_components.elInput, ]} */ ;
+    // @ts-ignore
+    ElInput;
+    // @ts-ignore
+    const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
+        ...{ 'onKeyup': {} },
+        modelValue: (__VLS_ctx.newCdTimeInput),
+        placeholder: "時.分 + enter",
+        ...{ style: {} },
+    }));
+    const __VLS_11 = __VLS_10({
+        ...{ 'onKeyup': {} },
+        modelValue: (__VLS_ctx.newCdTimeInput),
+        placeholder: "時.分 + enter",
+        ...{ style: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_10));
+    let __VLS_13;
+    let __VLS_14;
+    const __VLS_15 = ({ keyup: {} },
+        { onKeyup: (__VLS_ctx.handleCustomCd) });
+    // @ts-ignore
+    [newCdTimeInput, handleCustomCd,];
+    var __VLS_12;
+}
+else {
+    const __VLS_17 = {}.ElInput;
+    /** @type {[typeof __VLS_components.ElInput, typeof __VLS_components.elInput, ]} */ ;
+    // @ts-ignore
+    ElInput;
+    // @ts-ignore
+    const __VLS_18 = __VLS_asFunctionalComponent(__VLS_17, new __VLS_17({
+        ...{ 'onKeyup': {} },
+        modelValue: (__VLS_ctx.newCdTimeInput),
+        placeholder: "時.分.秒 + enter",
+        ...{ style: {} },
+    }));
+    const __VLS_19 = __VLS_18({
+        ...{ 'onKeyup': {} },
+        modelValue: (__VLS_ctx.newCdTimeInput),
+        placeholder: "時.分.秒 + enter",
+        ...{ style: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_18));
+    let __VLS_21;
+    let __VLS_22;
+    const __VLS_23 = ({ keyup: {} },
+        { onKeyup: (__VLS_ctx.handleCustomCd) });
+    // @ts-ignore
+    [newCdTimeInput, handleCustomCd,];
+    var __VLS_20;
+}
+const __VLS_25 = {}.ElButton;
 /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
 // @ts-ignore
 ElButton;
 // @ts-ignore
-const __VLS_18 = __VLS_asFunctionalComponent(__VLS_17, new __VLS_17({
+const __VLS_26 = __VLS_asFunctionalComponent(__VLS_25, new __VLS_25({
     ...{ 'onClick': {} },
     type: "warning",
     ...{ style: {} },
 }));
-const __VLS_19 = __VLS_18({
+const __VLS_27 = __VLS_26({
     ...{ 'onClick': {} },
     type: "warning",
     ...{ style: {} },
-}, ...__VLS_functionalComponentArgsRest(__VLS_18));
-let __VLS_21;
-let __VLS_22;
-const __VLS_23 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_26));
+let __VLS_29;
+let __VLS_30;
+const __VLS_31 = ({ click: {} },
     { onClick: (__VLS_ctx.handleCustomCd) });
-const { default: __VLS_24 } = __VLS_20.slots;
+const { default: __VLS_32 } = __VLS_28.slots;
 // @ts-ignore
 [handleCustomCd,];
-var __VLS_20;
+var __VLS_28;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ style: {} },
 });
@@ -174,67 +205,68 @@ for (const [i] of __VLS_getVForSourceType((__VLS_ctx.currentNote?.maxStages || 4
         key: (`stage-${i}`),
         ...{ style: {} },
     });
-    const __VLS_25 = {}.ElButton;
+    const __VLS_33 = {}.ElButton;
     /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
     // @ts-ignore
     ElButton;
     // @ts-ignore
-    const __VLS_26 = __VLS_asFunctionalComponent(__VLS_25, new __VLS_25({
+    const __VLS_34 = __VLS_asFunctionalComponent(__VLS_33, new __VLS_33({
         ...{ 'onClick': {} },
         ...{ style: {} },
     }));
-    const __VLS_27 = __VLS_26({
+    const __VLS_35 = __VLS_34({
         ...{ 'onClick': {} },
         ...{ style: {} },
-    }, ...__VLS_functionalComponentArgsRest(__VLS_26));
-    let __VLS_29;
-    let __VLS_30;
-    const __VLS_31 = ({ click: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_34));
+    let __VLS_37;
+    let __VLS_38;
+    const __VLS_39 = ({ click: {} },
         { onClick: (...[$event]) => {
                 __VLS_ctx.handleSelection(`stage_${i}`);
                 // @ts-ignore
                 [handleSelection,];
             } });
-    const { default: __VLS_32 } = __VLS_28.slots;
+    const { default: __VLS_40 } = __VLS_36.slots;
     (i);
     (__VLS_ctx.currentNote?.maxStages || 4);
     // @ts-ignore
     [currentNote,];
-    var __VLS_28;
+    var __VLS_36;
 }
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     span: (24),
     ...{ style: {} },
 });
-const __VLS_33 = {}.ElButton;
+const __VLS_41 = {}.ElButton;
 /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
 // @ts-ignore
 ElButton;
 // @ts-ignore
-const __VLS_34 = __VLS_asFunctionalComponent(__VLS_33, new __VLS_33({
+const __VLS_42 = __VLS_asFunctionalComponent(__VLS_41, new __VLS_41({
     ...{ 'onClick': {} },
     type: "success",
     ...{ style: {} },
 }));
-const __VLS_35 = __VLS_34({
+const __VLS_43 = __VLS_42({
     ...{ 'onClick': {} },
     type: "success",
     ...{ style: {} },
-}, ...__VLS_functionalComponentArgsRest(__VLS_34));
-let __VLS_37;
-let __VLS_38;
-const __VLS_39 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_42));
+let __VLS_45;
+let __VLS_46;
+const __VLS_47 = ({ click: {} },
     { onClick: (...[$event]) => {
             __VLS_ctx.handleSelection('on');
             // @ts-ignore
             [handleSelection,];
         } });
-const { default: __VLS_40 } = __VLS_36.slots;
-var __VLS_36;
+const { default: __VLS_48 } = __VLS_44.slots;
+var __VLS_44;
 var __VLS_3;
 var __VLS_dollars;
 const __VLS_self = (await import('vue')).defineComponent({
     setup: () => ({
+        featureFlags: featureFlags,
         newCdTimeInput: newCdTimeInput,
         handleSelection: handleSelection,
         handleCustomCd: handleCustomCd,
