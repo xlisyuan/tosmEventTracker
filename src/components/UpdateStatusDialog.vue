@@ -20,6 +20,14 @@
       "
     >
       <el-input
+        v-if="featureFlags?.nosec"
+        v-model="newCdTimeInput"
+        placeholder="時.分 + enter"
+        style="width: 230px"
+        @keyup.enter="handleCustomCd"
+      />
+      <el-input
+        v-else
         v-model="newCdTimeInput"
         placeholder="時.分.秒 + enter"
         style="width: 230px"
@@ -138,6 +146,7 @@ const handleCustomCd = () => {
       totalSeconds =
         timeParts[0] * 3600 + timeParts[1] * 60 + (timeParts[2] || 0);
     } else {
+      // nosec?
       ElMessage.error("時間格式錯誤，請使用 mm:ss 或 hh:mm:ss");
       return;
     }
