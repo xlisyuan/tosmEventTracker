@@ -1,6 +1,7 @@
 // src/components/UpdateStatusDialog.vue
-import { ref, defineProps, defineEmits, watch } from "vue";
+import { ref, defineProps, defineEmits, watch, inject } from "vue";
 import { ElMessage } from "element-plus";
+const featureFlags = inject("feature-flags");
 const props = defineProps();
 const emit = defineEmits([
     "update:modelValue",
@@ -41,7 +42,9 @@ const handleCustomCd = () => {
         return;
     }
     if (timeStr.includes(":") || timeStr.includes(".")) {
-        const timeParts = timeStr.split(/[.:]/).map(Number);
+        const timeParts = featureFlags?.value.nosec
+            ? (timeStr + ".0").split(/[.:]/).map(Number)
+            : timeStr.split(/[.:]/).map(Number);
         let totalSeconds = 0;
         if (timeParts.length === 2) {
             totalSeconds = timeParts[0] * 60 + (timeParts[1] || 0);

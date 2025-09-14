@@ -4,6 +4,15 @@
       <div class="input-form-left">
         <el-form-item label="地圖 分流 時間or狀態">
           <el-input
+            v-if="featureFlags?.nosec"
+            v-model="inputContent"
+            placeholder="e.g., 83 2 1.35"
+            @keyup.enter="handleAdd"
+            @focus="isInputFocused = true"
+            @blur="isInputFocused = false"
+          />
+          <el-input
+            v-else
             v-model="inputContent"
             placeholder="e.g., 83 2 1.35.45"
             @keyup.enter="handleAdd"
@@ -11,6 +20,13 @@
             @blur="isInputFocused = false"
           />
           <div
+            v-if="featureFlags?.nosec"
+            v-show="isInputFocused"
+            class="input-hint"
+            v-html="hintTextNosec"
+          ></div>
+          <div
+            v-else
             v-show="isInputFocused"
             class="input-hint"
             v-html="hintText"
@@ -117,6 +133,14 @@
             ON
           </el-button>
           <el-input
+            v-if="featureFlags?.nosec"
+            v-model="timeInput"
+            placeholder="e.g., 1.10 或 25"
+            style="width: 150px"
+            @keyup.enter="handleAdd"
+          />
+          <el-input
+            v-else
             v-model="timeInput"
             placeholder="e.g., 1:10:05 或 25.10"
             style="width: 150px"
@@ -137,11 +161,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, computed, watch, h, defineProps } from "vue";
+import {
+  ref,
+  defineEmits,
+  computed,
+  watch,
+  h,
+  defineProps,
+  inject,
+  Ref,
+} from "vue";
 import { ElMessage, ElMessageBox, ElButton } from "element-plus";
 import { ArrowUp, ArrowDown, StarFilled } from "@element-plus/icons-vue";
 import type { Note, NoteState } from "@/types/Note";
 import type { MapData } from "@/data/maps";
+
+const featureFlags = inject<Ref<{ nosec: boolean }>>("feature-flags");
 
 const props = defineProps({
   hasSound: Boolean,
@@ -172,6 +207,12 @@ const hintText = ref(`
   <strong>狀態</strong>: 階段 <code>1/4</code> 到 <code>3/4</code> 或 <code>ON</code><br>
   輸入完可以直接enter
 `);
+
+const hintTextNosec =
+  ref(`<strong>支援格式</strong>: 地圖等級 (空格) 分流 (空格) CD時間或狀態<br>
+  <strong>CD時間</strong>: <code>1.35</code> (時.分) 或 <code>5</code> (分)<br>
+  <strong>狀態</strong>: 階段 <code>1/4</code> 到 <code>3/4</code> 或 <code>ON</code><br>
+  輸入完可以直接enter`);
 
 const toggleCollapse = () => {
   isCollapsed.value = !isCollapsed.value;
@@ -380,7 +421,9 @@ const handleAdd = async () => {
       return;
     }
   } else if (finalTimeStr.includes(".") || finalTimeStr.includes(":")) {
-    const timeParts = finalTimeStr.split(/[.:]/).map(Number);
+    const timeParts = featureFlags?.value.nosec
+      ? (finalTimeStr + ".0").split(/[.:]/).map(Number)
+      : finalTimeStr.split(/[.:]/).map(Number);
     let totalSeconds = 0;
 
     if (timeParts.length === 2) {

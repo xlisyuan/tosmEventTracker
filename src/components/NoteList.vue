@@ -376,6 +376,9 @@ const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
+
+  // note: 即使nosec也要顯示秒數 因為會出現00:00(分)的倒數
+
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
     2,
     "0"
