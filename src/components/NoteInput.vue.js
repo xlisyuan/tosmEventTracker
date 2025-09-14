@@ -18,19 +18,16 @@ const isInputFocused = ref(false);
 watch(() => props.hasSound, (newVal) => {
     hasSound.value = newVal;
 });
-const hintText = ref(featureFlags?.value.nosec
-    ? `
-  <strong>支援格式</strong>: 地圖等級 (空格) 分流 (空格) CD時間或狀態<br>
-  <strong>CD時間</strong>: <code>1.35</code> (時.分) 或 <code>5</code> (分)<br>
-  <strong>狀態</strong>: 階段 <code>1/4</code> 到 <code>3/4</code> 或 <code>ON</code><br>
-  輸入完可以直接enter
-`
-    : `
+const hintText = ref(`
   <strong>支援格式</strong>: 地圖等級 (空格) 分流 (空格) CD時間或狀態<br>
   <strong>CD時間</strong>: <code>1.30.7</code> (時.分.秒) 或 <code>25.10</code> (分.秒) 或 <code>5</code> (分)<br>
   <strong>狀態</strong>: 階段 <code>1/4</code> 到 <code>3/4</code> 或 <code>ON</code><br>
   輸入完可以直接enter
 `);
+const hintTextNosec = ref(`<strong>支援格式</strong>: 地圖等級 (空格) 分流 (空格) CD時間或狀態<br>
+  <strong>CD時間</strong>: <code>1.35</code> (時.分) 或 <code>5</code> (分)<br>
+  <strong>狀態</strong>: 階段 <code>1/4</code> 到 <code>3/4</code> 或 <code>ON</code><br>
+  輸入完可以直接enter`);
 const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value;
 };
@@ -456,13 +453,26 @@ else {
             } });
     var __VLS_32;
 }
-__VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
-    ...{ class: "input-hint" },
-});
-__VLS_asFunctionalDirective(__VLS_directives.vShow)(null, { ...__VLS_directiveBindingRestFields, value: (__VLS_ctx.isInputFocused) }, null, null);
-__VLS_asFunctionalDirective(__VLS_directives.vHtml)(null, { ...__VLS_directiveBindingRestFields, value: (__VLS_ctx.hintText) }, null, null);
-// @ts-ignore
-[isInputFocused, vShow, vHtml, hintText,];
+if (__VLS_ctx.featureFlags?.nosec) {
+    // @ts-ignore
+    [featureFlags,];
+    __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
+        ...{ class: "input-hint" },
+    });
+    __VLS_asFunctionalDirective(__VLS_directives.vShow)(null, { ...__VLS_directiveBindingRestFields, value: (__VLS_ctx.isInputFocused) }, null, null);
+    __VLS_asFunctionalDirective(__VLS_directives.vHtml)(null, { ...__VLS_directiveBindingRestFields, value: (__VLS_ctx.hintTextNosec) }, null, null);
+    // @ts-ignore
+    [isInputFocused, vShow, vHtml, hintTextNosec,];
+}
+else {
+    __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
+        ...{ class: "input-hint" },
+    });
+    __VLS_asFunctionalDirective(__VLS_directives.vShow)(null, { ...__VLS_directiveBindingRestFields, value: (__VLS_ctx.isInputFocused) }, null, null);
+    __VLS_asFunctionalDirective(__VLS_directives.vHtml)(null, { ...__VLS_directiveBindingRestFields, value: (__VLS_ctx.hintText) }, null, null);
+    // @ts-ignore
+    [isInputFocused, vShow, vHtml, hintText,];
+}
 var __VLS_17;
 const __VLS_39 = {}.ElFormItem;
 /** @type {[typeof __VLS_components.ElFormItem, typeof __VLS_components.elFormItem, typeof __VLS_components.ElFormItem, typeof __VLS_components.elFormItem, ]} */ ;
@@ -997,6 +1007,7 @@ var __VLS_3;
 /** @type {__VLS_StyleScopedClasses['input-form']} */ ;
 /** @type {__VLS_StyleScopedClasses['input-form-left']} */ ;
 /** @type {__VLS_StyleScopedClasses['input-hint']} */ ;
+/** @type {__VLS_StyleScopedClasses['input-hint']} */ ;
 /** @type {__VLS_StyleScopedClasses['input-form-right']} */ ;
 /** @type {__VLS_StyleScopedClasses['map-buttons-container']} */ ;
 /** @type {__VLS_StyleScopedClasses['episode-selection']} */ ;
@@ -1028,6 +1039,7 @@ const __VLS_self = (await import('vue')).defineComponent({
         isChannelConfirmed: isChannelConfirmed,
         isInputFocused: isInputFocused,
         hintText: hintText,
+        hintTextNosec: hintTextNosec,
         toggleCollapse: toggleCollapse,
         episodes: episodes,
         filteredMaps: filteredMaps,

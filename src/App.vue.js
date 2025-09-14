@@ -1,4 +1,10 @@
 import { ref, onMounted, watch, h, provide } from "vue";
+const featureFlags = ref({
+    nosec: false,
+});
+// 確保在其他 onMounted 邏輯執行前 provide
+// provide 的第一個參數是鍵值，第二個是提供的變數
+provide("feature-flags", featureFlags);
 import { v4 as uuidv4 } from "uuid";
 import NoteInput from "./components/NoteInput.vue";
 import NoteList from "./components/NoteList.vue";
@@ -20,9 +26,6 @@ watch(isDark, (newValue) => {
     }
 });
 // --------------------- 功能旗標 (Feature Flags) ---------------------
-const featureFlags = ref({
-    nosec: false,
-});
 onMounted(() => {
     // 網址參數邏輯
     const urlParams = new URLSearchParams(window.location.search);
@@ -34,9 +37,6 @@ onMounted(() => {
             console.log("功能已啟用：nosec");
         }
     }
-    // 確保在其他 onMounted 邏輯執行前 provide
-    // provide 的第一個參數是鍵值，第二個是提供的變數
-    provide("feature-flags", featureFlags);
 });
 // --------------------- 地圖與圖片快取 ---------------------
 const savedMaps = localStorage.getItem("mapData");
@@ -695,13 +695,13 @@ var __VLS_3;
 var __VLS_dollars;
 const __VLS_self = (await import('vue')).defineComponent({
     setup: () => ({
+        featureFlags: featureFlags,
         NoteInput: NoteInput,
         NoteList: NoteList,
         UpdateStatusDialog: UpdateStatusDialog,
         Sunny: Sunny,
         Moon: Moon,
         isDark: isDark,
-        featureFlags: featureFlags,
         maps: maps,
         mapImageCache: mapImageCache,
         notes: notes,
