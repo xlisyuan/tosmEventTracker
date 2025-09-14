@@ -4,6 +4,15 @@
       <div class="header-content">
         <div class="header-left">
           <!-- <div class="title">野外活動追蹤</div> -->
+          <div
+            v-if="featureFlags?.nosec"
+            type="warning"
+            style="text-align: left"
+          >
+            測試中: 不使用秒數唷 <br />
+            (例) CD 1小時 23分鐘 請輸入 <b>1.23</b> <br />
+            (例) CD 5分鐘 請輸入 <b>5</b>
+          </div>
         </div>
         <div class="header-right">
           <el-switch
@@ -66,7 +75,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, h } from "vue";
+import { ref, onMounted, watch, h, provide } from "vue";
+
+const featureFlags = ref({
+  nosec: false,
+});
+// 確保在其他 onMounted 邏輯執行前 provide
+// provide 的第一個參數是鍵值，第二個是提供的變數
+provide("feature-flags", featureFlags);
+
 import { v4 as uuidv4 } from "uuid";
 import NoteInput from "./components/NoteInput.vue";
 import NoteList from "./components/NoteList.vue";
@@ -86,6 +103,22 @@ watch(isDark, (newValue) => {
   } else {
     document.documentElement.classList.remove("dark");
     localStorage.setItem("theme", "light");
+  }
+});
+
+// --------------------- 功能旗標 (Feature Flags) ---------------------
+
+onMounted(() => {
+  // 網址參數邏輯
+  const urlParams = new URLSearchParams(window.location.search);
+  const settingsParam = urlParams.get("setting");
+
+  if (settingsParam) {
+    const enabledFeatures = settingsParam.split(",");
+    if (enabledFeatures.includes("nosec")) {
+      featureFlags.value.nosec = true;
+      console.log("功能已啟用：nosec");
+    }
   }
 });
 

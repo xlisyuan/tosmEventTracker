@@ -67,9 +67,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, watch } from "vue";
+import { ref, defineProps, defineEmits, watch, inject, Ref } from "vue";
 import { ElMessage } from "element-plus";
 import type { Note, NoteState } from "@/types/Note";
+
+const featureFlags = inject<Ref<{ nosec: boolean }>>("feature-flags");
 
 const props = defineProps<{
   modelValue: boolean;
@@ -125,7 +127,9 @@ const handleCustomCd = () => {
   }
 
   if (timeStr.includes(":") || timeStr.includes(".")) {
-    const timeParts = timeStr.split(/[.:]/).map(Number);
+    const timeParts = featureFlags?.value.nosec
+      ? (timeStr + ".0").split(/[.:]/).map(Number)
+      : timeStr.split(/[.:]/).map(Number);
     let totalSeconds = 0;
 
     if (timeParts.length === 2) {

@@ -1,4 +1,4 @@
-import { ref, onMounted, watch, h } from "vue";
+import { ref, onMounted, watch, h, provide } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import NoteInput from "./components/NoteInput.vue";
 import NoteList from "./components/NoteList.vue";
@@ -18,6 +18,25 @@ watch(isDark, (newValue) => {
         document.documentElement.classList.remove("dark");
         localStorage.setItem("theme", "light");
     }
+});
+// --------------------- 功能旗標 (Feature Flags) ---------------------
+const featureFlags = ref({
+    nosec: false,
+});
+onMounted(() => {
+    // 網址參數邏輯
+    const urlParams = new URLSearchParams(window.location.search);
+    const settingsParam = urlParams.get("setting");
+    if (settingsParam) {
+        const enabledFeatures = settingsParam.split(",");
+        if (enabledFeatures.includes("nosec")) {
+            featureFlags.value.nosec = true;
+            console.log("功能已啟用：nosec");
+        }
+    }
+    // 確保在其他 onMounted 邏輯執行前 provide
+    // provide 的第一個參數是鍵值，第二個是提供的變數
+    provide("feature-flags", featureFlags);
 });
 // --------------------- 地圖與圖片快取 ---------------------
 const savedMaps = localStorage.getItem("mapData");
@@ -443,6 +462,18 @@ __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "header-left" },
 });
+if (__VLS_ctx.featureFlags?.nosec) {
+    // @ts-ignore
+    [featureFlags,];
+    __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
+        type: "warning",
+        ...{ style: {} },
+    });
+    __VLS_asFunctionalElement(__VLS_elements.br)({});
+    __VLS_asFunctionalElement(__VLS_elements.b, __VLS_elements.b)({});
+    __VLS_asFunctionalElement(__VLS_elements.br)({});
+    __VLS_asFunctionalElement(__VLS_elements.b, __VLS_elements.b)({});
+}
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "header-right" },
 });
@@ -670,6 +701,7 @@ const __VLS_self = (await import('vue')).defineComponent({
         Sunny: Sunny,
         Moon: Moon,
         isDark: isDark,
+        featureFlags: featureFlags,
         maps: maps,
         mapImageCache: mapImageCache,
         notes: notes,
