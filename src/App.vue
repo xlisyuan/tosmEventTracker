@@ -141,7 +141,7 @@ const mapImageCache = ref<Record<string, string>>({});
 
 // 獨立的圖片載入函式
 const loadMapImage = async (noteText: string) => {
-  const mapData = maps.value.find((m) => m.name === noteText);
+  const mapData = maps.value.find((m: MapData) => m.name === noteText);
   // todo: 等蒐集完地圖再更新
   // if (mapData?.imagePath && !mapImageCache.value[mapData.name]) {
   //   console.log(mapData?.imagePath);
@@ -186,7 +186,7 @@ const loadNotes = () => {
   if (savedNotes) {
     notes.value = JSON.parse(savedNotes).map((note: Note) => {
       const mapData = maps.value.find(
-        (m) => m.level === note.mapLevel && m.name === note.noteText
+        (m: MapData) => m.level === note.mapLevel && m.name === note.noteText
       );
 
       if (mapData) {
@@ -209,7 +209,7 @@ const saveNotes = () => {
 };
 
 const handleAddNewNote = async (newNote: any) => {
-  const mapData = maps.value.find((m) => m.name === newNote.noteText);
+  const mapData = maps.value.find((m: MapData) => m.name === newNote.noteText);
   if (!mapData) {
     ElMessage.error("找不到對應的地圖資料");
     return;
@@ -347,7 +347,7 @@ const handleUpdateNoteStatus = (
         noteToUpdate.onTime = newTime;
         break;
       case "CD":
-        const map = maps.value.find((m) => m.level === noteToUpdate.mapLevel);
+        const map = maps.value.find((m: MapData) => m.level === noteToUpdate.mapLevel);
         if (map) {
           noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
         }
@@ -380,7 +380,7 @@ const handleToggleInputSound = (state: boolean) => {
 };
 
 const handleUpdateMapStar = (mapLevel: number) => {
-  const map = maps.value.find((m) => m.level === mapLevel);
+  const map = maps.value.find((m: MapData) => m.level === mapLevel);
   if (map) {
     map.isStarred = !map.isStarred;
     localStorage.setItem("mapData", JSON.stringify(maps.value));
@@ -446,7 +446,7 @@ const handleImportClick = async () => {
     const duplicateNotes: { newNote: Note; oldNote: Note }[] = [];
     importedNotes.forEach((importedNote) => {
       const mapData = maps.value.find(
-        (m) =>
+        (m: MapData) =>
           m.level === importedNote.mapLevel && m.name === importedNote.noteText
       );
       const isExpired = importedNote.respawnTime <= Date.now();
