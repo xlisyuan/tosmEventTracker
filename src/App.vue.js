@@ -40,10 +40,14 @@ onMounted(() => {
 });
 // --------------------- 地圖與圖片快取 ---------------------
 const savedMaps = localStorage.getItem("mapData");
-const maps = ref(savedMaps ? JSON.parse(savedMaps) : [...originalMaps]);
-if (!savedMaps) {
-    localStorage.setItem("mapData", JSON.stringify(originalMaps));
-}
+let mapsData = savedMaps ? JSON.parse(savedMaps) : [];
+const existingEpisodes = new Set(mapsData.map((map) => map.episode));
+const newMaps = originalMaps.filter((newMap) => {
+    return !existingEpisodes.has(newMap.episode);
+});
+mapsData.push(...newMaps);
+localStorage.setItem("mapData", JSON.stringify(mapsData));
+const maps = ref(mapsData);
 // 用來快取已載入的圖片路徑
 const mapImageCache = ref({});
 // 獨立的圖片載入函式

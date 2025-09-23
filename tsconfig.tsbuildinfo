@@ -1,1 +1,1 @@
-{"root":["./src/main.ts","./src/vite-env.d.ts","./src/data/maps.ts","./src/types/note.ts","./src/app.vue","./src/components/noteinput.vue","./src/components/notelist.vue","./src/components/updatestatusdialog.vue"],"version":"5.8.3"}
+{"root":["./src/main.ts","./src/vite-env.d.ts","./src/data/maps.ts","./src/types/note.ts","./src/app.vue","./src/components/noteinput.vue","./src/components/notelist.vue","./src/components/updatestatusdialog.vue"],"errors":true,"version":"5.8.3"}
