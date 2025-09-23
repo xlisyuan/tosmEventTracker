@@ -79,6 +79,7 @@ import { ref, onMounted, watch, h, provide } from "vue";
 
 const featureFlags = ref({
   nosec: false,
+  pic: false
 });
 // 確保在其他 onMounted 邏輯執行前 provide
 // provide 的第一個參數是鍵值，第二個是提供的變數
@@ -119,6 +120,10 @@ onMounted(() => {
       featureFlags.value.nosec = true;
       console.log("功能已啟用：nosec");
     }
+    if (enabledFeatures.includes("pic")) {
+      featureFlags.value.pic = true;
+      console.log("功能已啟用：pic");
+    }
   }
 });
 
@@ -143,20 +148,20 @@ const mapImageCache = ref<Record<string, string>>({});
 const loadMapImage = async (noteText: string) => {
   const mapData = maps.value.find((m: MapData) => m.name === noteText);
   // todo: 等蒐集完地圖再更新
-  // if (mapData?.imagePath && !mapImageCache.value[mapData.name]) {
-  //   console.log(mapData?.imagePath);
-  //   try {
-  //     const image = new Image();
-  //     await new Promise((resolve, reject) => {
-  //       image.onload = resolve;
-  //       image.onerror = reject;
-  //       image.src = mapData.imagePath as string;
-  //     });
-  //     mapImageCache.value[mapData.name] = mapData.imagePath;
-  //   } catch (e) {
-  //     console.error(`無法載入地圖圖片: ${mapData.imagePath}`, e);
-  //   }
-  // }
+  if ( featureFlags?.value.pic && mapData?.imagePath && !mapImageCache.value[mapData.name]) {
+    console.log(mapData?.imagePath);
+    try {
+      const image = new Image();
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = mapData.imagePath as string;
+      });
+      mapImageCache.value[mapData.name] = mapData.imagePath;
+    } catch (e) {
+      console.error(`無法載入地圖圖片: ${mapData.imagePath}`, e);
+    }
+  }
 };
 const activeIndex = ref("0");
 const notes = ref<Note[]>([]);
