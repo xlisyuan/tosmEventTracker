@@ -88,5 +88,12 @@ export const maps: MapData[] = [
     { episode: 10, level: 80, name: '大教堂懺悔路', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/大教堂懺悔路.webp` },
     { episode: 10, level: 81, name: '大教堂正殿', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/大教堂正殿.webp` },
     { episode: 10, level: 82, name: '大教堂大迴廊', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/大教堂大迴廊.webp` },
-    { episode: 10, level: 83, name: '大教堂至聖所', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/大教堂至聖所.webp` }
+    { episode: 10, level: 83, name: '大教堂至聖所', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/大教堂至聖所.webp` },
+
+    // EP11
+    { episode: 11, level: 85, name: '拉烏基美濕地', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/拉烏基美濕地.webp` },
+    { episode: 11, level: 86, name: '提拉修道院', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/提拉修道院.webp` },
+    { episode: 11, level: 87, name: '貝拉伊森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/貝拉伊森林.webp` },
+    { episode: 11, level: 88, name: '潔拉哈', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/潔拉哈.webp` },
+    { episode: 11, level: 89, name: '世伊魯森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/世伊魯森林.webp` }
 ];

@@ -124,13 +124,17 @@ onMounted(() => {
 
 // --------------------- 地圖與圖片快取 ---------------------
 const savedMaps = localStorage.getItem("mapData");
-const maps = ref<MapData[]>(
-  savedMaps ? JSON.parse(savedMaps) : [...originalMaps]
-);
+let mapsData = savedMaps ? JSON.parse(savedMaps) : [];
 
-if (!savedMaps) {
-  localStorage.setItem("mapData", JSON.stringify(originalMaps));
-}
+const existingEpisodes = new Set(mapsData.map((map: MapData) => map.episode));
+const newMaps = originalMaps.filter((newMap: MapData) => {
+  return !existingEpisodes.has(newMap.episode);
+});
+
+mapsData.push(...newMaps);
+localStorage.setItem("mapData", JSON.stringify(mapsData));
+
+const maps = ref(mapsData);
 
 // 用來快取已載入的圖片路徑
 const mapImageCache = ref<Record<string, string>>({});
