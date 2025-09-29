@@ -78,7 +78,9 @@
                 <template #reference>
                   <span v-if="featureFlags?.en">
                     Lv.{{ note.mapLevel }}
-                    {{ getMapEnName(note.noteText || getMapName(note.mapLevel)) }}
+                    {{
+                      getMapEnName(note.noteText || getMapName(note.mapLevel))
+                    }}
                   </span>
                   <span v-else>
                     Lv.{{ note.mapLevel }}
@@ -206,7 +208,7 @@ import {
   Delete,
 } from "@element-plus/icons-vue";
 
-const featureFlags = inject<Ref<{ en:boolean }>>("feature-flags");
+const featureFlags = inject<Ref<{ en: boolean }>>("feature-flags");
 
 const props = defineProps<{
   notes: Note[];
@@ -301,7 +303,7 @@ const getMapName = (level: number) => {
   return map ? map.name : "未知地圖";
 };
 
-const getMapEnName = (name:string) => {
+const getMapEnName = (name: string) => {
   const map = props.maps.find((m) => m.name === name);
   return map ? map.enName : "unknown";
 };
@@ -315,6 +317,12 @@ const speakNoteDetails = (note: Note) => {
       note.channel
     }, CD已結束`;
     utterance.lang = "zh-TW";
+
+    if (featureFlags?.value.en) {
+      const mapEnName = getMapEnName(mapName);
+      utterance.text = `Episode ${getEpisode(note.mapLevel)}, ${mapEnName} channel ${note.channel}, Cooldown is finished`;
+      utterance.lang = "en-US";
+    }
 
     window.speechSynthesis.speak(utterance);
   } else {
@@ -422,7 +430,7 @@ const getStatusText = (note: Note) => {
         );
         return `開始於 ${localTime}`;
       } else {
-        return `CD時間 ${formatTime(diffInSeconds)}`;
+        return featureFlags?.value.en?`Cooldown ${formatTime(diffInSeconds)}`:`CD時間 ${formatTime(diffInSeconds)}`;
       }
     } else {
       const elapsedSeconds = Math.abs(diffInSeconds);
