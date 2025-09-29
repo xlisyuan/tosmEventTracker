@@ -79,7 +79,7 @@ import { ref, onMounted, watch, h, provide } from "vue";
 
 const featureFlags = ref({
   nosec: false,
-  pic: false
+  pic: false,
 });
 // 確保在其他 onMounted 邏輯執行前 provide
 // provide 的第一個參數是鍵值，第二個是提供的變數
@@ -128,17 +128,95 @@ onMounted(() => {
 });
 
 // --------------------- 地圖與圖片快取 ---------------------
+// ---------------------
+// 1. 地圖版本遷移設定
+// ---------------------
+const mapMigrations: ((mapsData: MapData[]) => MapData[])[] = [
+  // v0 → v1: 僅修正「提拉修道院」名稱和圖片路徑 (保留使用者資料)
+  (mapsData) => {
+    const correctTiraMap = originalMaps.find(
+      (map) => map.name === "堤拉修道院"
+    );
+    // 找不到最新資料時，拋出錯誤以阻止版本號更新。
+    if (!correctTiraMap) {
+      console.error(
+        "Migration V0→V1: 找不到最新的 '堤拉修道院' 資料，無法完成遷移！"
+      );
+      throw new Error("Missing correct map data for V0→V1 migration.");
+    }
+    return mapsData.map((map) =>
+      map.name === "提拉修道院" // 檢查舊名稱
+        ? {
+            ...map,
+            name: correctTiraMap.name,
+            imagePath: correctTiraMap.imagePath,
+          }
+        : map
+    );
+  },
+
+  // v1 → v2: 新增 'enName' 欄位
+  (mapsData) => {
+    console.log("Applying migration: v1 to v2 (Adding enName)");
+
+    // 鍵(key) 使用地圖的中文名稱 (map.name)
+    const originalMapsEnNames = new Map(
+      originalMaps.map((map) => [map.name, map.enName])
+    );
+
+    const migratedMaps = mapsData.map((map) => {
+      const newEnName = originalMapsEnNames.get(map.name);
+      if (newEnName) {
+        return {
+          ...map,
+          enName: newEnName,
+        };
+      }
+      return map;
+    });
+
+    return migratedMaps;
+  },
+];
+
+// ---------------------
+// 2. 讀取 localStorage & 套用 migration
+// ---------------------
 const savedMaps = localStorage.getItem("mapData");
 let mapsData = savedMaps ? JSON.parse(savedMaps) : [];
 
+// 遊戲更新地區時更新地圖
 const existingEpisodes = new Set(mapsData.map((map: MapData) => map.episode));
 const newMaps = originalMaps.filter((newMap: MapData) => {
   return !existingEpisodes.has(newMap.episode);
 });
 
 mapsData.push(...newMaps);
+
+//地圖版本
+const mapVersion = localStorage.getItem("mapVersion") || "0";
+
+// 套用缺的 migration
+const mapMigrationIndex = parseInt(mapVersion, 10);
+let migrationSuccess = true;
+try {
+  for (let i = mapMigrationIndex; i < mapMigrations.length; i++) {
+    mapsData = mapMigrations[i](mapsData);
+  }
+} catch (error) {
+  console.error("地圖資料遷移失敗，版本號未更新。", error);
+  migrationSuccess = false;
+}
+
+// 更新版本與 localStorage
+if (migrationSuccess) {
+  localStorage.setItem("mapVersion", mapMigrations.length.toString());
+}
 localStorage.setItem("mapData", JSON.stringify(mapsData));
 
+// ---------------------
+// 3. 建立 Vue reactive 變數
+// ---------------------
 const maps = ref(mapsData);
 
 // 用來快取已載入的圖片路徑
@@ -148,7 +226,11 @@ const mapImageCache = ref<Record<string, string>>({});
 const loadMapImage = async (noteText: string) => {
   const mapData = maps.value.find((m: MapData) => m.name === noteText);
   // todo: 等蒐集完地圖再更新
-  if ( featureFlags?.value.pic && mapData?.imagePath && !mapImageCache.value[mapData.name]) {
+  if (
+    featureFlags?.value.pic &&
+    mapData?.imagePath &&
+    !mapImageCache.value[mapData.name]
+  ) {
     console.log(mapData?.imagePath);
     try {
       const image = new Image();
@@ -163,7 +245,9 @@ const loadMapImage = async (noteText: string) => {
     }
   }
 };
-const activeIndex = ref("0");
+
+// --------------------- ------------- ---------------------
+
 const notes = ref<Note[]>([]);
 const currentSortMode = ref<"time" | "map">("time");
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
@@ -352,7 +436,9 @@ const handleUpdateNoteStatus = (
         noteToUpdate.onTime = newTime;
         break;
       case "CD":
-        const map = maps.value.find((m: MapData) => m.level === noteToUpdate.mapLevel);
+        const map = maps.value.find(
+          (m: MapData) => m.level === noteToUpdate.mapLevel
+        );
         if (map) {
           noteToUpdate.respawnTime = Date.now() + map.respawnTime * 1000;
         }
