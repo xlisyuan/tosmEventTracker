@@ -87,6 +87,11 @@ const speakNoteDetails = (note) => {
         const utterance = new SpeechSynthesisUtterance();
         utterance.text = `E P ${getEpisode(note.mapLevel)}, ${mapName} 分流 ${note.channel}, CD已結束`;
         utterance.lang = "zh-TW";
+        if (featureFlags?.value.en) {
+            const mapEnName = getMapEnName(mapName);
+            utterance.text = `Episode ${getEpisode(note.mapLevel)}, ${mapEnName} channel ${note.channel}, Cooldown is finished`;
+            utterance.lang = "en-US";
+        }
         window.speechSynthesis.speak(utterance);
     }
     else {
@@ -178,7 +183,7 @@ const getStatusText = (note) => {
                 return `開始於 ${localTime}`;
             }
             else {
-                return `CD時間 ${formatTime(diffInSeconds)}`;
+                return featureFlags?.value.en ? `Cooldown ${formatTime(diffInSeconds)}` : `CD時間 ${formatTime(diffInSeconds)}`;
             }
         }
         else {
