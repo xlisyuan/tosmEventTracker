@@ -76,7 +76,11 @@
                 :hide-after="200"
               >
                 <template #reference>
-                  <span>
+                  <span v-if="featureFlags?.en">
+                    Lv.{{ note.mapLevel }}
+                    {{ getMapEnName(note.noteText || getMapName(note.mapLevel)) }}
+                  </span>
+                  <span v-else>
                     Lv.{{ note.mapLevel }}
                     {{ note.noteText || getMapName(note.mapLevel) }}
                   </span>
@@ -188,6 +192,8 @@ import {
   onUnmounted,
   h,
   computed,
+  inject,
+  Ref,
 } from "vue";
 import { ElMessage, ElMessageBox, ElButton, ElIcon } from "element-plus";
 import type { Note, NoteState } from "@/types/Note";
@@ -199,6 +205,8 @@ import {
   Setting,
   Delete,
 } from "@element-plus/icons-vue";
+
+const featureFlags = inject<Ref<{ en:boolean }>>("feature-flags");
 
 const props = defineProps<{
   notes: Note[];
@@ -291,6 +299,11 @@ const toggleHightlight = (on: boolean, target: number = 0) => {
 const getMapName = (level: number) => {
   const map = props.maps.find((m) => m.level === level);
   return map ? map.name : "未知地圖";
+};
+
+const getMapEnName = (name:string) => {
+  const map = props.maps.find((m) => m.name === name);
+  return map ? map.enName : "unknown";
 };
 
 const speakNoteDetails = (note: Note) => {

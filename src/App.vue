@@ -72,6 +72,24 @@
       ></el-input>
     </div>
   </el-container>
+  <a
+    v-if="featureFlags?.en"
+    href="https://github.com/xlisyuan/tosmEventTracker/issues"
+    target="_blank"
+    rel="noopener noreferrer"
+    title="github"
+  >
+    Lis Taiwan
+  </a>
+  <a
+    v-else
+    href="https://forum.gamer.com.tw/C.php?bsn=74968&snA=700"
+    target="_blank"
+    rel="noopener noreferrer"
+    title="巴哈姆特:【閒聊】追蹤野外活動的工具"
+  >
+    其他資訊
+  </a>
 </template>
 
 <script setup lang="ts">
@@ -80,6 +98,7 @@ import { ref, onMounted, watch, h, provide } from "vue";
 const featureFlags = ref({
   nosec: false,
   pic: false,
+  en: false,
 });
 // 確保在其他 onMounted 邏輯執行前 provide
 // provide 的第一個參數是鍵值，第二個是提供的變數
@@ -123,6 +142,10 @@ onMounted(() => {
     if (enabledFeatures.includes("pic")) {
       featureFlags.value.pic = true;
       console.log("功能已啟用：pic");
+    }
+    if (enabledFeatures.includes("en")) {
+      featureFlags.value.en = true;
+      console.log("功能已啟用：en");
     }
   }
 });

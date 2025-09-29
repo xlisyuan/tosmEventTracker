@@ -78,7 +78,7 @@
             <template v-else>EP{{ selectedEpisode }} 地圖：</template>
           </h4>
           <div class="map-level-buttons">
-            <el-button @click="handleEpisodeSelection(0)">回上頁</el-button>
+            <el-button @click="handleEpisodeSelection(0)">{{featureFlags?.en?'↩':'回上頁'}}</el-button>
             <el-button
               v-for="map in filteredMaps"
               :key="map.level + (map.isStarred ? 'star' : '')"
@@ -86,7 +86,8 @@
               @click="fillMapLevel(map)"
             >
               <span class="map-button-content">
-                <span>Lv.{{ map.level }} {{ map.name }}</span>
+                <span v-if="featureFlags?.en">Lv.{{ map.level }} {{ map.enName }}</span>
+                <span v-else>Lv.{{ map.level }} {{ map.name }}</span>
                 <el-icon
                   class="star-icon"
                   :class="{ 'is-starred': map.isStarred }"
@@ -176,7 +177,7 @@ import { ArrowUp, ArrowDown, StarFilled } from "@element-plus/icons-vue";
 import type { Note, NoteState } from "@/types/Note";
 import type { MapData } from "@/data/maps";
 
-const featureFlags = inject<Ref<{ nosec: boolean }>>("feature-flags");
+const featureFlags = inject<Ref<{ nosec: boolean, en:boolean }>>("feature-flags");
 
 const props = defineProps({
   hasSound: Boolean,
