@@ -1,6 +1,7 @@
-import { ref, defineProps, defineEmits, onMounted, onUnmounted, computed, } from "vue";
+import { ref, defineProps, defineEmits, onMounted, onUnmounted, computed, inject, } from "vue";
 import { ElMessage, ElMessageBox, ElButton, ElIcon } from "element-plus";
 import { StarFilled, Bell, BellFilled, Setting, Delete, } from "@element-plus/icons-vue";
+const featureFlags = inject("feature-flags");
 const props = defineProps();
 const emit = defineEmits([
     "delete-note",
@@ -75,6 +76,10 @@ const toggleHightlight = (on, target = 0) => {
 const getMapName = (level) => {
     const map = props.maps.find((m) => m.level === level);
     return map ? map.name : "未知地圖";
+};
+const getMapEnName = (name) => {
+    const map = props.maps.find((m) => m.name === name);
+    return map ? map.enName : "unknown";
 };
 const speakNoteDetails = (note) => {
     if ("speechSynthesis" in window) {
@@ -680,11 +685,22 @@ else {
             const { default: __VLS_143 } = __VLS_142.slots;
             {
                 const { reference: __VLS_144 } = __VLS_142.slots;
-                __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-                (note.mapLevel);
-                (note.noteText || __VLS_ctx.getMapName(note.mapLevel));
-                // @ts-ignore
-                [getMapName,];
+                if (__VLS_ctx.featureFlags?.en) {
+                    // @ts-ignore
+                    [featureFlags,];
+                    __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+                    (note.mapLevel);
+                    (__VLS_ctx.getMapEnName(note.noteText || __VLS_ctx.getMapName(note.mapLevel)));
+                    // @ts-ignore
+                    [getMapEnName, getMapName,];
+                }
+                else {
+                    __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+                    (note.mapLevel);
+                    (note.noteText || __VLS_ctx.getMapName(note.mapLevel));
+                    // @ts-ignore
+                    [getMapName,];
+                }
             }
             {
                 const { default: __VLS_145 } = __VLS_142.slots;
@@ -1088,6 +1104,7 @@ const __VLS_self = (await import('vue')).defineComponent({
         BellFilled: BellFilled,
         Setting: Setting,
         Delete: Delete,
+        featureFlags: featureFlags,
         isXs: isXs,
         currentTime: currentTime,
         showChannelAdjust: showChannelAdjust,
@@ -1096,6 +1113,7 @@ const __VLS_self = (await import('vue')).defineComponent({
         toggleChannelAdjust: toggleChannelAdjust,
         channelAdjust: channelAdjust,
         getMapName: getMapName,
+        getMapEnName: getMapEnName,
         sortButtonText: sortButtonText,
         toggleAllSoundButtonText: toggleAllSoundButtonText,
         handleExpiredClick: handleExpiredClick,

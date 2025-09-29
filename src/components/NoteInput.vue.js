@@ -682,6 +682,9 @@ else {
                 [handleEpisodeSelection,];
             } });
     const { default: __VLS_103 } = __VLS_99.slots;
+    (__VLS_ctx.featureFlags?.en ? '↩' : '回上頁');
+    // @ts-ignore
+    [featureFlags,];
     var __VLS_99;
     for (const [map] of __VLS_getVForSourceType((__VLS_ctx.filteredMaps))) {
         // @ts-ignore
@@ -715,9 +718,18 @@ else {
         __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
             ...{ class: "map-button-content" },
         });
-        __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
-        (map.level);
-        (map.name);
+        if (__VLS_ctx.featureFlags?.en) {
+            // @ts-ignore
+            [featureFlags,];
+            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            (map.level);
+            (map.enName);
+        }
+        else {
+            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            (map.level);
+            (map.name);
+        }
         const __VLS_112 = {}.ElIcon;
         /** @type {[typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, typeof __VLS_components.ElIcon, typeof __VLS_components.elIcon, ]} */ ;
         // @ts-ignore

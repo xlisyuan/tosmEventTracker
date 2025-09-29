@@ -2,6 +2,7 @@ import { ref, onMounted, watch, h, provide } from "vue";
 const featureFlags = ref({
     nosec: false,
     pic: false,
+    en: false,
 });
 // 確保在其他 onMounted 邏輯執行前 provide
 // provide 的第一個參數是鍵值，第二個是提供的變數
@@ -40,6 +41,10 @@ onMounted(() => {
         if (enabledFeatures.includes("pic")) {
             featureFlags.value.pic = true;
             console.log("功能已啟用：pic");
+        }
+        if (enabledFeatures.includes("en")) {
+            featureFlags.value.en = true;
+            console.log("功能已啟用：en");
         }
     }
 });
@@ -517,20 +522,19 @@ const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
 const __VLS_2 = __VLS_1({
     ...{ class: "app-container" },
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-var __VLS_4 = {};
-const { default: __VLS_5 } = __VLS_3.slots;
-const __VLS_6 = {}.ElHeader;
+const { default: __VLS_4 } = __VLS_3.slots;
+const __VLS_5 = {}.ElHeader;
 /** @type {[typeof __VLS_components.ElHeader, typeof __VLS_components.elHeader, typeof __VLS_components.ElHeader, typeof __VLS_components.elHeader, ]} */ ;
 // @ts-ignore
 ElHeader;
 // @ts-ignore
-const __VLS_7 = __VLS_asFunctionalComponent(__VLS_6, new __VLS_6({
+const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({
     ...{ class: "app-header" },
 }));
-const __VLS_8 = __VLS_7({
+const __VLS_7 = __VLS_6({
     ...{ class: "app-header" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_7));
-const { default: __VLS_10 } = __VLS_9.slots;
+}, ...__VLS_functionalComponentArgsRest(__VLS_6));
+const { default: __VLS_9 } = __VLS_8.slots;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "header-content" },
 });
@@ -552,12 +556,12 @@ if (__VLS_ctx.featureFlags?.nosec) {
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "header-right" },
 });
-const __VLS_11 = {}.ElSwitch;
+const __VLS_10 = {}.ElSwitch;
 /** @type {[typeof __VLS_components.ElSwitch, typeof __VLS_components.elSwitch, ]} */ ;
 // @ts-ignore
 ElSwitch;
 // @ts-ignore
-const __VLS_12 = __VLS_asFunctionalComponent(__VLS_11, new __VLS_11({
+const __VLS_11 = __VLS_asFunctionalComponent(__VLS_10, new __VLS_10({
     modelValue: (__VLS_ctx.isDark),
     inlinePrompt: true,
     activeIcon: (__VLS_ctx.Moon),
@@ -565,58 +569,58 @@ const __VLS_12 = __VLS_asFunctionalComponent(__VLS_11, new __VLS_11({
     size: "large",
     ...{ class: "dark-mode-switch" },
 }));
-const __VLS_13 = __VLS_12({
+const __VLS_12 = __VLS_11({
     modelValue: (__VLS_ctx.isDark),
     inlinePrompt: true,
     activeIcon: (__VLS_ctx.Moon),
     inactiveIcon: (__VLS_ctx.Sunny),
     size: "large",
     ...{ class: "dark-mode-switch" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_12));
+}, ...__VLS_functionalComponentArgsRest(__VLS_11));
 // @ts-ignore
 [isDark, Moon, Sunny,];
-var __VLS_9;
-const __VLS_16 = {}.ElMain;
+var __VLS_8;
+const __VLS_15 = {}.ElMain;
 /** @type {[typeof __VLS_components.ElMain, typeof __VLS_components.elMain, typeof __VLS_components.ElMain, typeof __VLS_components.elMain, ]} */ ;
 // @ts-ignore
 ElMain;
 // @ts-ignore
-const __VLS_17 = __VLS_asFunctionalComponent(__VLS_16, new __VLS_16({
+const __VLS_16 = __VLS_asFunctionalComponent(__VLS_15, new __VLS_15({
     ...{ class: "app-main" },
 }));
-const __VLS_18 = __VLS_17({
+const __VLS_17 = __VLS_16({
     ...{ class: "app-main" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_17));
-const { default: __VLS_20 } = __VLS_19.slots;
+}, ...__VLS_functionalComponentArgsRest(__VLS_16));
+const { default: __VLS_19 } = __VLS_18.slots;
 /** @type {[typeof NoteInput, ]} */ ;
 // @ts-ignore
-const __VLS_21 = __VLS_asFunctionalComponent(NoteInput, new NoteInput({
+const __VLS_20 = __VLS_asFunctionalComponent(NoteInput, new NoteInput({
     ...{ 'onAddNote': {} },
     ...{ 'onUpdateMapStar': {} },
     hasSound: (__VLS_ctx.hasInputSoundOn),
     maps: (__VLS_ctx.maps),
 }));
-const __VLS_22 = __VLS_21({
+const __VLS_21 = __VLS_20({
     ...{ 'onAddNote': {} },
     ...{ 'onUpdateMapStar': {} },
     hasSound: (__VLS_ctx.hasInputSoundOn),
     maps: (__VLS_ctx.maps),
-}, ...__VLS_functionalComponentArgsRest(__VLS_21));
+}, ...__VLS_functionalComponentArgsRest(__VLS_20));
+let __VLS_23;
 let __VLS_24;
-let __VLS_25;
-const __VLS_26 = ({ addNote: {} },
+const __VLS_25 = ({ addNote: {} },
     { onAddNote: (__VLS_ctx.handleAddNewNote) });
-const __VLS_27 = ({ updateMapStar: {} },
+const __VLS_26 = ({ updateMapStar: {} },
     { onUpdateMapStar: (__VLS_ctx.handleUpdateMapStar) });
 // @ts-ignore
 [hasInputSoundOn, maps, handleAddNewNote, handleUpdateMapStar,];
-var __VLS_23;
+var __VLS_22;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "list-card-container" },
 });
 /** @type {[typeof NoteList, ]} */ ;
 // @ts-ignore
-const __VLS_29 = __VLS_asFunctionalComponent(NoteList, new NoteList({
+const __VLS_28 = __VLS_asFunctionalComponent(NoteList, new NoteList({
     ...{ 'onDeleteNote': {} },
     ...{ 'onClearNotes': {} },
     ...{ 'onToggleSort': {} },
@@ -630,7 +634,7 @@ const __VLS_29 = __VLS_asFunctionalComponent(NoteList, new NoteList({
     maps: (__VLS_ctx.maps),
     mapImageCache: (__VLS_ctx.mapImageCache),
 }));
-const __VLS_30 = __VLS_29({
+const __VLS_29 = __VLS_28({
     ...{ 'onDeleteNote': {} },
     ...{ 'onClearNotes': {} },
     ...{ 'onToggleSort': {} },
@@ -643,120 +647,138 @@ const __VLS_30 = __VLS_29({
     currentSortMode: (__VLS_ctx.currentSortMode),
     maps: (__VLS_ctx.maps),
     mapImageCache: (__VLS_ctx.mapImageCache),
-}, ...__VLS_functionalComponentArgsRest(__VLS_29));
+}, ...__VLS_functionalComponentArgsRest(__VLS_28));
+let __VLS_31;
 let __VLS_32;
-let __VLS_33;
-const __VLS_34 = ({ deleteNote: {} },
+const __VLS_33 = ({ deleteNote: {} },
     { onDeleteNote: (__VLS_ctx.handleDeleteNote) });
-const __VLS_35 = ({ clearNotes: {} },
+const __VLS_34 = ({ clearNotes: {} },
     { onClearNotes: (__VLS_ctx.handleClearAllNotes) });
-const __VLS_36 = ({ toggleSort: {} },
+const __VLS_35 = ({ toggleSort: {} },
     { onToggleSort: (__VLS_ctx.toggleSort) });
-const __VLS_37 = ({ updateNoteStatus: {} },
+const __VLS_36 = ({ updateNoteStatus: {} },
     { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
-const __VLS_38 = ({ updateNoteChannel: {} },
+const __VLS_37 = ({ updateNoteChannel: {} },
     { onUpdateNoteChannel: (__VLS_ctx.handleUpdateNoteChannel) });
-const __VLS_39 = ({ toggleInputSound: {} },
+const __VLS_38 = ({ toggleInputSound: {} },
     { onToggleInputSound: (__VLS_ctx.handleToggleInputSound) });
-const __VLS_40 = ({ updateMapStar: {} },
+const __VLS_39 = ({ updateMapStar: {} },
     { onUpdateMapStar: (__VLS_ctx.handleUpdateMapStar) });
-const __VLS_41 = ({ showUpdateDialog: {} },
+const __VLS_40 = ({ showUpdateDialog: {} },
     { onShowUpdateDialog: (__VLS_ctx.handleShowUpdateDialog) });
 // @ts-ignore
 [maps, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleToggleInputSound, handleShowUpdateDialog,];
-var __VLS_31;
+var __VLS_30;
 /** @type {[typeof UpdateStatusDialog, ]} */ ;
 // @ts-ignore
-const __VLS_43 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
+const __VLS_42 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
     ...{ 'onUpdateNoteStatus': {} },
     ...{ 'onUpdateNoteCd': {} },
     modelValue: (__VLS_ctx.showUpdateDialog),
     currentNote: (__VLS_ctx.currentNoteToUpdate),
 }));
-const __VLS_44 = __VLS_43({
+const __VLS_43 = __VLS_42({
     ...{ 'onUpdateNoteStatus': {} },
     ...{ 'onUpdateNoteCd': {} },
     modelValue: (__VLS_ctx.showUpdateDialog),
     currentNote: (__VLS_ctx.currentNoteToUpdate),
-}, ...__VLS_functionalComponentArgsRest(__VLS_43));
+}, ...__VLS_functionalComponentArgsRest(__VLS_42));
+let __VLS_45;
 let __VLS_46;
-let __VLS_47;
-const __VLS_48 = ({ updateNoteStatus: {} },
+const __VLS_47 = ({ updateNoteStatus: {} },
     { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
-const __VLS_49 = ({ updateNoteCd: {} },
+const __VLS_48 = ({ updateNoteCd: {} },
     { onUpdateNoteCd: (__VLS_ctx.handleUpdateNoteCd) });
 // @ts-ignore
 [handleUpdateNoteStatus, showUpdateDialog, currentNoteToUpdate, handleUpdateNoteCd,];
-var __VLS_45;
-var __VLS_19;
+var __VLS_44;
+var __VLS_18;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "import-export-section" },
 });
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "import-export-buttons" },
 });
-const __VLS_51 = {}.ElButton;
+const __VLS_50 = {}.ElButton;
 /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
 // @ts-ignore
 ElButton;
 // @ts-ignore
-const __VLS_52 = __VLS_asFunctionalComponent(__VLS_51, new __VLS_51({
+const __VLS_51 = __VLS_asFunctionalComponent(__VLS_50, new __VLS_50({
     ...{ 'onClick': {} },
     type: "primary",
 }));
-const __VLS_53 = __VLS_52({
+const __VLS_52 = __VLS_51({
     ...{ 'onClick': {} },
     type: "primary",
-}, ...__VLS_functionalComponentArgsRest(__VLS_52));
+}, ...__VLS_functionalComponentArgsRest(__VLS_51));
+let __VLS_54;
 let __VLS_55;
-let __VLS_56;
-const __VLS_57 = ({ click: {} },
+const __VLS_56 = ({ click: {} },
     { onClick: (__VLS_ctx.exportNotes) });
-const { default: __VLS_58 } = __VLS_54.slots;
+const { default: __VLS_57 } = __VLS_53.slots;
 // @ts-ignore
 [exportNotes,];
-var __VLS_54;
-const __VLS_59 = {}.ElButton;
+var __VLS_53;
+const __VLS_58 = {}.ElButton;
 /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
 // @ts-ignore
 ElButton;
 // @ts-ignore
-const __VLS_60 = __VLS_asFunctionalComponent(__VLS_59, new __VLS_59({
+const __VLS_59 = __VLS_asFunctionalComponent(__VLS_58, new __VLS_58({
     ...{ 'onClick': {} },
     type: "success",
 }));
-const __VLS_61 = __VLS_60({
+const __VLS_60 = __VLS_59({
     ...{ 'onClick': {} },
     type: "success",
-}, ...__VLS_functionalComponentArgsRest(__VLS_60));
+}, ...__VLS_functionalComponentArgsRest(__VLS_59));
+let __VLS_62;
 let __VLS_63;
-let __VLS_64;
-const __VLS_65 = ({ click: {} },
+const __VLS_64 = ({ click: {} },
     { onClick: (__VLS_ctx.handleImportClick) });
-const { default: __VLS_66 } = __VLS_62.slots;
+const { default: __VLS_65 } = __VLS_61.slots;
 // @ts-ignore
 [handleImportClick,];
-var __VLS_62;
-const __VLS_67 = {}.ElInput;
+var __VLS_61;
+const __VLS_66 = {}.ElInput;
 /** @type {[typeof __VLS_components.ElInput, typeof __VLS_components.elInput, typeof __VLS_components.ElInput, typeof __VLS_components.elInput, ]} */ ;
 // @ts-ignore
 ElInput;
 // @ts-ignore
-const __VLS_68 = __VLS_asFunctionalComponent(__VLS_67, new __VLS_67({
+const __VLS_67 = __VLS_asFunctionalComponent(__VLS_66, new __VLS_66({
     modelValue: (__VLS_ctx.importExportData),
     type: "textarea",
     rows: (5),
     placeholder: "匯出的記錄會顯示在此處，或在此處貼上要匯入的資料",
 }));
-const __VLS_69 = __VLS_68({
+const __VLS_68 = __VLS_67({
     modelValue: (__VLS_ctx.importExportData),
     type: "textarea",
     rows: (5),
     placeholder: "匯出的記錄會顯示在此處，或在此處貼上要匯入的資料",
-}, ...__VLS_functionalComponentArgsRest(__VLS_68));
+}, ...__VLS_functionalComponentArgsRest(__VLS_67));
 // @ts-ignore
 [importExportData,];
 var __VLS_3;
+if (__VLS_ctx.featureFlags?.en) {
+    // @ts-ignore
+    [featureFlags,];
+    __VLS_asFunctionalElement(__VLS_elements.a, __VLS_elements.a)({
+        href: "https://github.com/xlisyuan/tosmEventTracker/issues",
+        target: "_blank",
+        rel: "noopener noreferrer",
+        title: "github",
+    });
+}
+else {
+    __VLS_asFunctionalElement(__VLS_elements.a, __VLS_elements.a)({
+        href: "https://forum.gamer.com.tw/C.php?bsn=74968&snA=700",
+        target: "_blank",
+        rel: "noopener noreferrer",
+        title: "巴哈姆特:【閒聊】追蹤野外活動的工具",
+    });
+}
 /** @type {__VLS_StyleScopedClasses['app-container']} */ ;
 /** @type {__VLS_StyleScopedClasses['app-header']} */ ;
 /** @type {__VLS_StyleScopedClasses['header-content']} */ ;
