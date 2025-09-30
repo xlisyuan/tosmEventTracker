@@ -342,12 +342,12 @@ const handleUpdateMapStar = (mapLevel) => {
 };
 const exportNotes = async () => {
     const exportedNotes = notes.value.map((note) => ({
-        mapLevel: note.mapLevel,
-        channel: note.channel,
-        onTime: note.onTime,
-        respawnTime: note.respawnTime,
-        state: note.state,
-        noteText: note.noteText,
+        l: note.mapLevel, // 縮寫: mapLevel -> l
+        c: note.channel, // 縮寫: channel -> c
+        o: note.onTime, // 縮寫: onTime -> o
+        r: note.respawnTime, // 縮寫: respawnTime -> r
+        s: note.state, // 縮寫: state -> s
+        n: note.noteText, // 縮寫: noteText -> n
     }));
     // importExportData.value = JSON.stringify(exportedNotes, null, 2);
     importExportData.value = JSON.stringify(exportedNotes);
@@ -376,13 +376,41 @@ const handleImportClick = async () => {
     }
     try {
         const importedNotes = JSON.parse(importExportData.value);
+        // 檢查資料格式：我們檢查新格式的 'l' 和 'c'，或舊格式的 'mapLevel' 和 'channel'
         if (!Array.isArray(importedNotes) ||
-            importedNotes.some((n) => !n.mapLevel || !n.channel)) {
+            importedNotes.some((n) => !(n.l || n.mapLevel) || !(n.c || n.channel))) {
             ElMessage({ type: "error", message: "匯入的資料格式不正確。" });
             return;
         }
+        // --- 核心解碼邏輯 ---
+        const processedImportedNotes = importedNotes
+            .map((importedNote) => {
+            // 使用 || 來兼容新格式 (l, c, o, r, s, n) 和舊格式 (mapLevel, channel, ...)
+            const mapLevel = importedNote.l || importedNote.mapLevel;
+            const channel = importedNote.c || importedNote.channel;
+            const onTime = importedNote.o || importedNote.onTime;
+            const respawnTime = importedNote.r || importedNote.respawnTime;
+            const state = importedNote.s || importedNote.state;
+            const noteText = importedNote.n || importedNote.noteText;
+            // 檢查地圖等級和名稱是否存在 (確保 mapData 可以被找到)
+            if (!mapLevel || !noteText) {
+                // 可以在這裡拋出錯誤，或跳過此筆資料
+                return null;
+            }
+            // 重新組裝成一個標準的物件，方便後續程式碼處理
+            return {
+                ...importedNote, // 保留所有原始屬性 (兼容舊版自訂屬性)
+                mapLevel,
+                channel,
+                onTime,
+                respawnTime,
+                state,
+                noteText, // 這裡的 noteText 包含了地圖名稱
+            };
+        })
+            .filter((n) => n !== null); // 過濾掉不合格的資料
         // 預載入圖片
-        for (const note of importedNotes) {
+        for (const note of processedImportedNotes) {
             await loadMapImage(note.noteText);
         }
         // 在建立 Map 時將 noteText 納入鍵中
@@ -392,7 +420,7 @@ const handleImportClick = async () => {
         ]));
         const nonDuplicateNotes = [];
         const duplicateNotes = [];
-        importedNotes.forEach((importedNote) => {
+        processedImportedNotes.forEach((importedNote) => {
             const mapData = maps.value.find((m) => m.level === importedNote.mapLevel && m.name === importedNote.noteText);
             const isExpired = importedNote.respawnTime <= Date.now();
             const processedNote = {
