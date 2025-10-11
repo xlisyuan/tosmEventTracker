@@ -10,7 +10,7 @@
     :close-on-click-modal="true"
     align-center
   >
-  <span style="font-size: large;">Lv. {{currentNote?.mapLevel}} {{currentNote?.noteText }} Ch. {{ currentNote?.channel }}</span>
+  <span style="font-size: large;">{{showName }}</span>
     <div
       style="
         display: flex;
@@ -85,6 +85,7 @@ const featureFlags = inject<Ref<{ nosec: boolean }>>("feature-flags");
 const props = defineProps<{
   modelValue: boolean;
   currentNote: Note | null;
+  showName: string;
 }>();
 
 const emit = defineEmits([

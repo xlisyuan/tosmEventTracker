@@ -52,6 +52,7 @@
       <UpdateStatusDialog
         v-model="showUpdateDialog"
         :current-note="currentNoteToUpdate"
+        :showName="updateMapName"
         @update-note-status="handleUpdateNoteStatus"
         @update-note-cd="handleUpdateNoteCd"
       />
@@ -279,12 +280,23 @@ const importExportData = ref("");
 
 const showUpdateDialog = ref(false);
 const currentNoteToUpdate = ref<Note | null>(null);
+const updateMapName = ref("");
 
 const handleShowUpdateDialog = (noteId: string) => {
   const note = notes.value.find((n) => n.id === noteId);
   if (note) {
     currentNoteToUpdate.value = note;
     showUpdateDialog.value = true;
+
+    const finalMapName = featureFlags.value.en
+      ? (() => {
+          const mapData = maps.value.find(
+            (m: MapData) => m.name === note.noteText
+          );
+          return mapData ? mapData.enName : note.noteText; 
+        })()
+      : note.noteText;
+    updateMapName.value = `Lv. ${note.mapLevel} ${finalMapName} Ch. ${note.channel}`
   }
 };
 
