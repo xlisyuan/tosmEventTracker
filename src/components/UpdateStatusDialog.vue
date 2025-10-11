@@ -10,6 +10,7 @@
     :close-on-click-modal="true"
     align-center
   >
+  <span style="font-size: large;">Lv. {{currentNote?.mapLevel}} {{currentNote?.noteText }} Ch. {{ currentNote?.channel }}</span>
     <div
       style="
         display: flex;
