@@ -153,11 +153,19 @@ const hasInputSoundOn = ref(true);
 const importExportData = ref("");
 const showUpdateDialog = ref(false);
 const currentNoteToUpdate = ref(null);
+const updateMapName = ref("");
 const handleShowUpdateDialog = (noteId) => {
     const note = notes.value.find((n) => n.id === noteId);
     if (note) {
         currentNoteToUpdate.value = note;
         showUpdateDialog.value = true;
+        const finalMapName = featureFlags.value.en
+            ? (() => {
+                const mapData = maps.value.find((m) => m.name === note.noteText);
+                return mapData ? mapData.enName : note.noteText;
+            })()
+            : note.noteText;
+        updateMapName.value = `Lv. ${note.mapLevel} ${finalMapName} Ch. ${note.channel}`;
     }
 };
 const toggleSort = () => {
@@ -704,12 +712,14 @@ const __VLS_42 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatu
     ...{ 'onUpdateNoteCd': {} },
     modelValue: (__VLS_ctx.showUpdateDialog),
     currentNote: (__VLS_ctx.currentNoteToUpdate),
+    showName: (__VLS_ctx.updateMapName),
 }));
 const __VLS_43 = __VLS_42({
     ...{ 'onUpdateNoteStatus': {} },
     ...{ 'onUpdateNoteCd': {} },
     modelValue: (__VLS_ctx.showUpdateDialog),
     currentNote: (__VLS_ctx.currentNoteToUpdate),
+    showName: (__VLS_ctx.updateMapName),
 }, ...__VLS_functionalComponentArgsRest(__VLS_42));
 let __VLS_45;
 let __VLS_46;
@@ -718,7 +728,7 @@ const __VLS_47 = ({ updateNoteStatus: {} },
 const __VLS_48 = ({ updateNoteCd: {} },
     { onUpdateNoteCd: (__VLS_ctx.handleUpdateNoteCd) });
 // @ts-ignore
-[handleUpdateNoteStatus, showUpdateDialog, currentNoteToUpdate, handleUpdateNoteCd,];
+[handleUpdateNoteStatus, showUpdateDialog, currentNoteToUpdate, updateMapName, handleUpdateNoteCd,];
 var __VLS_44;
 var __VLS_18;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
@@ -835,6 +845,7 @@ const __VLS_self = (await import('vue')).defineComponent({
         importExportData: importExportData,
         showUpdateDialog: showUpdateDialog,
         currentNoteToUpdate: currentNoteToUpdate,
+        updateMapName: updateMapName,
         handleShowUpdateDialog: handleShowUpdateDialog,
         toggleSort: toggleSort,
         handleAddNewNote: handleAddNewNote,

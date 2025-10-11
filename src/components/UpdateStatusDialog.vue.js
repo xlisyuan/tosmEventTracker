@@ -118,11 +118,9 @@ const { default: __VLS_8 } = __VLS_3.slots;
 __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
     ...{ style: {} },
 });
-(__VLS_ctx.currentNote?.mapLevel);
-(__VLS_ctx.currentNote?.noteText);
-(__VLS_ctx.currentNote?.channel);
+(__VLS_ctx.showName);
 // @ts-ignore
-[currentNote, currentNote, currentNote,];
+[showName,];
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ style: {} },
 });
