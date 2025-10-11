@@ -157,7 +157,7 @@
                 >{{ getStatusText(note) }}</el-button
               >
             </span>
-            <span v-else>
+            <span v-else @click="handleExpiredClick(note)">
               {{ getStatusText(note) }}
             </span>
           </el-col>
