@@ -115,6 +115,14 @@ const __VLS_6 = ({ 'update:modelValue': {} },
         } });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
+__VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
+    ...{ style: {} },
+});
+(__VLS_ctx.currentNote?.mapLevel);
+(__VLS_ctx.currentNote?.noteText);
+(__VLS_ctx.currentNote?.channel);
+// @ts-ignore
+[currentNote, currentNote, currentNote,];
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ style: {} },
 });
