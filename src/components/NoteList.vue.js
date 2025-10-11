@@ -981,7 +981,21 @@ else {
             var __VLS_204;
         }
         else {
-            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
+                ...{ onClick: (...[$event]) => {
+                        if (!!(__VLS_ctx.notes.length === 0))
+                            return;
+                        if (!!(note.state === 'CD' && note.respawnTime <= __VLS_ctx.currentTime))
+                            return;
+                        if (!!(note.state.startsWith('STAGE_')))
+                            return;
+                        if (!!(note.state === 'ON'))
+                            return;
+                        __VLS_ctx.handleExpiredClick(note);
+                        // @ts-ignore
+                        [handleExpiredClick,];
+                    } },
+            });
             (__VLS_ctx.getStatusText(note));
             // @ts-ignore
             [getStatusText,];
