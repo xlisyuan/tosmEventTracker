@@ -20,13 +20,13 @@
             @blur="isInputFocused = false"
           />
           <div
-            v-if="featureFlags?.nosec"
+            v-if="featureFlags?.nosec && !inputContent"
             v-show="isInputFocused"
             class="input-hint"
             v-html="hintTextNosec"
           ></div>
           <div
-            v-else
+            v-else-if="!inputContent"
             v-show="isInputFocused"
             class="input-hint"
             v-html="hintText"
