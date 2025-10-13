@@ -453,9 +453,9 @@ else {
             } });
     var __VLS_32;
 }
-if (__VLS_ctx.featureFlags?.nosec) {
+if (__VLS_ctx.featureFlags?.nosec && !__VLS_ctx.inputContent) {
     // @ts-ignore
-    [featureFlags,];
+    [featureFlags, inputContent,];
     __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
         ...{ class: "input-hint" },
     });
@@ -464,7 +464,9 @@ if (__VLS_ctx.featureFlags?.nosec) {
     // @ts-ignore
     [isInputFocused, vShow, vHtml, hintTextNosec,];
 }
-else {
+else if (!__VLS_ctx.inputContent) {
+    // @ts-ignore
+    [inputContent,];
     __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
         ...{ class: "input-hint" },
     });
