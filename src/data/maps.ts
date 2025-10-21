@@ -96,5 +96,11 @@ export const maps: MapData[] = [
     { episode: 11, level: 86, name: '堤拉修道院', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/堤拉修道院.webp`, enName: 'Tyla Monastery' },
     { episode: 11, level: 87, name: '貝拉伊森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/貝拉伊森林.webp`, enName: 'Bellai Rainforest' },
     { episode: 11, level: 88, name: '潔拉哈', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/潔拉哈.webp`, enName: 'Zeraha' },
-    { episode: 11, level: 89, name: '世伊魯森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/世伊魯森林.webp`, enName: 'Seir Rainforest' }
+    { episode: 11, level: 89, name: '世伊魯森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/世伊魯森林.webp`, enName: 'Seir Rainforest' },
+    
+     // EP12
+    { episode: 12, level: 90, name: '沿岸要塞', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/沿岸要塞.webp`, enName: 'Coastal Fortress' },
+    { episode: 12, level: 91, name: '丁格巴希地區', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/丁格巴希地區.webp`, enName: 'Dingofasil District' },
+    { episode: 12, level: 92, name: '大地要塞貯藏區域', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/大地要塞貯藏區域.webp`, enName: 'Storage Quarter' },
+    { episode: 12, level: 93, name: '大地要塞決戰地', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/大地要塞決戰地.webp`, enName: 'Fortress Battlegrounds' }
 ];
