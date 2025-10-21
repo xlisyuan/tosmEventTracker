@@ -69,7 +69,7 @@
           <el-col :span="7" :xs="8">
             <span class="map-name-content">
               <el-popover
-                v-if="!isXs"
+                v-if="(!isXs && featureFlags?.pic)"
                 placement="top"
                 trigger="hover"
                 :width="425"
@@ -208,7 +208,7 @@ import {
   Delete,
 } from "@element-plus/icons-vue";
 
-const featureFlags = inject<Ref<{ en: boolean }>>("feature-flags");
+const featureFlags = inject<Ref<{ pic: boolean,en: boolean }>>("feature-flags");
 
 const props = defineProps<{
   notes: Note[];
