@@ -667,9 +667,9 @@ else {
         __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
             ...{ class: "map-name-content" },
         });
-        if (!__VLS_ctx.isXs) {
+        if ((!__VLS_ctx.isXs && __VLS_ctx.featureFlags?.pic)) {
             // @ts-ignore
-            [isXs,];
+            [isXs, featureFlags,];
             const __VLS_139 = {}.ElPopover;
             /** @type {[typeof __VLS_components.ElPopover, typeof __VLS_components.elPopover, typeof __VLS_components.ElPopover, typeof __VLS_components.elPopover, ]} */ ;
             // @ts-ignore
