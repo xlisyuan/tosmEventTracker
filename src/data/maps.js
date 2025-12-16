@@ -83,5 +83,11 @@ export const maps = [
     { episode: 13, level: 95, name: '阿勒篾森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Alemeth Forest' },
     { episode: 13, level: 98, name: '巴勒哈森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Barha Forest' },
     { episode: 13, level: 101, name: '卡雷伊瑪斯接見所', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Kalejimas Visiting Room' },
-    { episode: 13, level: 103, name: '卡雷伊瑪斯拷問所', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Investigation Room' }
+    { episode: 13, level: 103, name: '卡雷伊瑪斯拷問所', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Investigation Room' },
+    // EP14
+    { episode: 14, level: 105, name: '娜圖森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Nheto Forest' },
+    { episode: 14, level: 107, name: '史巴賓嘉斯森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Svalphinghas Forest' },
+    { episode: 14, level: 109, name: '娜塔勒森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Lhadar Forest' },
+    { episode: 14, level: 111, name: '泰芙林鐘乳洞1區域', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Tevhrin Stalactite Cave Section 1' },
+    { episode: 14, level: 113, name: '泰芙林鐘乳洞2區域', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Tevhrin Stalactite Cave Section 2' }
 ];
