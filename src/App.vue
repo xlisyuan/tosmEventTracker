@@ -7,9 +7,9 @@
           <div
             v-if="featureFlags?.nosec"
             type="warning"
-            style="text-align: left"
+            style="text-align: left; color: #aaa;"
           >
-            測試中: 不使用秒數唷 <br />
+            目前設定: 不使用秒數 <br />
             (例) CD 1小時 23分鐘 請輸入 <b>1.23</b> <br />
             (例) CD 5分鐘 請輸入 <b>5</b>
           </div>
