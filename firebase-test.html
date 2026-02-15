@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Event Tracker Test</title>
+  <script type="module">
+    // Firebase SDK 引入
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // 你的 Firebase 設定（從 Firebase SDK 頁複製）
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMuk8fWfq4jTj76SBH8iOMZUNedhTJ3m0",
+      authDomain: "webapp-ceb18.firebaseapp.com",
+      projectId: "webapp-ceb18",
+      storageBucket: "webapp-ceb18.firebasestorage.app",
+      messagingSenderId: "1094462364537",
+      appId: "1:1094462364537:web:4a6ea7926ff19b9be2eda8",
+      measurementId: "G-ZGQNRBVDK2"
+    };
+
+    // 初始化 Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 監聽 Firestore 實時更新
+    const eventsCol = collection(db, "events");
+    onSnapshot(eventsCol, (snapshot) => {
+      const list = document.getElementById("eventList");
+      list.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.BOSS || "?"} | ${data.channel || "?"} | ${data.time || "?"} | ${data.note || ""}`;
+        list.appendChild(li);
+      });
+    });
+
+    // 送出表單
+    async function addEvent() {
+      const boss = document.getElementById("boss").value;
+      const channel = document.getElementById("channel").value;
+      const time = document.getElementById("time").value;
+      const note = document.getElementById("note").value;
+      if (!boss || !channel || !time) {
+        alert("請填寫完整資料！");
+        return;
+      }
+      await addDoc(eventsCol, { BOSS: boss, channel, time, note });
+      alert("已新增事件！");
+    }
+    window.addEvent = addEvent;
+  </script>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: #181818;
+      color: #eee;
+      text-align: center;
+      padding: 30px;
+    }
+    input, button {
+      margin: 5px;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+    }
+    input { width: 150px; }
+    button {
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+    ul { text-align: left; margin: 20px auto; width: 60%; }
+  </style>
+</head>
+<body>
+  <h2>🔥 Firebase Event Tracker 測試</h2>
+  <div>
+    <input id="boss" placeholder="Boss 名稱">
+    <input id="channel" placeholder="分流">
+    <input id="time" placeholder="時間">
+    <input id="note" placeholder="備註">
+    <button onclick="addEvent()">新增</button>
+  </div>
+  <ul id="eventList"></ul>
+</body>
+</html>
