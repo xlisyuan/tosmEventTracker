@@ -127,5 +127,12 @@ export const maps: MapData[] = [
     { episode: 16, level: 125, name: '捷泰奧海岸', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Zeteor Coast' },
     { episode: 16, level: 128, name: '艾泰奧海岸', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Iotheo Coast' },
     { episode: 16, level: 130, name: '埃佩羅塔奧海岸', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Epherotao Coast' },
-    { episode: 16, level: 133, name: '藍庫22海域', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Lanko 22 Waters' }
+    { episode: 16, level: 133, name: '藍庫22海域', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Lanko 22 Waters' },
+
+    // EP17
+    { episode: 17, level: 135, name: '泰萊希森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Teresh Forest' },
+    { episode: 17, level: 138, name: '沙烏席斯10館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Sausis Room 10' },
+    { episode: 17, level: 140, name: '巴蘭迪斯3館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Valandis Room 3' },
+    { episode: 17, level: 143, name: '巴蘭迪斯91館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Valandis Room 91' }
+
 ];
