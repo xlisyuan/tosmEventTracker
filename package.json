@@ -1,11 +1,11 @@
 {
   "name": "tosm-event-tracker",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vue-tsc -b && vite build && node scripts/postbuild.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
