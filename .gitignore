@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.env.local
+
+# Firebase / Functions
+.firebaserc.local
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+functions/.env*
+functions/node_modules/
+service-account*.json
