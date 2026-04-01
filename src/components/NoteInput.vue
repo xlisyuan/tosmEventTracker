@@ -164,11 +164,9 @@
 <script setup lang="ts">
 import {
   ref,
-  defineEmits,
   computed,
   watch,
   h,
-  defineProps,
   inject,
   Ref,
 } from "vue";
@@ -184,11 +182,11 @@ const props = defineProps({
   maps: Array as () => MapData[],
 });
 
-const emit = defineEmits(["add-note", "update-map-star"]);
+const emit = defineEmits(["add-note", "update-map-star", "toggle-input-sound"]);
 
 const inputContent = ref("");
 const timeInput = ref("");
-const hasSound = ref(true);
+const hasSound = ref(props.hasSound ?? true);
 const selectedEpisode = ref(0);
 const isStarSelection = ref(false);
 const isCollapsed = ref(false);
@@ -198,9 +196,13 @@ const isInputFocused = ref(false);
 watch(
   () => props.hasSound,
   (newVal) => {
-    hasSound.value = newVal;
+    hasSound.value = newVal ?? true;
   }
 );
+
+watch(hasSound, (newVal) => {
+  emit("toggle-input-sound", newVal);
+});
 
 const hintText = ref(`
   <strong>支援格式</strong>: 地圖等級 (空格) 分流 (空格) CD時間或狀態<br>

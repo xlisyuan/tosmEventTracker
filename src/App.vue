@@ -29,6 +29,7 @@
     <el-main class="app-main">
       <NoteInput
         @add-note="handleAddNewNote"
+        @toggle-input-sound="handleToggleInputSound"
         :hasSound="hasInputSoundOn"
         :maps="maps"
         @update-map-star="handleUpdateMapStar"
@@ -278,6 +279,7 @@ const notes = ref<Note[]>([]);
 const currentSortMode = ref<"time" | "map">("time");
 const ON_TIME_LIMIT_MS = 30 * 60 * 1000;
 const hasInputSoundOn = ref(true);
+const INPUT_SOUND_STORAGE_KEY = "input-sound-on";
 const importExportData = ref("");
 
 const showUpdateDialog = ref(false);
@@ -505,6 +507,7 @@ const handleUpdateNoteCd = (id: string, respawnTime: number) => {
 
 const handleToggleInputSound = (state: boolean) => {
   hasInputSoundOn.value = state;
+  localStorage.setItem(INPUT_SOUND_STORAGE_KEY, JSON.stringify(state));
 };
 
 const handleUpdateNoteSound = (id: string, hasSound: boolean) => {
@@ -732,6 +735,11 @@ onMounted(() => {
     document.documentElement.classList.add("dark");
   } else {
     document.documentElement.classList.remove("dark");
+  }
+
+  const savedInputSound = localStorage.getItem(INPUT_SOUND_STORAGE_KEY);
+  if (savedInputSound !== null) {
+    hasInputSoundOn.value = savedInputSound === "true";
   }
 
   loadNotes();

@@ -42,6 +42,7 @@
         />
         <NoteInput
           @add-note="handleAddNewNote"
+          @toggle-input-sound="handleToggleInputSound"
           :hasSound="hasInputSoundOn"
           :maps="maps"
           @update-map-star="handleUpdateMapStar"
