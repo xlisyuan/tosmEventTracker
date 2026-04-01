@@ -565,12 +565,14 @@ else {
     // @ts-ignore
     const __VLS_47 = __VLS_asFunctionalComponent(NoteInput, new NoteInput({
         ...{ 'onAddNote': {} },
+        ...{ 'onToggleInputSound': {} },
         ...{ 'onUpdateMapStar': {} },
         hasSound: (__VLS_ctx.hasInputSoundOn),
         maps: (__VLS_ctx.maps),
     }));
     const __VLS_48 = __VLS_47({
         ...{ 'onAddNote': {} },
+        ...{ 'onToggleInputSound': {} },
         ...{ 'onUpdateMapStar': {} },
         hasSound: (__VLS_ctx.hasInputSoundOn),
         maps: (__VLS_ctx.maps),
@@ -579,17 +581,19 @@ else {
     let __VLS_51;
     const __VLS_52 = ({ addNote: {} },
         { onAddNote: (__VLS_ctx.handleAddNewNote) });
-    const __VLS_53 = ({ updateMapStar: {} },
+    const __VLS_53 = ({ toggleInputSound: {} },
+        { onToggleInputSound: (__VLS_ctx.handleToggleInputSound) });
+    const __VLS_54 = ({ updateMapStar: {} },
         { onUpdateMapStar: (__VLS_ctx.handleUpdateMapStar) });
     // @ts-ignore
-    [hasInputSoundOn, maps, handleAddNewNote, handleUpdateMapStar,];
+    [hasInputSoundOn, maps, handleAddNewNote, handleToggleInputSound, handleUpdateMapStar,];
     var __VLS_49;
     __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
         ...{ class: "list-card-container" },
     });
     /** @type {[typeof NoteList, ]} */ ;
     // @ts-ignore
-    const __VLS_55 = __VLS_asFunctionalComponent(NoteList, new NoteList({
+    const __VLS_56 = __VLS_asFunctionalComponent(NoteList, new NoteList({
         ...{ 'onDeleteNote': {} },
         ...{ 'onClearNotes': {} },
         ...{ 'onToggleSort': {} },
@@ -605,7 +609,7 @@ else {
         maps: (__VLS_ctx.maps),
         mapImageCache: (__VLS_ctx.mapImageCache),
     }));
-    const __VLS_56 = __VLS_55({
+    const __VLS_57 = __VLS_56({
         ...{ 'onDeleteNote': {} },
         ...{ 'onClearNotes': {} },
         ...{ 'onToggleSort': {} },
@@ -620,57 +624,57 @@ else {
         currentSortMode: (__VLS_ctx.currentSortMode),
         maps: (__VLS_ctx.maps),
         mapImageCache: (__VLS_ctx.mapImageCache),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_55));
-    let __VLS_58;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_56));
     let __VLS_59;
-    const __VLS_60 = ({ deleteNote: {} },
+    let __VLS_60;
+    const __VLS_61 = ({ deleteNote: {} },
         { onDeleteNote: (__VLS_ctx.handleDeleteNote) });
-    const __VLS_61 = ({ clearNotes: {} },
+    const __VLS_62 = ({ clearNotes: {} },
         { onClearNotes: (__VLS_ctx.handleClearAllNotes) });
-    const __VLS_62 = ({ toggleSort: {} },
+    const __VLS_63 = ({ toggleSort: {} },
         { onToggleSort: (__VLS_ctx.toggleSort) });
-    const __VLS_63 = ({ updateNoteStatus: {} },
+    const __VLS_64 = ({ updateNoteStatus: {} },
         { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
-    const __VLS_64 = ({ updateNoteChannel: {} },
+    const __VLS_65 = ({ updateNoteChannel: {} },
         { onUpdateNoteChannel: (__VLS_ctx.handleUpdateNoteChannel) });
-    const __VLS_65 = ({ updateNoteSound: {} },
+    const __VLS_66 = ({ updateNoteSound: {} },
         { onUpdateNoteSound: (__VLS_ctx.handleUpdateNoteSound) });
-    const __VLS_66 = ({ updateAllNoteSound: {} },
+    const __VLS_67 = ({ updateAllNoteSound: {} },
         { onUpdateAllNoteSound: (__VLS_ctx.handleUpdateAllNoteSound) });
-    const __VLS_67 = ({ toggleInputSound: {} },
+    const __VLS_68 = ({ toggleInputSound: {} },
         { onToggleInputSound: (__VLS_ctx.handleToggleInputSound) });
-    const __VLS_68 = ({ updateMapStar: {} },
+    const __VLS_69 = ({ updateMapStar: {} },
         { onUpdateMapStar: (__VLS_ctx.handleUpdateMapStar) });
-    const __VLS_69 = ({ showUpdateDialog: {} },
+    const __VLS_70 = ({ showUpdateDialog: {} },
         { onShowUpdateDialog: (__VLS_ctx.handleShowUpdateDialog) });
     // @ts-ignore
-    [maps, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleUpdateNoteSound, handleUpdateAllNoteSound, handleToggleInputSound, handleShowUpdateDialog,];
-    var __VLS_57;
+    [maps, handleToggleInputSound, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleUpdateNoteSound, handleUpdateAllNoteSound, handleShowUpdateDialog,];
+    var __VLS_58;
     /** @type {[typeof UpdateStatusDialog, ]} */ ;
     // @ts-ignore
-    const __VLS_71 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
+    const __VLS_72 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
         ...{ 'onUpdateNoteStatus': {} },
         ...{ 'onUpdateNoteCd': {} },
         modelValue: (__VLS_ctx.showUpdateDialog),
         currentNote: (__VLS_ctx.currentNoteToUpdate),
         showName: (__VLS_ctx.updateMapName),
     }));
-    const __VLS_72 = __VLS_71({
+    const __VLS_73 = __VLS_72({
         ...{ 'onUpdateNoteStatus': {} },
         ...{ 'onUpdateNoteCd': {} },
         modelValue: (__VLS_ctx.showUpdateDialog),
         currentNote: (__VLS_ctx.currentNoteToUpdate),
         showName: (__VLS_ctx.updateMapName),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_71));
-    let __VLS_74;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_72));
     let __VLS_75;
-    const __VLS_76 = ({ updateNoteStatus: {} },
+    let __VLS_76;
+    const __VLS_77 = ({ updateNoteStatus: {} },
         { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
-    const __VLS_77 = ({ updateNoteCd: {} },
+    const __VLS_78 = ({ updateNoteCd: {} },
         { onUpdateNoteCd: (__VLS_ctx.handleUpdateNoteCd) });
     // @ts-ignore
     [handleUpdateNoteStatus, showUpdateDialog, currentNoteToUpdate, updateMapName, handleUpdateNoteCd,];
-    var __VLS_73;
+    var __VLS_74;
 }
 var __VLS_19;
 var __VLS_3;

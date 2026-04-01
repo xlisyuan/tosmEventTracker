@@ -1,4 +1,4 @@
-import { ref, defineEmits, computed, watch, h, defineProps, inject, } from "vue";
+import { ref, computed, watch, h, inject, } from "vue";
 import { ElMessage, ElMessageBox, ElButton } from "element-plus";
 import { ArrowUp, ArrowDown, StarFilled } from "@element-plus/icons-vue";
 const featureFlags = inject("feature-flags");
@@ -6,17 +6,20 @@ const props = defineProps({
     hasSound: Boolean,
     maps: Array,
 });
-const emit = defineEmits(["add-note", "update-map-star"]);
+const emit = defineEmits(["add-note", "update-map-star", "toggle-input-sound"]);
 const inputContent = ref("");
 const timeInput = ref("");
-const hasSound = ref(true);
+const hasSound = ref(props.hasSound ?? true);
 const selectedEpisode = ref(0);
 const isStarSelection = ref(false);
 const isCollapsed = ref(false);
 const isChannelConfirmed = ref(false);
 const isInputFocused = ref(false);
 watch(() => props.hasSound, (newVal) => {
-    hasSound.value = newVal;
+    hasSound.value = newVal ?? true;
+});
+watch(hasSound, (newVal) => {
+    emit("toggle-input-sound", newVal);
 });
 const hintText = ref(`
   <strong>支援格式</strong>: 地圖等級 (空格) 分流 (空格) CD時間或狀態<br>
