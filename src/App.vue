@@ -42,6 +42,8 @@
           @toggle-sort="toggleSort"
           @update-note-status="handleUpdateNoteStatus"
           @update-note-channel="handleUpdateNoteChannel"
+        @update-note-sound="handleUpdateNoteSound"
+        @update-all-note-sound="handleUpdateAllNoteSound"
           @toggle-input-sound="handleToggleInputSound"
           :maps="maps"
           @update-map-star="handleUpdateMapStar"
@@ -503,6 +505,20 @@ const handleUpdateNoteCd = (id: string, respawnTime: number) => {
 
 const handleToggleInputSound = (state: boolean) => {
   hasInputSoundOn.value = state;
+};
+
+const handleUpdateNoteSound = (id: string, hasSound: boolean) => {
+  const note = notes.value.find((n) => n.id === id);
+  if (!note) return;
+  note.hasSound = hasSound;
+  saveNotes();
+};
+
+const handleUpdateAllNoteSound = (hasSound: boolean) => {
+  notes.value.forEach((note) => {
+    note.hasSound = hasSound;
+  });
+  saveNotes();
 };
 
 const handleUpdateMapStar = (mapLevel: number) => {

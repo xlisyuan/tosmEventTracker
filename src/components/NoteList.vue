@@ -188,8 +188,6 @@
 <script setup lang="ts">
 import {
   ref,
-  defineProps,
-  defineEmits,
   onMounted,
   onUnmounted,
   h,
@@ -223,6 +221,8 @@ const emit = defineEmits([
   "toggle-sort",
   "update-note-status",
   "update-note-channel",
+  "update-note-sound",
+  "update-all-note-sound",
   "toggle-input-sound",
   "update-map-star",
   "show-update-dialog",
@@ -458,6 +458,7 @@ const toggleStar = (mapLevel: number) => {
 
 const toggleSound = (note: Note) => {
   note.hasSound = !note.hasSound;
+  emit("update-note-sound", note.id, note.hasSound);
 };
 
 const handleToggleAllSound = () => {
@@ -465,6 +466,7 @@ const handleToggleAllSound = () => {
   props.notes.forEach((note) => {
     note.hasSound = isAllSoundOn.value;
   });
+  emit("update-all-note-sound", isAllSoundOn.value);
   emit("toggle-input-sound", isAllSoundOn.value);
 };
 

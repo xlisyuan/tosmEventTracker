@@ -55,6 +55,8 @@
             @toggle-sort="toggleSort"
             @update-note-status="handleUpdateNoteStatus"
             @update-note-channel="handleUpdateNoteChannel"
+            @update-note-sound="handleUpdateNoteSound"
+            @update-all-note-sound="handleUpdateAllNoteSound"
             @toggle-input-sound="handleToggleInputSound"
             :maps="maps"
             @update-map-star="handleUpdateMapStar"
@@ -153,6 +155,31 @@ const loadMapImage = async (noteText: string) => {
 const getDocId = (mapLevel: number, channel: number, noteText: string) =>
   `${mapLevel}_${channel}_${encodeURIComponent(noteText.trim())}`;
 
+const SA_NOTE_SOUND_STORAGE_KEY = "sa-note-sound-settings";
+const SA_INPUT_SOUND_STORAGE_KEY = "sa-input-sound-on";
+
+const getNoteSoundSettings = (): Record<string, boolean> => {
+  const saved = localStorage.getItem(SA_NOTE_SOUND_STORAGE_KEY);
+  if (!saved) return {};
+  try {
+    return JSON.parse(saved) as Record<string, boolean>;
+  } catch {
+    return {};
+  }
+};
+
+const setNoteSoundSetting = (noteId: string, hasSound: boolean) => {
+  const settings = getNoteSoundSettings();
+  settings[noteId] = hasSound;
+  localStorage.setItem(SA_NOTE_SOUND_STORAGE_KEY, JSON.stringify(settings));
+};
+
+const getNoteSoundSetting = (noteId: string): boolean => {
+  const settings = getNoteSoundSettings();
+  if (noteId in settings) return settings[noteId];
+  return hasInputSoundOn.value;
+};
+
 const sortNotesArray = (a: Note, b: Note): number => {
   const now = Date.now();
   const getCategory = (state: string) => {
@@ -197,7 +224,6 @@ const saveNoteToFirestore = async (note: Note) => {
     respawnTime: note.respawnTime ?? null,
     state: note.state,
     maxStages: note.maxStages ?? 4,
-    hasSound: note.hasSound ?? true,
     updatedBy: clientId,
     updatedAt: serverTimestamp(),
   });
@@ -212,15 +238,16 @@ const subscribeNotes = () => {
       const mapData = maps.value.find((m) => m.level === d.mapLevel && m.name === d.noteText);
       const mapName = d.noteText || mapData?.name;
       if (!mapName) return;
+      const noteId = getDocId(d.mapLevel, d.channel, mapName);
       nextNotes.push({
-        id: snap.id,
+        id: noteId,
         mapLevel: d.mapLevel,
         channel: d.channel,
         noteText: mapName,
         respawnTime: d.respawnTime ?? 0,
         state: d.state ?? "CD",
         isStarred: mapData?.isStarred ?? false,
-        hasSound: d.hasSound ?? true,
+        hasSound: getNoteSoundSetting(noteId),
         maxStages: d.maxStages ?? mapData?.maxStages ?? 4,
         onTime: d.onTime ?? null,
         hasAlerted: false,
@@ -249,6 +276,7 @@ const handleAddNewNote = async (newNote: any) => {
     onTime: newNote.onTime || null,
     hasAlerted: false,
   };
+  setNoteSoundSetting(finalNote.id, finalNote.hasSound);
   await saveNoteToFirestore(finalNote);
   ElMessage({
     type: "success",
@@ -314,6 +342,22 @@ const handleUpdateNoteChannel = async (id: string, newChannel: number) => {
 
 const handleToggleInputSound = (state: boolean) => {
   hasInputSoundOn.value = state;
+  localStorage.setItem(SA_INPUT_SOUND_STORAGE_KEY, JSON.stringify(state));
+};
+
+const handleUpdateNoteSound = (id: string, hasSound: boolean) => {
+  const note = notes.value.find((n) => n.id === id);
+  if (!note) return;
+  note.hasSound = hasSound;
+  setNoteSoundSetting(id, hasSound);
+};
+
+const handleUpdateAllNoteSound = (hasSound: boolean) => {
+  if (notes.value.length === 0) return;
+  notes.value.forEach((note) => {
+    note.hasSound = hasSound;
+    setNoteSoundSetting(note.id, hasSound);
+  });
 };
 
 const handleUpdateMapStar = (mapLevel: number) => {
@@ -407,6 +451,10 @@ onMounted(() => {
 
   const savedMaps = localStorage.getItem("sa-mapData");
   if (savedMaps) maps.value = JSON.parse(savedMaps);
+  const savedInputSound = localStorage.getItem(SA_INPUT_SOUND_STORAGE_KEY);
+  if (savedInputSound !== null) {
+    hasInputSoundOn.value = savedInputSound === "true";
+  }
 
   if (isFirebaseConfigured && saAuth) {
     unsubscribeAuth = onAuthStateChanged(saAuth, (user) => {
