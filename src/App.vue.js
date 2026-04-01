@@ -341,6 +341,19 @@ const handleUpdateNoteCd = (id, respawnTime) => {
 const handleToggleInputSound = (state) => {
     hasInputSoundOn.value = state;
 };
+const handleUpdateNoteSound = (id, hasSound) => {
+    const note = notes.value.find((n) => n.id === id);
+    if (!note)
+        return;
+    note.hasSound = hasSound;
+    saveNotes();
+};
+const handleUpdateAllNoteSound = (hasSound) => {
+    notes.value.forEach((note) => {
+        note.hasSound = hasSound;
+    });
+    saveNotes();
+};
 const handleUpdateMapStar = (mapLevel) => {
     const map = maps.value.find((m) => m.level === mapLevel);
     if (map) {
@@ -662,6 +675,8 @@ const __VLS_28 = __VLS_asFunctionalComponent(NoteList, new NoteList({
     ...{ 'onToggleSort': {} },
     ...{ 'onUpdateNoteStatus': {} },
     ...{ 'onUpdateNoteChannel': {} },
+    ...{ 'onUpdateNoteSound': {} },
+    ...{ 'onUpdateAllNoteSound': {} },
     ...{ 'onToggleInputSound': {} },
     ...{ 'onUpdateMapStar': {} },
     ...{ 'onShowUpdateDialog': {} },
@@ -676,6 +691,8 @@ const __VLS_29 = __VLS_28({
     ...{ 'onToggleSort': {} },
     ...{ 'onUpdateNoteStatus': {} },
     ...{ 'onUpdateNoteChannel': {} },
+    ...{ 'onUpdateNoteSound': {} },
+    ...{ 'onUpdateAllNoteSound': {} },
     ...{ 'onToggleInputSound': {} },
     ...{ 'onUpdateMapStar': {} },
     ...{ 'onShowUpdateDialog': {} },
@@ -696,40 +713,44 @@ const __VLS_36 = ({ updateNoteStatus: {} },
     { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
 const __VLS_37 = ({ updateNoteChannel: {} },
     { onUpdateNoteChannel: (__VLS_ctx.handleUpdateNoteChannel) });
-const __VLS_38 = ({ toggleInputSound: {} },
+const __VLS_38 = ({ updateNoteSound: {} },
+    { onUpdateNoteSound: (__VLS_ctx.handleUpdateNoteSound) });
+const __VLS_39 = ({ updateAllNoteSound: {} },
+    { onUpdateAllNoteSound: (__VLS_ctx.handleUpdateAllNoteSound) });
+const __VLS_40 = ({ toggleInputSound: {} },
     { onToggleInputSound: (__VLS_ctx.handleToggleInputSound) });
-const __VLS_39 = ({ updateMapStar: {} },
+const __VLS_41 = ({ updateMapStar: {} },
     { onUpdateMapStar: (__VLS_ctx.handleUpdateMapStar) });
-const __VLS_40 = ({ showUpdateDialog: {} },
+const __VLS_42 = ({ showUpdateDialog: {} },
     { onShowUpdateDialog: (__VLS_ctx.handleShowUpdateDialog) });
 // @ts-ignore
-[maps, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleToggleInputSound, handleShowUpdateDialog,];
+[maps, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleUpdateNoteSound, handleUpdateAllNoteSound, handleToggleInputSound, handleShowUpdateDialog,];
 var __VLS_30;
 /** @type {[typeof UpdateStatusDialog, ]} */ ;
 // @ts-ignore
-const __VLS_42 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
+const __VLS_44 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
     ...{ 'onUpdateNoteStatus': {} },
     ...{ 'onUpdateNoteCd': {} },
     modelValue: (__VLS_ctx.showUpdateDialog),
     currentNote: (__VLS_ctx.currentNoteToUpdate),
     showName: (__VLS_ctx.updateMapName),
 }));
-const __VLS_43 = __VLS_42({
+const __VLS_45 = __VLS_44({
     ...{ 'onUpdateNoteStatus': {} },
     ...{ 'onUpdateNoteCd': {} },
     modelValue: (__VLS_ctx.showUpdateDialog),
     currentNote: (__VLS_ctx.currentNoteToUpdate),
     showName: (__VLS_ctx.updateMapName),
-}, ...__VLS_functionalComponentArgsRest(__VLS_42));
-let __VLS_45;
-let __VLS_46;
-const __VLS_47 = ({ updateNoteStatus: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_44));
+let __VLS_47;
+let __VLS_48;
+const __VLS_49 = ({ updateNoteStatus: {} },
     { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
-const __VLS_48 = ({ updateNoteCd: {} },
+const __VLS_50 = ({ updateNoteCd: {} },
     { onUpdateNoteCd: (__VLS_ctx.handleUpdateNoteCd) });
 // @ts-ignore
 [handleUpdateNoteStatus, showUpdateDialog, currentNoteToUpdate, updateMapName, handleUpdateNoteCd,];
-var __VLS_44;
+var __VLS_46;
 var __VLS_18;
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "import-export-section" },
@@ -737,65 +758,65 @@ __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
 __VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
     ...{ class: "import-export-buttons" },
 });
-const __VLS_50 = {}.ElButton;
+const __VLS_52 = {}.ElButton;
 /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
 // @ts-ignore
 ElButton;
 // @ts-ignore
-const __VLS_51 = __VLS_asFunctionalComponent(__VLS_50, new __VLS_50({
+const __VLS_53 = __VLS_asFunctionalComponent(__VLS_52, new __VLS_52({
     ...{ 'onClick': {} },
     type: "primary",
 }));
-const __VLS_52 = __VLS_51({
+const __VLS_54 = __VLS_53({
     ...{ 'onClick': {} },
     type: "primary",
-}, ...__VLS_functionalComponentArgsRest(__VLS_51));
-let __VLS_54;
-let __VLS_55;
-const __VLS_56 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_53));
+let __VLS_56;
+let __VLS_57;
+const __VLS_58 = ({ click: {} },
     { onClick: (__VLS_ctx.exportNotes) });
-const { default: __VLS_57 } = __VLS_53.slots;
+const { default: __VLS_59 } = __VLS_55.slots;
 // @ts-ignore
 [exportNotes,];
-var __VLS_53;
-const __VLS_58 = {}.ElButton;
+var __VLS_55;
+const __VLS_60 = {}.ElButton;
 /** @type {[typeof __VLS_components.ElButton, typeof __VLS_components.elButton, typeof __VLS_components.ElButton, typeof __VLS_components.elButton, ]} */ ;
 // @ts-ignore
 ElButton;
 // @ts-ignore
-const __VLS_59 = __VLS_asFunctionalComponent(__VLS_58, new __VLS_58({
+const __VLS_61 = __VLS_asFunctionalComponent(__VLS_60, new __VLS_60({
     ...{ 'onClick': {} },
     type: "success",
 }));
-const __VLS_60 = __VLS_59({
+const __VLS_62 = __VLS_61({
     ...{ 'onClick': {} },
     type: "success",
-}, ...__VLS_functionalComponentArgsRest(__VLS_59));
-let __VLS_62;
-let __VLS_63;
-const __VLS_64 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_61));
+let __VLS_64;
+let __VLS_65;
+const __VLS_66 = ({ click: {} },
     { onClick: (__VLS_ctx.handleImportClick) });
-const { default: __VLS_65 } = __VLS_61.slots;
+const { default: __VLS_67 } = __VLS_63.slots;
 // @ts-ignore
 [handleImportClick,];
-var __VLS_61;
-const __VLS_66 = {}.ElInput;
+var __VLS_63;
+const __VLS_68 = {}.ElInput;
 /** @type {[typeof __VLS_components.ElInput, typeof __VLS_components.elInput, typeof __VLS_components.ElInput, typeof __VLS_components.elInput, ]} */ ;
 // @ts-ignore
 ElInput;
 // @ts-ignore
-const __VLS_67 = __VLS_asFunctionalComponent(__VLS_66, new __VLS_66({
+const __VLS_69 = __VLS_asFunctionalComponent(__VLS_68, new __VLS_68({
     modelValue: (__VLS_ctx.importExportData),
     type: "textarea",
     rows: (5),
     placeholder: "匯出的記錄會顯示在此處，或在此處貼上要匯入的資料",
 }));
-const __VLS_68 = __VLS_67({
+const __VLS_70 = __VLS_69({
     modelValue: (__VLS_ctx.importExportData),
     type: "textarea",
     rows: (5),
     placeholder: "匯出的記錄會顯示在此處，或在此處貼上要匯入的資料",
-}, ...__VLS_functionalComponentArgsRest(__VLS_67));
+}, ...__VLS_functionalComponentArgsRest(__VLS_69));
 // @ts-ignore
 [importExportData,];
 var __VLS_3;
@@ -855,6 +876,8 @@ const __VLS_self = (await import('vue')).defineComponent({
         handleUpdateNoteStatus: handleUpdateNoteStatus,
         handleUpdateNoteCd: handleUpdateNoteCd,
         handleToggleInputSound: handleToggleInputSound,
+        handleUpdateNoteSound: handleUpdateNoteSound,
+        handleUpdateAllNoteSound: handleUpdateAllNoteSound,
         handleUpdateMapStar: handleUpdateMapStar,
         exportNotes: exportNotes,
         handleImportClick: handleImportClick,

@@ -61,6 +61,30 @@ const loadMapImage = async (noteText) => {
     }
 };
 const getDocId = (mapLevel, channel, noteText) => `${mapLevel}_${channel}_${encodeURIComponent(noteText.trim())}`;
+const SA_NOTE_SOUND_STORAGE_KEY = "sa-note-sound-settings";
+const SA_INPUT_SOUND_STORAGE_KEY = "sa-input-sound-on";
+const getNoteSoundSettings = () => {
+    const saved = localStorage.getItem(SA_NOTE_SOUND_STORAGE_KEY);
+    if (!saved)
+        return {};
+    try {
+        return JSON.parse(saved);
+    }
+    catch {
+        return {};
+    }
+};
+const setNoteSoundSetting = (noteId, hasSound) => {
+    const settings = getNoteSoundSettings();
+    settings[noteId] = hasSound;
+    localStorage.setItem(SA_NOTE_SOUND_STORAGE_KEY, JSON.stringify(settings));
+};
+const getNoteSoundSetting = (noteId) => {
+    const settings = getNoteSoundSettings();
+    if (noteId in settings)
+        return settings[noteId];
+    return hasInputSoundOn.value;
+};
 const sortNotesArray = (a, b) => {
     const now = Date.now();
     const getCategory = (state) => {
@@ -109,7 +133,6 @@ const saveNoteToFirestore = async (note) => {
         respawnTime: note.respawnTime ?? null,
         state: note.state,
         maxStages: note.maxStages ?? 4,
-        hasSound: note.hasSound ?? true,
         updatedBy: clientId,
         updatedAt: serverTimestamp(),
     });
@@ -125,15 +148,16 @@ const subscribeNotes = () => {
             const mapName = d.noteText || mapData?.name;
             if (!mapName)
                 return;
+            const noteId = getDocId(d.mapLevel, d.channel, mapName);
             nextNotes.push({
-                id: snap.id,
+                id: noteId,
                 mapLevel: d.mapLevel,
                 channel: d.channel,
                 noteText: mapName,
                 respawnTime: d.respawnTime ?? 0,
                 state: d.state ?? "CD",
                 isStarred: mapData?.isStarred ?? false,
-                hasSound: d.hasSound ?? true,
+                hasSound: getNoteSoundSetting(noteId),
                 maxStages: d.maxStages ?? mapData?.maxStages ?? 4,
                 onTime: d.onTime ?? null,
                 hasAlerted: false,
@@ -161,6 +185,7 @@ const handleAddNewNote = async (newNote) => {
         onTime: newNote.onTime || null,
         hasAlerted: false,
     };
+    setNoteSoundSetting(finalNote.id, finalNote.hasSound);
     await saveNoteToFirestore(finalNote);
     ElMessage({
         type: "success",
@@ -226,6 +251,22 @@ const handleUpdateNoteChannel = async (id, newChannel) => {
 };
 const handleToggleInputSound = (state) => {
     hasInputSoundOn.value = state;
+    localStorage.setItem(SA_INPUT_SOUND_STORAGE_KEY, JSON.stringify(state));
+};
+const handleUpdateNoteSound = (id, hasSound) => {
+    const note = notes.value.find((n) => n.id === id);
+    if (!note)
+        return;
+    note.hasSound = hasSound;
+    setNoteSoundSetting(id, hasSound);
+};
+const handleUpdateAllNoteSound = (hasSound) => {
+    if (notes.value.length === 0)
+        return;
+    notes.value.forEach((note) => {
+        note.hasSound = hasSound;
+        setNoteSoundSetting(note.id, hasSound);
+    });
 };
 const handleUpdateMapStar = (mapLevel) => {
     const map = maps.value.find((m) => m.level === mapLevel);
@@ -318,6 +359,10 @@ onMounted(() => {
     const savedMaps = localStorage.getItem("sa-mapData");
     if (savedMaps)
         maps.value = JSON.parse(savedMaps);
+    const savedInputSound = localStorage.getItem(SA_INPUT_SOUND_STORAGE_KEY);
+    if (savedInputSound !== null) {
+        hasInputSoundOn.value = savedInputSound === "true";
+    }
     if (isFirebaseConfigured && saAuth) {
         unsubscribeAuth = onAuthStateChanged(saAuth, (user) => {
             isVerified.value = !!user;
@@ -550,6 +595,8 @@ else {
         ...{ 'onToggleSort': {} },
         ...{ 'onUpdateNoteStatus': {} },
         ...{ 'onUpdateNoteChannel': {} },
+        ...{ 'onUpdateNoteSound': {} },
+        ...{ 'onUpdateAllNoteSound': {} },
         ...{ 'onToggleInputSound': {} },
         ...{ 'onUpdateMapStar': {} },
         ...{ 'onShowUpdateDialog': {} },
@@ -564,6 +611,8 @@ else {
         ...{ 'onToggleSort': {} },
         ...{ 'onUpdateNoteStatus': {} },
         ...{ 'onUpdateNoteChannel': {} },
+        ...{ 'onUpdateNoteSound': {} },
+        ...{ 'onUpdateAllNoteSound': {} },
         ...{ 'onToggleInputSound': {} },
         ...{ 'onUpdateMapStar': {} },
         ...{ 'onShowUpdateDialog': {} },
@@ -584,40 +633,44 @@ else {
         { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
     const __VLS_64 = ({ updateNoteChannel: {} },
         { onUpdateNoteChannel: (__VLS_ctx.handleUpdateNoteChannel) });
-    const __VLS_65 = ({ toggleInputSound: {} },
+    const __VLS_65 = ({ updateNoteSound: {} },
+        { onUpdateNoteSound: (__VLS_ctx.handleUpdateNoteSound) });
+    const __VLS_66 = ({ updateAllNoteSound: {} },
+        { onUpdateAllNoteSound: (__VLS_ctx.handleUpdateAllNoteSound) });
+    const __VLS_67 = ({ toggleInputSound: {} },
         { onToggleInputSound: (__VLS_ctx.handleToggleInputSound) });
-    const __VLS_66 = ({ updateMapStar: {} },
+    const __VLS_68 = ({ updateMapStar: {} },
         { onUpdateMapStar: (__VLS_ctx.handleUpdateMapStar) });
-    const __VLS_67 = ({ showUpdateDialog: {} },
+    const __VLS_69 = ({ showUpdateDialog: {} },
         { onShowUpdateDialog: (__VLS_ctx.handleShowUpdateDialog) });
     // @ts-ignore
-    [maps, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleToggleInputSound, handleShowUpdateDialog,];
+    [maps, handleUpdateMapStar, notes, currentSortMode, mapImageCache, handleDeleteNote, handleClearAllNotes, toggleSort, handleUpdateNoteStatus, handleUpdateNoteChannel, handleUpdateNoteSound, handleUpdateAllNoteSound, handleToggleInputSound, handleShowUpdateDialog,];
     var __VLS_57;
     /** @type {[typeof UpdateStatusDialog, ]} */ ;
     // @ts-ignore
-    const __VLS_69 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
+    const __VLS_71 = __VLS_asFunctionalComponent(UpdateStatusDialog, new UpdateStatusDialog({
         ...{ 'onUpdateNoteStatus': {} },
         ...{ 'onUpdateNoteCd': {} },
         modelValue: (__VLS_ctx.showUpdateDialog),
         currentNote: (__VLS_ctx.currentNoteToUpdate),
         showName: (__VLS_ctx.updateMapName),
     }));
-    const __VLS_70 = __VLS_69({
+    const __VLS_72 = __VLS_71({
         ...{ 'onUpdateNoteStatus': {} },
         ...{ 'onUpdateNoteCd': {} },
         modelValue: (__VLS_ctx.showUpdateDialog),
         currentNote: (__VLS_ctx.currentNoteToUpdate),
         showName: (__VLS_ctx.updateMapName),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_69));
-    let __VLS_72;
-    let __VLS_73;
-    const __VLS_74 = ({ updateNoteStatus: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_71));
+    let __VLS_74;
+    let __VLS_75;
+    const __VLS_76 = ({ updateNoteStatus: {} },
         { onUpdateNoteStatus: (__VLS_ctx.handleUpdateNoteStatus) });
-    const __VLS_75 = ({ updateNoteCd: {} },
+    const __VLS_77 = ({ updateNoteCd: {} },
         { onUpdateNoteCd: (__VLS_ctx.handleUpdateNoteCd) });
     // @ts-ignore
     [handleUpdateNoteStatus, showUpdateDialog, currentNoteToUpdate, updateMapName, handleUpdateNoteCd,];
-    var __VLS_71;
+    var __VLS_73;
 }
 var __VLS_19;
 var __VLS_3;
@@ -660,6 +713,8 @@ const __VLS_self = (await import('vue')).defineComponent({
         handleUpdateNoteCd: handleUpdateNoteCd,
         handleUpdateNoteChannel: handleUpdateNoteChannel,
         handleToggleInputSound: handleToggleInputSound,
+        handleUpdateNoteSound: handleUpdateNoteSound,
+        handleUpdateAllNoteSound: handleUpdateAllNoteSound,
         handleUpdateMapStar: handleUpdateMapStar,
         handleShowUpdateDialog: handleShowUpdateDialog,
         toggleSort: toggleSort,

@@ -1,4 +1,4 @@
-import { ref, defineProps, defineEmits, onMounted, onUnmounted, computed, inject, } from "vue";
+import { ref, onMounted, onUnmounted, computed, inject, } from "vue";
 import { ElMessage, ElMessageBox, ElButton, ElIcon } from "element-plus";
 import { StarFilled, Bell, BellFilled, Setting, Delete, } from "@element-plus/icons-vue";
 const featureFlags = inject("feature-flags");
@@ -9,6 +9,8 @@ const emit = defineEmits([
     "toggle-sort",
     "update-note-status",
     "update-note-channel",
+    "update-note-sound",
+    "update-all-note-sound",
     "toggle-input-sound",
     "update-map-star",
     "show-update-dialog",
@@ -208,12 +210,14 @@ const toggleStar = (mapLevel) => {
 };
 const toggleSound = (note) => {
     note.hasSound = !note.hasSound;
+    emit("update-note-sound", note.id, note.hasSound);
 };
 const handleToggleAllSound = () => {
     isAllSoundOn.value = !isAllSoundOn.value;
     props.notes.forEach((note) => {
         note.hasSound = isAllSoundOn.value;
     });
+    emit("update-all-note-sound", isAllSoundOn.value);
     emit("toggle-input-sound", isAllSoundOn.value);
 };
 const sortNotes = () => {
