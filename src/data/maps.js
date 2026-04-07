@@ -104,5 +104,10 @@ export const maps = [
     { episode: 17, level: 135, name: '泰萊希森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Teresh Forest' },
     { episode: 17, level: 138, name: '沙烏席斯10館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Sausis Room 10' },
     { episode: 17, level: 140, name: '巴蘭迪斯3館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Valandis Room 3' },
-    { episode: 17, level: 143, name: '巴蘭迪斯91館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Valandis Room 91' }
+    { episode: 17, level: 143, name: '巴蘭迪斯91館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Valandis Room 91' },
+    // EP18
+    { episode: 18, level: 145, name: '諾貝禮爾森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Nobreer Forest' },
+    { episode: 18, level: 148, name: '尤德伊安森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Yudejan Forest' },
+    { episode: 18, level: 150, name: '那魯巴斯寺院', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Narvas Temple' },
+    { episode: 18, level: 153, name: '那魯巴斯寺院別館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Narvas Temple Annex' }
 ];
