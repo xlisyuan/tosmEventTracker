@@ -11,6 +11,122 @@
 
       gtag('config', 'G-6FZ92PW6TR');
     </script>
+    <!-- 🔽 Firebase Firestore 整合模組，請直接貼在 </body> 前 🔽 -->
+<script type="module">
+  // 1️⃣ 載入 Firebase SDK (v11 模組版)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, doc, setDoc, deleteDoc,
+    onSnapshot, query, where, orderBy, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  // 2️⃣ 你的 Firebase 設定（保持這組不變）
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMuk8fWfq4jTj76SBH8iOMZUNedhTJ3m0",
+    authDomain: "webapp-ceb18.firebaseapp.com",
+    projectId: "webapp-ceb18",
+    storageBucket: "webapp-ceb18.firebasestorage.app",
+    messagingSenderId: "1094462364537",
+    appId: "1:1094462364537:web:4a6ea7926ff19b9be2eda8",
+    measurementId: "G-ZGQNRBVDK2"
+  };
+
+  // 初始化
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  const eventsCol = collection(db, "events");
+
+  // 3️⃣ 共用狀態
+  window.cloud = { unsubscribe: null };
+
+  // 4️⃣ 把 Firestore 資料轉換成可顯示的格式
+  function mapDocToRow(d) {
+    const x = d.data();
+    return {
+      id: d.id,
+      BOSS: x.BOSS || "",
+      channel: x.channel || "",
+      note: x.note || "",
+      time: x.time || "",
+      updatedAt: x.updatedAt?.toMillis?.() || 0,
+    };
+  }
+
+  // 5️⃣ 將資料繪製到頁面（沒有 renderTable 時的保底方式）
+  function renderFallback(rows) {
+    let tbody = document.querySelector("#recordsBody");
+    if (!tbody) {
+      const table = document.createElement("table");
+      table.style.margin = "20px auto";
+      table.style.borderCollapse = "collapse";
+      table.style.width = "90%";
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>BOSS</th><th>Channel</th><th>Note</th><th>Time</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="recordsBody"></tbody>
+      `;
+      document.body.appendChild(table);
+      tbody = table.querySelector("#recordsBody");
+    }
+
+    tbody.innerHTML = rows.map(r => `
+      <tr data-id="${r.id}">
+        <td>${r.BOSS}</td>
+        <td>${r.channel}</td>
+        <td>${r.note}</td>
+        <td>${r.time}</td>
+        <td><button class="btn-del" data-id="${r.id}">刪除</button></td>
+      </tr>
+    `).join("");
+
+    tbody.querySelectorAll(".btn-del").forEach(b => {
+      b.onclick = () => cloudRemove(b.dataset.id);
+    });
+  }
+
+  // 6️⃣ 啟動 Firestore 即時監聽
+  function startRealtime() {
+    if (window.cloud.unsubscribe) window.cloud.unsubscribe();
+    const q = query(eventsCol, orderBy("updatedAt", "desc"));
+    window.cloud.unsubscribe = onSnapshot(q, (snap) => {
+      const rows = snap.docs.map(mapDocToRow);
+      renderFallback(rows);
+    });
+  }
+
+  // 7️⃣ Firestore 操作函式
+  async function cloudAdd({ BOSS, channel, note, time }) {
+    await addDoc(eventsCol, {
+      BOSS, channel, note, time,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+  }
+
+  async function cloudRemove(id) {
+    await deleteDoc(doc(db, "events", id));
+  }
+
+  async function cloudUpdate(id, patch) {
+    await setDoc(doc(db, "events", id), { ...patch, updatedAt: serverTimestamp() }, { merge: true });
+  }
+
+  // 8️⃣ 將操作綁定到全域（方便你的其他 JS 呼叫）
+  window.cloudAdd = cloudAdd;
+  window.cloudRemove = cloudRemove;
+  window.cloudUpdate = cloudUpdate;
+  window.cloudStart = startRealtime;
+
+  // 9️⃣ 初始化監聽
+  startRealtime();
+
+  console.log("%cFirebase Firestore 已啟用 ✓", "color:#4caf50;font-weight:bold;");
+</script>
+<!-- 🔼 Firebase Firestore 整合結束 🔼 -->
+
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
