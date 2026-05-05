@@ -109,5 +109,11 @@ export const maps = [
     { episode: 18, level: 145, name: '諾貝禮爾森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Nobreer Forest' },
     { episode: 18, level: 148, name: '尤德伊安森林', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Yudejan Forest' },
     { episode: 18, level: 150, name: '那魯巴斯寺院', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Narvas Temple' },
-    { episode: 18, level: 153, name: '那魯巴斯寺院別館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Narvas Temple Annex' }
+    { episode: 18, level: 153, name: '那魯巴斯寺院別館', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Narvas Temple Annex' },
+    // EP19
+    { episode: 19, level: 155, name: '史達里小鎮', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Starry Town' },
+    { episode: 19, level: 157, name: '貝拉因小鎮', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Feline Post Town' },
+    { episode: 19, level: 159, name: '斯貝托溫小鎮', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Spell Tome Town' },
+    { episode: 19, level: 161, name: '巴爾堤內紀念區', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Baltinel Memorial' },
+    { episode: 19, level: 163, name: '克利黑爾紀念區', maxStages: 4, isStarred: false, respawnTime: 25 * 60 + 15, imagePath: `${BASE_URL}maps/XXXXXX.webp`, enName: 'Gliehel Memorial' }
 ];
